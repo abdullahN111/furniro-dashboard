@@ -10,10 +10,10 @@ const Layout = ({
 }>) => {
   return (
     <div className="flex">
-      <div className="flex-1 bg-[--bgSoft] p-5">
+      <div className="flex-1 bg-[--bgSoft] p-4 sm:p-5">
         <Sidebar />
       </div>
-      <div className="flex-[4] p-5">
+      <div className="flex-[4] p-4 sm:p-5">
         <Navbar />
         {children}
         <Footer />

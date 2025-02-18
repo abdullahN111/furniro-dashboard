@@ -9,7 +9,7 @@ import {
   MdWork,
   MdAnalytics,
   MdPeople,
-  MdOutlineSettings,
+  // MdOutlineSettings,
   MdHelpCenter,
   MdLogout,
   MdMenu,
@@ -23,11 +23,6 @@ const menuItems = [
     title: "Pages",
     list: [
       { title: "Dashboard", path: "/dashboard", icon: <MdDashboard /> },
-      {
-        title: "Users",
-        path: "/dashboard/users",
-        icon: <MdSupervisedUserCircle />,
-      },
       { title: "Orders", path: "/dashboard/orders", icon: <MdShoppingBag /> },
       {
         title: "Transactions",
@@ -48,10 +43,15 @@ const menuItems = [
     title: "User",
     list: [
       {
-        title: "Settings",
-        path: "/dashboard/settings",
-        icon: <MdOutlineSettings />,
+        title: "Users",
+        path: "/dashboard/users",
+        icon: <MdSupervisedUserCircle />,
       },
+      // {
+      //   title: "Settings",
+      //   path: "/dashboard/settings",
+      //   icon: <MdOutlineSettings />,
+      // },
       { title: "Help", path: "/dashboard/help", icon: <MdHelpCenter /> },
     ],
   },
@@ -64,16 +64,16 @@ const Sidebar = () => {
     <div>
       <button
         onClick={() => setIsOpen(true)}
-        className="lg:hidden pt-4 p-[2px] sm:p-3 flex flex-col md:flex-row items-center gap-2 text-white rounded-md"
+        className="lg:hidden pt-4 p-[2px] sm:p-2 flex flex-col md:flex-row items-center gap-1 sm:gap-2 text-white rounded-md"
       >
         <MdMenu size={24} />
-        <span className="text-sm text-[--textSoft] font-bold">
-          Admin
-        </span>
+        <span className="text-sm text-[--textSoft] font-bold">Admin</span>
       </button>
 
       <div
-        className={`fixed top-0 left-0 h-full bg-[--bgSoft] p-4 transition-transform duration-300 z-50 w-48 shadow-lg ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:relative lg:translate-x-0 lg:w-auto`}
+        className={`fixed top-0 left-0 h-full bg-[--bgSoft] p-4 transition-transform duration-300 z-50 w-42 shadow-lg overflow-y-auto ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:relative lg:translate-x-0 lg:w-auto`}
       >
         <div className="flex justify-end mb-3 lg:hidden">
           <button onClick={() => setIsOpen(false)} className="text-white">

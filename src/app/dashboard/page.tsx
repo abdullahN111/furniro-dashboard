@@ -1,7 +1,7 @@
 import Card from "@/app/components/admin/card/Card";
 import Rightbar from "@/app/components/admin/rightbar/Rightbar";
 import Transactions from "@/app/components/admin/transactions/Transactions";
-import Chart from "@/app/components/admin/chart/Chart";
+// import Chart from "@/app/components/admin/chart/Chart";
 
 const Admin = () => {
   return (
@@ -13,7 +13,7 @@ const Admin = () => {
           <Card />
         </div>
         <Transactions />
-        <Chart />
+        {/* <Chart /> */}
       </div>
       <div className="lg:max-w-xs xl:max-w-sm">
         <Rightbar />

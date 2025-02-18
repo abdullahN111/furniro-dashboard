@@ -55,7 +55,7 @@ const Rightbar = () => {
         </div>
       </div>
 
-      <div className="hidden md:flex flex-col relative lg:hidden gap-4 justify-center">
+      {/* <div className="hidden md:block relative flex-col lg:hidden gap-4 justify-center">
         <button className="flex items-center gap-2 p-2 bg-[#5d57c9] text-white rounded-md w-[100px]">
           <MdPlayCircleFilled size={20} />
           <span className="text-sm">Watch</span>
@@ -64,7 +64,7 @@ const Rightbar = () => {
           <MdReadMore size={20} />
           <span className="text-sm">Learn</span>
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };
