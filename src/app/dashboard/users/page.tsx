@@ -3,8 +3,11 @@
 import { useMemo } from "react";
 import Link from "next/link";
 // import Image from "next/image";
+import SearchBar from "@/app/dashboard/search/SearchBar";
+import { useSearch } from "@/app/dashboard/search/SearchContext";
 
 const Users = () => {
+  const { pageSearchQuery } = useSearch();
   const users = useMemo(
     () => [
       {
@@ -40,12 +43,26 @@ const Users = () => {
     ],
     []
   );
+  const filteredUsers = useMemo(() => {
+    if (!pageSearchQuery) return users;
+    return users.filter(
+      (u) =>
+        u.id.toLowerCase().includes(pageSearchQuery.toLowerCase()) ||
+        u.name.toLowerCase().includes(pageSearchQuery.toLowerCase()) ||
+        u.email.toLowerCase().includes(pageSearchQuery.toLowerCase()) ||
+        u.role.toLowerCase().includes(pageSearchQuery.toLowerCase())
+    );
+  }, [pageSearchQuery, users]);
+
 
   return (
     <div className="container bg-[--bgSoft] w-full p-4 rounded-[10px] mt-5">
-      <h2 className="mb-[20px] font-light text-[--textSoft] text-lg sm:text-xl">
-        Users
-      </h2>
+      <div className="mt-2 mb-3 flex justify-between">
+        <SearchBar scope="page" />
+        <button className="bg-[#3f3fad] hover:bg-[#3f3faddc] text-white px-3 rounded-md text-xs sm:text-sm shadow">
+          Add User
+        </button>
+      </div>
 
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full table-fixed">
@@ -58,8 +75,11 @@ const Users = () => {
             </tr>
           </thead>
           <tbody>
-            {users.map((user) => (
-              <tr key={user.id} className="bg-[--bgSoft] text-white hover:bg-zinc-100/50">
+            {filteredUsers.map((user) => (
+              <tr
+                key={user.id}
+                className="bg-[--bgSoft] text-white hover:bg-zinc-100/50"
+              >
                 <td className="p-[10px] text-left">
                   <Link href="/" className="">
                     {user.id}
@@ -87,7 +107,7 @@ const Users = () => {
       </div>
 
       <div className="md:hidden flex flex-col gap-4">
-        {users.map((user) => (
+        {filteredUsers.map((user) => (
           <div
             key={user.id}
             className="p-3 sm:p-4 border border-[#2e374a] rounded-lg shadow-md bg-[--bgSoft]"

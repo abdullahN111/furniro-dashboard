@@ -6,10 +6,11 @@ import {
   MdNotifications,
   MdOutlineChat,
   MdPublic,
-  MdSearch,
   MdMenu,
   MdClose,
 } from "react-icons/md";
+import SearchBar from "@/app/dashboard/search/SearchBar";
+
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -21,14 +22,7 @@ const Navbar = () => {
         {pathname.split("/").pop()}
       </div>
       <div className="hidden lg:flex items-center gap-[20px]">
-        <div className="flex items-center gap-[10px] bg-[#2e374a] p-[10px] rounded-[10px]">
-          <MdSearch size={20} />
-          <input
-            type="text"
-            placeholder="Search.."
-            className="bg-transparent border-none outline-none text-[--text]"
-          />
-        </div>
+       <SearchBar scope="global" />
         <div className="flex items-center gap-[10px]">
           <MdOutlineChat size={20} />
           <MdNotifications size={20} />
@@ -44,14 +38,7 @@ const Navbar = () => {
         className={`absolute top-[70px] right-0 w-[250px] bg-[--bgSoft] p-5 rounded-[10px] shadow-lg transition-all duration-300 ${menuOpen ? "opacity-100 visible z-[1000]" : "opacity-0 invisible"}`}
       >
         <div className="flex flex-col gap-[20px]">
-          <div className="flex items-center gap-[10px] bg-[#2e374a] p-[10px] rounded-[10px]">
-            <MdSearch size={20} />
-            <input
-              type="text"
-              placeholder="Search.."
-              className="bg-transparent border-none outline-none text-[--text]"
-            />
-          </div>
+          <SearchBar scope="global" />
           <div className="flex flex-col gap-[15px]">
             <button className="flex items-center gap-[10px]">
               <MdOutlineChat size={20} /> Messages

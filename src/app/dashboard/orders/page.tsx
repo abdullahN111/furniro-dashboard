@@ -15,8 +15,11 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import SearchBar from "@/app/dashboard/search/SearchBar";
+import { useSearch } from "@/app/dashboard/search/SearchContext";
 
 const Orders = () => {
+  const { pageSearchQuery } = useSearch();
   const orders = useMemo(
     () => [
       {
@@ -163,6 +166,16 @@ const Orders = () => {
     []
   );
 
+  const filteredOrders = useMemo(() => {
+    if (!pageSearchQuery) return orders;
+    return orders.filter(
+      (o) =>
+        o.id.toLowerCase().includes(pageSearchQuery.toLowerCase()) ||
+        o.customer.toLowerCase().includes(pageSearchQuery.toLowerCase()) ||
+        o.product.toLowerCase().includes(pageSearchQuery.toLowerCase())
+    );
+  }, [pageSearchQuery, orders]);
+
   const columns = [
     { accessorKey: "id", header: "Order ID" },
     { accessorKey: "customer", header: "Customer Name" },
@@ -174,11 +187,11 @@ const Orders = () => {
       header: "Action",
       cell: () => (
         <div className="flex gap-2">
-          <button className="bg-green-500 text-white px-3 py-1 rounded-md text-xs sm:text-sm">
-            Process
-          </button>
-          <button className="bg-red-500 text-white px-3 py-1 rounded-md text-xs sm:text-sm">
+          <button className="bg-red-700 text-white px-3 py-1 rounded-md text-xs sm:text-sm">
             Details
+          </button>
+          <button className="bg-green-700 text-white px-3 py-1 rounded-md text-xs sm:text-sm">
+            Process
           </button>
         </div>
       ),
@@ -188,7 +201,7 @@ const Orders = () => {
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
   const table = useReactTable({
-    data: orders,
+    data: filteredOrders,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -198,9 +211,9 @@ const Orders = () => {
 
   return (
     <div className="container bg-[--bgSoft] w-full p-4 rounded-[10px] mt-5">
-      <h2 className="mb-[20px] font-light text-[--textSoft] text-lg sm:text-xl">
-        Recent Orders
-      </h2>
+      <div className="mt-2 mb-3">
+        <SearchBar scope="page" />
+      </div>
 
       <div className="hidden md:block w-full overflow-auto rounded-lg shadow">
         <Table className="w-full min-w-[600px]">
@@ -233,22 +246,26 @@ const Orders = () => {
       </div>
 
       <div className="md:hidden flex flex-col gap-4">
-        {orders.map((order) => (
+        {filteredOrders.map((order) => (
           <div
             key={order.id}
             className="p-3 sm:p-4 border border-[#2e374a] rounded-lg shadow-md bg-[--bgSoft]"
           >
             <p className="text-sm text-white mb-1">Order ID: {order.id}</p>
-            <p className="text-sm text-white mb-1">Customer: {order.customer}</p>
+            <p className="text-sm text-white mb-1">
+              Customer: {order.customer}
+            </p>
             <p className="text-sm text-white mb-1">Product: {order.product}</p>
-            <p className="text-sm text-white mb-1">Quantity: {order.quantity}</p>
+            <p className="text-sm text-white mb-1">
+              Quantity: {order.quantity}
+            </p>
             <p className="text-sm text-white mb-1">Price: {order.price}</p>
             <div className="flex gap-2 mt-3">
-              <button className="bg-green-500 text-white px-3 py-1 rounded-md text-xs sm:text-sm shadow">
-                Process
-              </button>
-              <button className="bg-red-500 text-white px-3 py-1 rounded-md text-xs sm:text-sm shadow">
+              <button className="bg-red-700 text-white px-3 py-1 rounded-md text-xs sm:text-sm shadow">
                 Details
+              </button>
+              <button className="bg-green-700 text-white px-3 py-1 rounded-md text-xs sm:text-sm shadow">
+                Process
               </button>
             </div>
           </div>

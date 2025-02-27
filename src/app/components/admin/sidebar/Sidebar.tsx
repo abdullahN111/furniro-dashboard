@@ -8,7 +8,7 @@ import {
   MdAttachMoney,
   MdWork,
   MdAnalytics,
-  MdPeople,
+  // MdPeople,
   // MdOutlineSettings,
   MdHelpCenter,
   MdLogout,
@@ -36,7 +36,7 @@ const menuItems = [
     list: [
       { title: "Revenue", path: "/dashboard/revenue", icon: <MdWork /> },
       { title: "Reports", path: "/dashboard/reports", icon: <MdAnalytics /> },
-      { title: "Teams", path: "/dashboard/teams", icon: <MdPeople /> },
+      // { title: "Teams", path: "/dashboard/teams", icon: <MdPeople /> },
     ],
   },
   {
