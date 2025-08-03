@@ -10,7 +10,7 @@ const SearchBar = ({ scope = "global" }: { scope?: "global" | "page" }) => {
       } = useSearch();
       const isGlobal = scope === "global";
   return (
-    <div className="flex items-center gap-[10px] bg-[#2e374a] p-[10px] rounded-[10px]">
+    <div className="flex items-center gap-[8px] md:gap-[10px] bg-[#2e374a] p-[8px] md:p-[10px] rounded-[10px] mr-2">
       <MdSearch size={20} />
       <input
         type="text"

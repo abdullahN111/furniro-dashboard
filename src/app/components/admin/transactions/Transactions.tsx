@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Link from "next/link";
-// import Image from "next/image";
+import PaginationControls from "@/app/components/admin/pagination/PaginationControls";
 import {
   Table,
   TableBody,
@@ -22,9 +21,10 @@ import { useSearch } from "@/app/dashboard/search/SearchContext";
 
 interface TransactionsProps {
   showAll?: boolean;
+  heading?: string;
 }
 
-const Transactions = ({ showAll = false }: TransactionsProps) => {
+const Transactions = ({ showAll = false, heading }: TransactionsProps) => {
   const { pageSearchQuery } = useSearch();
 
   const transactions = useMemo(
@@ -176,11 +176,14 @@ const Transactions = ({ showAll = false }: TransactionsProps) => {
 
   return (
     <div className="container bg-[--bgSoft] w-full p-4 rounded-[10px] mt-5">
+      <div className="text-[--textSoft] text-lg font-bold capitalize py-2">
+        {heading}
+      </div>
       <div className="mt-2 mb-3">
         <SearchBar scope="page" />
       </div>
 
-      <div className="hidden md:block w-full overflow-auto rounded-lg shadow">
+      <div className="hidden lg+:block w-full overflow-auto rounded-lg shadow">
         <Table className="w-full min-w-[600px]">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -210,7 +213,7 @@ const Transactions = ({ showAll = false }: TransactionsProps) => {
         </Table>
       </div>
 
-      <div className="md:hidden flex flex-col gap-4">
+      <div className="lg+:hidden flex flex-col gap-4">
         {displayedTransactions.map((transaction) => (
           <div
             key={transaction.id}
@@ -241,37 +244,13 @@ const Transactions = ({ showAll = false }: TransactionsProps) => {
         ))}
       </div>
 
-      {!showAll && (
-        <div className="flex justify-center mt-5">
-          <Link
-            href="/dashboard/transactions"
-            className="bg-[#2e374a] hover:bg-[#3d4a65] text-white px-4 py-2 rounded-md text-sm shadow"
-          >
-            View All Transactions
-          </Link>
-        </div>
-      )}
-      {showAll && (
-        <div className="flex justify-center mt-4 space-x-2">
-          <button
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-            className="px-3 py-1 bg-gray-300 rounded-md disabled:opacity-50"
-          >
-            Prev
-          </button>
-          <span className="px-3 py-1 bg-gray-100 rounded-md">
-            Page {pagination.pageIndex + 1} of {table.getPageCount()}
-          </span>
-          <button
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-            className="px-3 py-1 bg-gray-300 rounded-md disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
-      )}
+      <PaginationControls
+        showAll={showAll}
+        url="/dashboard/transactions"
+        pagination={pagination}
+        table={table}
+        view={"Transactions"}
+      />
     </div>
   );
 };

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+// import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import {
   MdNotifications,
   MdOutlineChat,
@@ -11,18 +12,19 @@ import {
 } from "react-icons/md";
 import SearchBar from "@/app/dashboard/search/SearchBar";
 
-
 const Navbar = () => {
-  const pathname = usePathname();
+  // const pathname = usePathname();
+  const { data: session } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <div className="flex justify-between items-center w-full p-4 sm:p-5 rounded-lg bg-[--bgSoft]">
       <div className="text-[--textSoft] font-bold capitalize">
-        {pathname.split("/").pop()}
+        {/* {pathname.split("/").pop()?.replace(/-/g, " ")} */}
+        {session?.user?.name}
       </div>
       <div className="hidden lg:flex items-center gap-[20px]">
-       <SearchBar scope="global" />
+        <SearchBar scope="global" />
         <div className="flex items-center gap-[10px]">
           <MdOutlineChat size={20} />
           <MdNotifications size={20} />
@@ -57,5 +59,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-

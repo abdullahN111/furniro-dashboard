@@ -5,6 +5,7 @@
 :root {
   --bg: #151c2c;
   --bgSoft: #182237;
+  --textDark: #1e2943;
   --text: white;
   --textSoft: #b7bac1;
 }
@@ -25,4 +26,18 @@ body {
   :root {
     --radius: 0.5rem;
   }
+}
+
+/* Custom scrollbar */
+.sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }

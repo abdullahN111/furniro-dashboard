@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useSession, signOut } from "next-auth/react";
+
 import {
   MdDashboard,
   MdSupervisedUserCircle,
@@ -23,6 +25,11 @@ const menuItems = [
     title: "Pages",
     list: [
       { title: "Dashboard", path: "/dashboard", icon: <MdDashboard /> },
+      {
+        title: "Products",
+        path: "/dashboard/products",
+        icon: <MdShoppingBag />,
+      },
       { title: "Orders", path: "/dashboard/orders", icon: <MdShoppingBag /> },
       {
         title: "Transactions",
@@ -59,29 +66,36 @@ const menuItems = [
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { data: session } = useSession();
+
+  const handleLogout = () => {
+    signOut({ callbackUrl: "/login" });
+  };
 
   return (
-    <div>
+    <>
       <button
         onClick={() => setIsOpen(true)}
-        className="lg:hidden pt-4 p-[2px] sm:p-2 flex flex-col md:flex-row items-center gap-1 sm:gap-2 text-white rounded-md"
+        className="lg+:hidden fixed top-2 left-2 z-40 p-4 text-white rounded-md bg-[--bgSoft]"
       >
         <MdMenu size={24} />
-        <span className="text-sm text-[--textSoft] font-bold">Admin</span>
       </button>
 
       <div
-        className={`fixed top-0 left-0 h-full bg-[--bgSoft] p-4 transition-transform duration-300 z-50 w-42 shadow-lg overflow-y-auto ${
+        className={`fixed lg+:sticky top-0 left-0 h-screen lg+:h-fit bg-[--bgSoft] p-4 transition-transform duration-300 z-50 w-[220px] overflow-y-auto sidebar ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:relative lg:translate-x-0 lg:w-auto`}
+        } lg+:translate-x-0`}
       >
-        <div className="flex justify-end mb-3 lg:hidden">
-          <button onClick={() => setIsOpen(false)} className="text-white">
+        <div className="flex justify-end mb-3 lg+:hidden">
+          <button
+            onClick={() => setIsOpen(false)}
+            className="text-white hover:text-[--textSoft]"
+          >
             <MdClose size={24} />
           </button>
         </div>
 
-        <div className="flex items-center gap-3 mb-5">
+        <div className="flex items-center gap-3 mb-6">
           <Image
             src="/images/noavatar.png"
             alt="user image"
@@ -90,29 +104,38 @@ const Sidebar = () => {
             className="rounded-full object-cover"
           />
           <div className="flex flex-col text-xs">
-            <span className="font-semibold">John Doe</span>
-            <span className="text-[--textSoft]">Administrator</span>
+            <span className="font-semibold">
+              {session?.user?.name || "Loading..."}
+            </span>
+            <span className="text-[--textSoft]">
+              {session?.user?.role === "admin" ? "Administrator" : "Editor"}
+            </span>
           </div>
         </div>
 
-        <ul>
-          {menuItems.map((items) => (
-            <li key={items.title}>
-              <span className="text-[--textSoft] font-bold text-sm my-2 mx-0 block">
-                {items.title}
+        <ul className="space-y-4">
+          {menuItems.map((category) => (
+            <li key={category.title}>
+              <span className="text-[--textSoft] font-bold text-sm block mb-3">
+                {category.title}
               </span>
-              {items.list.map((item) => (
-                <MenuLink item={item} key={item.title} />
-              ))}
+              <div className="space-y-1">
+                {category.list.map((item) => (
+                  <MenuLink item={item} key={item.title} />
+                ))}
+              </div>
             </li>
           ))}
         </ul>
 
-        <button className="flex items-center gap-2 p-3 my-3 w-full rounded-lg cursor-pointer hover:bg-[#2e374a]">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-2 p-3 mt-6 w-full rounded-lg cursor-pointer hover:bg-[#2e374a]"
+        >
           <MdLogout /> Logout
         </button>
       </div>
-    </div>
+    </>
   );
 };
 
