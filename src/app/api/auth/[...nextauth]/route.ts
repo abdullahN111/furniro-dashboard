@@ -61,7 +61,7 @@ const handler = NextAuth({
   },
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, 
+    maxAge: 30 * 24 * 60 * 60,
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
@@ -73,7 +73,7 @@ const handler = NextAuth({
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
-        token.role = user.role;
+        (token as { role?: string }).role = (user as { role?: string }).role;
         console.log("✅ JWT token updated with user data");
       }
       return token;
@@ -83,7 +83,7 @@ const handler = NextAuth({
       console.log("🔄 Session callback - session before:", session);
 
       if (token) {
-        session.user = {
+        (session.user as { id?: string; name?: string; email?: string; role?: string }) = {
           id: token.id as string,
           name: token.name as string,
           email: token.email as string,

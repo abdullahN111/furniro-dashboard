@@ -36,7 +36,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
     return <div className="p-4 text-red-500">User not found</div>;
   }
 
-  const canEdit = session?.user?.id === id;
+  const canEdit = (session?.user as { id?: string })?.id === id;
 
   return (
     <>
