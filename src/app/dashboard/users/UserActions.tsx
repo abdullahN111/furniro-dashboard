@@ -23,7 +23,7 @@ const UserActions = ({
           View
         </button>
       </Link>
-      {session?.user?.role === "admin"? (
+      {(session?.user as { role?: string })?.role === "admin"? (
         <button
         className="bg-red-700 text-white px-2 py-1 rounded-md text-[13px] shadow"
         onClick={() => setIsConfirming(true)}
