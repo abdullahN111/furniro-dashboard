@@ -3,7 +3,9 @@ import mongoose from "mongoose";
 const MONGODB_URI = process.env.MONGODB_URI || "";
 
 if (!MONGODB_URI) {
-  throw new Error("❌ Please define the MONGO environment variable in .env.local");
+  throw new Error(
+    "❌ Please define the MONGODB_URI environment variable in .env.local"
+  );
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
