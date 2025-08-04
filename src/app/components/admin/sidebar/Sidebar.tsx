@@ -108,7 +108,9 @@ const Sidebar = () => {
               {session?.user?.name || "Loading..."}
             </span>
             <span className="text-[--textSoft]">
-              {session?.user?.role === "admin" ? "Administrator" : "Editor"}
+              {(session?.user as { role?: string })?.role === "admin"
+                ? "Administrator"
+                : "Editor"}
             </span>
           </div>
         </div>

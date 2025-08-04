@@ -83,7 +83,12 @@ const handler = NextAuth({
       console.log("🔄 Session callback - session before:", session);
 
       if (token) {
-        (session.user as { id?: string; name?: string; email?: string; role?: string }) = {
+        (session.user as {
+          id?: string;
+          name?: string;
+          email?: string;
+          role?: string;
+        }) = {
           id: token.id as string,
           name: token.name as string,
           email: token.email as string,
