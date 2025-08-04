@@ -56,7 +56,7 @@ const Users = () => {
     <div className="container bg-[--bgSoft] w-full p-4 rounded-[10px] mt-5">
       <div className="mt-2 mb-3 flex justify-between">
         <SearchBar scope="page" />
-        {session?.user?.role === "admin"? (
+        {(session?.user as { role?: string })?.role === "admin"? (
           <Link href="/dashboard/users/add">
           <button className="bg-[#3f3fad] hover:bg-[#3f3faddc] text-white px-3 py-2 rounded-md text-xs sm:text-sm shadow">
             Add User
