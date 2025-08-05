@@ -44,7 +44,7 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center bg-[--dark] lg:rounded-lg py-8 sm:py-16 lg:py-24 px-3 sm:px-5 lg:px-8 min-h-screen">
+    <div className="flex flex-col justify-center items-center bg-[--dark] lg:rounded-lg py-8 sm:py-16 lg:py-24 px-8 min-h-screen">
       <div className="text-center w-full max-w-sm">
         <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white my-4">
           Unlock Your Home&apos;s Elegance
@@ -57,7 +57,7 @@ const LoginPage = () => {
 
       <form
         onSubmit={handleLogin}
-        className="w-full max-w-[300px] sm:max-w-sm flex flex-col gap-4 sm:gap-6"
+        className="w-full max-w-sm flex flex-col gap-4 sm:gap-6"
       >
         <div className="flex flex-col gap-2">
           <label className="text-base sm:text-lg font-semibold">
@@ -95,8 +95,8 @@ const LoginPage = () => {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full text-sm gap-2 sm:gap-0">
-          <label className="flex text-sm md:text-base items-center gap-2 cursor-pointer">
+        <div className="flex justify-between items-start sm:items-center w-full text-[13px] sm:text-[15px]">
+          <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
               className="w-4 h-4 text-white accent-slate-50"
@@ -105,7 +105,7 @@ const LoginPage = () => {
           </label>
           <a
             href="#"
-            className="text-white hover:underline text-sm md:text-base"
+            className="text-white hover:underline"
           >
             Forgot Password?
           </a>

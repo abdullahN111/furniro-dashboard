@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 
 import {
@@ -72,42 +72,80 @@ const Sidebar = () => {
     signOut({ callbackUrl: "/login" });
   };
 
+  const closeSidebar = () => {
+    setIsOpen(false);
+  };
+
+  // Close sidebar when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const sidebar = document.querySelector(".sidebar");
+      const menuButton = document.querySelector(".menu-button");
+
+      if (
+        isOpen &&
+        sidebar &&
+        !sidebar.contains(event.target as Node) &&
+        menuButton &&
+        !menuButton.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
   return (
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="lg+:hidden fixed top-2 left-2 z-40 p-4 text-white rounded-md bg-[--bgSoft]"
+        className="lg+:hidden fixed top-2 left-2 z-40 p-2 sm:p-4 text-white rounded-md bg-[--bgSoft] menu-button"
       >
-        <MdMenu size={24} />
+        <MdMenu size={20} className="sm:w-6 sm:h-6" />
       </button>
 
+      {/* Overlay for mobile */}
+      {isOpen && (
+        <div
+          className="lg+:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={closeSidebar}
+        />
+      )}
+
       <div
-        className={`fixed lg+:sticky top-0 left-0 h-screen lg+:h-fit bg-[--bgSoft] p-4 transition-transform duration-300 z-50 w-[220px] overflow-y-auto sidebar ${
+        className={`fixed lg+:sticky top-0 left-0 h-screen lg+:h-fit bg-[--bgSoft] p-3 sm:p-4 transition-transform duration-300 z-50 w-[180px] sm:w-[200px] lg:w-[220px] overflow-y-auto sidebar ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } lg+:translate-x-0`}
       >
         <div className="flex justify-end mb-3 lg+:hidden">
           <button
-            onClick={() => setIsOpen(false)}
-            className="text-white hover:text-[--textSoft]"
+            onClick={closeSidebar}
+            className="text-white hover:text-[--textSoft] p-1"
           >
-            <MdClose size={24} />
+            <MdClose size={20} className="sm:w-6 sm:h-6" />
           </button>
         </div>
 
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
           <Image
             src="/images/noavatar.png"
             alt="user image"
-            width="40"
-            height="40"
-            className="rounded-full object-cover"
+            width="32"
+            height="32"
+            className="rounded-full object-cover w-8 h-8 sm:w-10 sm:h-10"
           />
-          <div className="flex flex-col text-xs">
-            <span className="font-semibold">
+          <div className="flex flex-col text-xs min-w-0 flex-1">
+            <span className="font-semibold text-xs sm:text-sm truncate">
               {session?.user?.name || "Loading..."}
             </span>
-            <span className="text-[--textSoft]">
+            <span className="text-[--textSoft] text-xs truncate">
               {(session?.user as { role?: string })?.role === "admin"
                 ? "Administrator"
                 : "Editor"}
@@ -115,15 +153,19 @@ const Sidebar = () => {
           </div>
         </div>
 
-        <ul className="space-y-4">
+        <ul className="space-y-3 sm:space-y-4">
           {menuItems.map((category) => (
             <li key={category.title}>
-              <span className="text-[--textSoft] font-bold text-sm block mb-3">
+              <span className="text-[--textSoft] font-bold text-xs sm:text-sm block mb-2 sm:mb-3">
                 {category.title}
               </span>
               <div className="space-y-1">
                 {category.list.map((item) => (
-                  <MenuLink item={item} key={item.title} />
+                  <MenuLink
+                    item={item}
+                    key={item.title}
+                    onItemClick={closeSidebar}
+                  />
                 ))}
               </div>
             </li>
@@ -132,9 +174,9 @@ const Sidebar = () => {
 
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 p-3 mt-6 w-full rounded-lg cursor-pointer hover:bg-[#2e374a]"
+          className="flex items-center gap-2 p-2 sm:p-3 mt-4 sm:mt-6 w-full rounded-lg cursor-pointer hover:bg-[#2e374a] text-sm sm:text-base"
         >
-          <MdLogout /> Logout
+          <MdLogout className="w-4 h-4 sm:w-5 sm:h-5" /> Logout
         </button>
       </div>
     </>

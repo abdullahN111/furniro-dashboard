@@ -9,14 +9,14 @@ const Layout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <div className="flex">
-      <div className="flex-1 lg+:flex-[0.8] bg-[--bgSoft] p-4 sm:p-5">
+    <div className="flex flex-col lg:flex-row min-h-screen w-full">
+      <div className="lg:flex-1 lg:lg+:flex-[0.8] bg-[--bgSoft] p-2 sm:p-4 lg:p-5">
         <Sidebar />
       </div>
 
-      <div className="flex-[4] lg+:flex-[4.2] p-4 sm:p-5">
+      <div className="flex-1 lg:flex-[4] lg:lg+:flex-[4.2] p-2 sm:p-4 overflow-hidden">
         <Navbar />
-        {children}
+        <div className="overflow-x-auto">{children}</div>
         <Footer />
       </div>
     </div>
