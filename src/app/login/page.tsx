@@ -44,7 +44,7 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center bg-[--dark] lg:rounded-lg py-8 sm:py-16 lg:py-24 px-4 sm:px-6 lg:px-8 min-h-screen">
+    <div className="flex flex-col justify-center items-center bg-[--dark] lg:rounded-lg py-8 sm:py-16 lg:py-24 px-3 sm:px-5 lg:px-8 min-h-screen">
       <div className="text-center w-full max-w-sm">
         <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white my-4">
           Unlock Your Home&apos;s Elegance
@@ -57,7 +57,7 @@ const LoginPage = () => {
 
       <form
         onSubmit={handleLogin}
-        className="w-full max-w-sm flex flex-col gap-4 sm:gap-6"
+        className="w-full max-w-[300px] sm:max-w-sm flex flex-col gap-4 sm:gap-6"
       >
         <div className="flex flex-col gap-2">
           <label className="text-base sm:text-lg font-semibold">

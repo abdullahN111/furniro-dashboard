@@ -36,7 +36,7 @@ const ProductDetail = () => {
   }
 
   return (
-    <div className="w-full mx-auto py-6 sm:py-8 lg:py-10 mb-8 sm:mb-12 px-4 sm:px-6 lg:px-16 font-poppins flex flex-col gap-6 sm:gap-8 lg:gap-10">
+    <div className="w-full mx-auto py-6 sm:py-8 lg:py-10 mb-8 sm:mb-12 px-3 sm:px-5 lg:px-14 font-poppins flex flex-col gap-6 sm:gap-8 lg:gap-10">
       <div className="basis-[50%] flex flex-col gap-4 sm:gap-6 lg:gap-4">
         <div className="flex gap-2 sm:gap-3 lg:gap-5 overflow-x-auto pb-2">
           {product.sideImages?.map((img, idx) => (
