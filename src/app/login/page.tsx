@@ -29,13 +29,13 @@ const LoginPage = () => {
         password,
         redirect: false,
       });
-      
+
       if (res?.ok) {
         router.push("/dashboard");
       } else {
         alert("Login failed: " + (res?.error ?? "Unknown error"));
       }
-      
+
       console.log("🧪 signIn result:", res);
     } catch (error) {
       console.error("❌ signIn error:", error);
@@ -44,10 +44,10 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center bg-[--dark] lg:rounded-lg py-24">
+    <div className="flex flex-col justify-center items-center bg-[--dark] lg:rounded-lg py-8 sm:py-16 lg:py-24 px-4 sm:px-6 lg:px-8 min-h-screen">
       <div className="text-center w-full max-w-sm">
-        <h2 className="text-[26px] lg:text-3xl font-bold text-white my-4">
-          Unlock Your Home’s Elegance
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white my-4">
+          Unlock Your Home&apos;s Elegance
         </h2>
         <p className="text-white text-sm lg:text-base mb-6">
           Sign in now and start creating your dream space with our premium
@@ -57,13 +57,15 @@ const LoginPage = () => {
 
       <form
         onSubmit={handleLogin}
-        className="w-full max-w-sm flex flex-col gap-6"
+        className="w-full max-w-sm flex flex-col gap-4 sm:gap-6"
       >
         <div className="flex flex-col gap-2">
-          <label className="text-lg font-semibold">Email Address</label>
+          <label className="text-base sm:text-lg font-semibold">
+            Email Address
+          </label>
           <input
             placeholder="Enter your email"
-            className="text-base text-[#333] border border-black py-3 px-4 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[--bgSoft]"
+            className="text-sm sm:text-base text-[#333] border border-black py-2 sm:py-3 px-3 sm:px-4 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[--bgSoft]"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -77,7 +79,7 @@ const LoginPage = () => {
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
-              className="text-base text-[#333] border border-black py-3 px-4 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[--bgSoft]"
+              className="text-sm sm:text-base text-[#333] border border-black py-2 sm:py-3 px-3 sm:px-4 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[--bgSoft]"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -85,7 +87,7 @@ const LoginPage = () => {
 
             <button
               type="button"
-              className="absolute right-4 top-3 text-gray-500 hover:text-[--bgSoft]"
+              className="absolute right-3 sm:right-4 top-2 sm:top-3 text-gray-500 hover:text-[--bgSoft]"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? "🙈" : "👁"}
@@ -93,7 +95,7 @@ const LoginPage = () => {
           </div>
         </div>
 
-        <div className="flex justify-between items-center w-full text-sm">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full text-sm gap-2 sm:gap-0">
           <label className="flex text-sm md:text-base items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
@@ -101,13 +103,16 @@ const LoginPage = () => {
             />
             Remember me
           </label>
-          <a href="#" className="text-white hover:underline">
+          <a
+            href="#"
+            className="text-white hover:underline text-sm md:text-base"
+          >
             Forgot Password?
           </a>
         </div>
 
         <button
-          className="text-white text-lg bg-[#3f3fad] hover:bg-[#313195] rounded-md py-3 px-6 font-semibold shadow-md transition duration-300 w-full max-w-sm mt-6"
+          className="text-white text-base sm:text-lg bg-[#3f3fad] hover:bg-[#313195] rounded-md py-2 sm:py-3 px-4 sm:px-6 font-semibold shadow-md transition duration-300 w-full max-w-sm mt-4 sm:mt-6"
           type="submit"
         >
           Sign In
