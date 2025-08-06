@@ -7,8 +7,7 @@ import { useSearch } from "@/app/dashboard/search/SearchContext";
 import { fetchUsers } from "@/app/lib/data";
 import Image from "next/image";
 import UserActions from "./UserActions";
-import { useSession} from "next-auth/react";
-
+import { useSession } from "next-auth/react";
 
 type User = {
   _id: string;
@@ -53,21 +52,21 @@ const Users = () => {
   }, [pageSearchQuery, users]);
 
   return (
-    <div className="container bg-[--bgSoft] w-full p-4 rounded-[10px] mt-5">
+    <div className="container bg-[--bgSoft] w-full p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
       <div className="mt-2 mb-3 flex justify-between">
         <SearchBar scope="page" />
-        {(session?.user as { role?: string })?.role === "admin"? (
+        {(session?.user as { role?: string })?.role === "admin" ? (
           <Link href="/dashboard/users/add">
-          <button className="bg-[#3f3fad] hover:bg-[#3f3faddc] text-white px-3 py-2 rounded-md text-xs sm:text-sm shadow">
-            Add User
-          </button>
-        </Link>
-        ): (
+            <button className="bg-[#3f3fad] hover:bg-[#3f3faddc] text-white px-3 py-2 rounded-md text-xs sm:text-sm shadow">
+              Add User
+            </button>
+          </Link>
+        ) : (
           <div>
-          <button className="bg-[#3f3fad] text-white px-3 py-2 rounded-md text-xs sm:text-sm shadow opacity-70">
-            Add User
-          </button>
-        </div>
+            <button className="bg-[#3f3fad] text-white px-3 py-2 rounded-md text-xs sm:text-sm shadow opacity-70">
+              Add User
+            </button>
+          </div>
         )}
       </div>
 

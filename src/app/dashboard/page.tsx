@@ -7,7 +7,8 @@ import Products from "@/app/components/admin/products/Products";
 
 const Admin = () => {
   return (
-    <div className="flex flex-col lg+:flex-row gap-3 sm:gap-4 mt-3 sm:mt-5 px-2 sm:px-0">
+    <div className="flex flex-col lg+:flex-row gap-6 sm:gap-8 mt-6 sm:mt-10 px-4 sm:px-6">
+
       <div className="flex-1 flex flex-col gap-3 sm:gap-5 min-w-0">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           <Card />

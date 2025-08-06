@@ -29,14 +29,14 @@ interface OrdersProps {
 const Orders = ({ showAll = false, heading }: OrdersProps) => {
   const { pageSearchQuery } = useSearch();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState<boolean>(true); // Loading state added
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const getOrders = async () => {
-      setLoading(true); // Start loading
+      setLoading(true);
       const fetchedOrders = await fetchOrders();
       setOrders(fetchedOrders);
-      setLoading(false); // Stop loading
+      setLoading(false);
     };
     getOrders();
   }, []);
@@ -137,7 +137,7 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
   });
 
   return (
-    <div className="container bg-[--bgSoft] w-full p-4 rounded-[10px] mt-5">
+    <div className="container bg-[--bgSoft] w-full p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
       <div className="text-[--textSoft] text-lg font-bold capitalize py-2">
         {heading}
       </div>
@@ -145,7 +145,6 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
         <SearchBar scope="page" />
       </div>
 
-   
       {loading ? (
         <div className="text-center py-32 text-lg font-semibold text-[--textSoft]">
           Loading orders...

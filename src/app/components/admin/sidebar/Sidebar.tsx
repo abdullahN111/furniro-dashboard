@@ -75,8 +75,6 @@ const Sidebar = () => {
   const closeSidebar = () => {
     setIsOpen(false);
   };
-
-  // Close sidebar when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const sidebar = document.querySelector(".sidebar");
@@ -111,7 +109,7 @@ const Sidebar = () => {
         <MdMenu size={20} className="sm:w-6 sm:h-6" />
       </button>
 
-      {/* Overlay for mobile */}
+   
       {isOpen && (
         <div
           className="lg+:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
