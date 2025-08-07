@@ -118,7 +118,7 @@ const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-[#3f3fad] hover:bg-[#313195] text-white px-2 md:px-3 py-2 rounded-lg text-[13px] md:text-sm font-medium shadow-md transition-all">
+        <Button className="bg-[#3f3fad] hover:bg-[#313195] text-white px-[7px] md:px-3 py-2 rounded-lg text-[13px] md:text-sm font-medium shadow-md transition-all">
           Add Product
         </Button>
       </DialogTrigger>
@@ -151,7 +151,7 @@ const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
             <Textarea
               name="description"
               onChange={handleInputChange}
-               className="border-[2px] border-gray-600 rounded-md p-2 focus:border-gray-700 focus:font-medium transition-all min-h-36 resize-y"
+              className="border-[2px] border-gray-600 rounded-md p-2 focus:border-gray-700 focus:font-medium transition-all min-h-36 resize-y"
             />
             {errors.description && (
               <p className="text-red-500 text-xs mt-1">{errors.description}</p>
