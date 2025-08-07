@@ -20,9 +20,9 @@ const Admin = () => {
         <Products heading="Products" />
         {/* <Chart /> */}
       </div>
-      <div className="lg+:w-[250px] flex-shrink-0">
+      {/* <div className="lg+:w-[250px] flex-shrink-0"> */}
         <Rightbar />
-      </div>
+      {/* </div> */}
     </div>
   );
 };

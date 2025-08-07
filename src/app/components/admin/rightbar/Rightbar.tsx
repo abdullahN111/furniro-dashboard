@@ -3,9 +3,9 @@ import { MdPlayCircleFilled, MdReadMore } from "react-icons/md";
 
 const Rightbar = () => {
   return (
-    <div className="w-full lg:w-[260px] max-w-[260px]">
+    <div className="w-full max-w-[250px]">
       <div className="hidden lg+:block">
-        <div className="bg-gradient-to-t from-[#182237] to-[#253352] py-[20px] px-[24px] rounded-[10px] mb-[20px] relative">
+        <div className="bg-gradient-to-t from-[#182237] to-[#253352] py-[20px] px-[16px] rounded-[10px] mb-[20px] relative">
           <div className="absolute right-0 bottom-0 w-[50%] h-[50%]">
             <Image
               src="/images/astronaut.png"

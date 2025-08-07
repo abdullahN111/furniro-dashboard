@@ -138,7 +138,7 @@ const Products = ({ showAll = false, heading }: ProductsProps) => {
         <AddProduct onProductAdded={() => fetchProducts().then(setProducts)} />
       </div>
       <div className="hidden lg+:block w-full overflow-auto rounded-lg shadow">
-        <Table className="w-full min-w-[600px]">
+        <Table className="w-full min-w-[500px]">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>

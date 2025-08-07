@@ -10,10 +10,10 @@ const Layout = ({
 }>) => {
   return (
     <div className="flex flex-col lg:flex-row min-h-screen w-full">
-      <div className="lg:w-[230px] lg:min-h-screen bg-[--bgSoft] ...">
+    
 
         <Sidebar />
-      </div>
+    
 
       <div className="flex-1 min-w-0 p-2 sm:p-3 lg:p-5">
         <Navbar />

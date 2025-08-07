@@ -19,7 +19,7 @@ const Navbar = () => {
 
   return (
     <div className="flex justify-between items-center w-full p-3 sm:p-4 lg:p-5 rounded-lg bg-[--bgSoft]">
-      <div className="text-[--textSoft] font-bold capitalize text-sm sm:text-base truncate max-w-[150px] sm:max-w-none">
+      <div className="text-[--textSoft] font-bold capitalize text-sm sm:text-base truncate">
         {/* {pathname.split("/").pop()?.replace(/-/g, " ")} */}
         {session?.user?.name}
       </div>
