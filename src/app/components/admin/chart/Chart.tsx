@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  Responsivesm:w-full w-auto,
+  ResponsiveContainer,
   Legend,
   Line,
   LineChart,
@@ -54,7 +54,7 @@ const Chart = () => {
       <h2 className="mb-[20px] font-light text-[--textSoft] text-lg sm:text-xl">
         Weekly Recap
       </h2>
-      <Responsivesm:w-full w-auto width="100%" height="90%">
+      <ResponsiveContainer width="100%" height="90%">
         <LineChart
           width={500}
           height={300}
@@ -83,7 +83,7 @@ const Chart = () => {
             strokeDasharray="3 4 5 2"
           />
         </LineChart>
-      </Responsivesm:w-full w-auto>
+      </ResponsiveContainer>
     </div>
   );
 };
