@@ -52,7 +52,7 @@ const Users = () => {
   }, [pageSearchQuery, users]);
 
   return (
-    <div className="container bg-[--bgSoft] w-full p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
+    <div className="sm:w-full w-auto bg-[--bgSoft] w-full p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
       <div className="mt-2 mb-3 flex justify-between">
         <SearchBar scope="page" />
         {(session?.user as { role?: string })?.role === "admin" ? (

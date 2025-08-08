@@ -137,7 +137,7 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
   });
 
   return (
-    <div className="container bg-[--bgSoft] w-full p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
+    <div className="container bg-[--bgSoft] p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
       <div className="text-[--textSoft] text-lg font-bold capitalize py-2">
         {heading}
       </div>
@@ -152,7 +152,7 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
       ) : (
         <>
           <div className="hidden lg+:block w-full overflow-auto rounded-lg shadow">
-            <Table className="w-full min-w-[500px]">
+            <Table className="w-full min-w-[600px]">
               <TableHeader>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>

@@ -7,8 +7,7 @@ import Products from "@/app/components/admin/products/Products";
 
 const Admin = () => {
   return (
-    <div className="flex flex-col lg+:flex-row gap-4 sm:gap-6 mt-6 sm:mt-10 px-2 sm:px-6">
-
+    <div className="flex flex-col lg+:flex-row gap-4 sm:gap-6 mt-6 sm:mt-10 px-3 sm:px-6">
       <div className="flex-1 flex flex-col gap-3 sm:gap-5 min-w-0">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           <Card />
@@ -21,7 +20,7 @@ const Admin = () => {
         {/* <Chart /> */}
       </div>
       {/* <div className="lg+:w-[250px] flex-shrink-0"> */}
-        <Rightbar />
+      <Rightbar />
       {/* </div> */}
     </div>
   );

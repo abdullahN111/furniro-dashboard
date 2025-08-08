@@ -104,7 +104,7 @@ const Sidebar = () => {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="lg+:hidden fixed top-2 left-2 z-40 p-2 sm:p-4 text-white rounded-md bg-[--bgSoft] menu-button"
+        className="lg+:hidden fixed top-14 left-4 z-40 p-2 sm:p-4 text-white rounded-md bg-[--bgSoft] menu-button"
       >
         <MdMenu size={20} className="sm:w-6 sm:h-6" />
       </button>

@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  ResponsiveContainer,
+  Responsivesm:w-full w-auto,
   Legend,
   Line,
   LineChart,
@@ -51,8 +51,10 @@ const data = [
 const Chart = () => {
   return (
     <div className="h-[400px] sm:h-[450px] w-full bg-[--bgSoft] p-[20px] rounded-[10px]">
-      <h2 className="mb-[20px] font-light text-[--textSoft] text-lg sm:text-xl">Weekly Recap</h2>
-      <ResponsiveContainer width="100%" height="90%">
+      <h2 className="mb-[20px] font-light text-[--textSoft] text-lg sm:text-xl">
+        Weekly Recap
+      </h2>
+      <Responsivesm:w-full w-auto width="100%" height="90%">
         <LineChart
           width={500}
           height={300}
@@ -64,10 +66,9 @@ const Chart = () => {
             bottom: 5,
           }}
         >
-  
           <XAxis dataKey="name" />
           <YAxis />
-          <Tooltip contentStyle={{background:"#151c2c", border:"none"}} />
+          <Tooltip contentStyle={{ background: "#151c2c", border: "none" }} />
           <Legend />
           <Line
             type="monotone"
@@ -82,7 +83,7 @@ const Chart = () => {
             strokeDasharray="3 4 5 2"
           />
         </LineChart>
-      </ResponsiveContainer>
+      </Responsivesm:w-full w-auto>
     </div>
   );
 };
