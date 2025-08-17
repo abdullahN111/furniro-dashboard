@@ -59,7 +59,7 @@ export const product = defineType({
       type: "number",
       title: "Inventory In Stock",
       initialValue: 0,
-      validation: (rule) => rule.required().min(0),
+      validation: (rule) => rule.required().min(0).integer(),
     },
     {
       name: "featured",

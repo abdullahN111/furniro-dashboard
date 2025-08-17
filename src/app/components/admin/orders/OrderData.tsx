@@ -50,3 +50,27 @@ export async function fetchOrders(): Promise<Order[]> {
   const orders: Order[] = await client.fetch(query);
   return orders;
 }
+
+
+export async function fetchOrderById(id: string): Promise<Order | null> {
+  const query = `*[_type == "order" && _id == $id][0]{
+    _id,
+    orderId,
+    user,
+    "items": items[]->{
+      _id,
+      title,
+      "productImage": productImage.asset->url,
+      price
+    },
+    itemPrices,
+    itemQuantities,
+    total,
+    status,
+    paymentMethod,
+    createdAt
+  }`;
+
+  const order: Order = await client.fetch(query, { id });
+  return order || null;
+}

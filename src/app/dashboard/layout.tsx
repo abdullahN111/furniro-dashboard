@@ -10,12 +10,9 @@ const Layout = ({
 }>) => {
   return (
     <div className="flex flex-col lg:flex-row min-h-screen w-full">
-    
+      <Sidebar />
 
-        <Sidebar />
-    
-
-      <div className="flex-1 min-w-0 p-2 sm:p-3 lg:p-5">
+      <div className="flex-1 min-w-0 p-5 md:p-7">
         <Navbar />
         <div className="overflow-x-auto">{children}</div>
         <Footer />

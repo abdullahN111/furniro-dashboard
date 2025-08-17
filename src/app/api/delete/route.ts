@@ -1,4 +1,4 @@
-import { client } from '@/sanity/lib/client';
+import { serverClient } from '@/sanity/lib/serverClient';
 import { NextResponse } from 'next/server';
 
 export async function DELETE(req: Request) {
@@ -16,7 +16,7 @@ export async function DELETE(req: Request) {
       );
     }
 
-    await client.delete(id); 
+    await serverClient.delete(id); 
     return NextResponse.json(
       { success: true, message: 'Product deleted successfully' },
       { status: 200 }

@@ -118,7 +118,7 @@ const Sidebar = () => {
       )}
 
       <div
-        className={`fixed lg+:sticky top-0 left-0 h-screen lg+:h-fit bg-[--bgSoft] p-3 sm:p-4 transition-transform duration-300 z-50 w-[180px] sm:w-[200px] lg:w-[220px] overflow-y-auto sidebar ${
+        className={`fixed lg+:sticky top-0 left-0 h-screen bg-[--bgSoft] p-3 sm:p-4 transition-transform duration-300 z-50 w-[180px] sm:w-[200px] lg:w-[220px] overflow-y-auto sidebar ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } lg+:translate-x-0`}
       >

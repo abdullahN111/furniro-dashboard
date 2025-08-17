@@ -118,26 +118,28 @@ const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-[#3f3fad] hover:bg-[#313195] text-white px-[7px] md:px-3 py-2 rounded-lg text-[13px] md:text-sm font-medium shadow-md transition-all">
-          Add Product
+        <Button className="bg-[#3f3fad] hover:bg-[#313195] text-white px-4 py-2 rounded-lg text-[15px] sm:text-base font-medium shadow-md transition-all">
+          + Add Product
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-white text-[--textDark] max-w-lg max-h-[85vh] overflow-y-auto rounded-xl p-6 shadow-lg">
+
+      <DialogContent className="bg-white text-gray-900 w-full max-h-[85vh] overflow-y-auto rounded-xl p-6 shadow-lg">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold text-gray-800">
+          <DialogTitle className="text-xl sm:text-[22px] font-bold text-gray-800">
             Add New Product
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 mt-4">
           <div>
-            <label className="block text-sm text-gray-700 font-semibold mb-1">
+            <label className="block text-[15px] sm:text-base font-semibold text-gray-700 mb-1">
               Title
             </label>
             <Input
               name="title"
               onChange={handleInputChange}
-              className="border-[2px] border-gray-600 rounded-md p-2 focus:border-gray-700 focus:font-medium transition-all"
+              placeholder="Enter product title"
+              className="w-full"
             />
             {errors.title && (
               <p className="text-red-500 text-xs mt-1">{errors.title}</p>
@@ -145,13 +147,14 @@ const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
           </div>
 
           <div>
-            <label className="block text-sm text-gray-700 font-semibold mb-1">
+            <label className="block text-[15px] sm:text-base font-semibold text-gray-700 mb-1">
               Description
             </label>
             <Textarea
               name="description"
               onChange={handleInputChange}
-              className="border-[2px] border-gray-600 rounded-md p-2 focus:border-gray-700 focus:font-medium transition-all min-h-36 resize-y"
+              placeholder="Write a short description"
+              className="w-full min-h-28 resize-none"
             />
             {errors.description && (
               <p className="text-red-500 text-xs mt-1">{errors.description}</p>
@@ -160,28 +163,28 @@ const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-gray-700 font-semibold mb-1">
-                Price
+              <label className="block text-[15px] sm:text-base font-semibold text-gray-700 mb-1">
+                Price ($)
               </label>
               <Input
                 name="price"
                 type="number"
                 onChange={handleInputChange}
-                className="border-[2px] border-gray-600 rounded-md p-2 focus:border-gray-700 focus:font-medium transition-all"
+                placeholder="0.00"
               />
               {errors.price && (
                 <p className="text-red-500 text-xs mt-1">{errors.price}</p>
               )}
             </div>
             <div>
-              <label className="block text-sm text-gray-700 font-semibold mb-1">
-                Discount Percentage
+              <label className="block text-[15px] sm:text-base font-semibold text-gray-700 mb-1">
+                Discount (%)
               </label>
               <Input
                 name="dicountPercentage"
                 type="number"
                 onChange={handleInputChange}
-                className="border-[2px] border-gray-600 rounded-md p-2 focus:border-gray-700 focus:font-medium transition-all"
+                placeholder="e.g. 15"
               />
               {errors.dicountPercentage && (
                 <p className="text-red-500 text-xs mt-1">
@@ -192,59 +195,60 @@ const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
           </div>
 
           <div>
-            <label className="block text-sm text-gray-700 font-semibold mb-1">
+            <label className="block text-[15px] sm:text-base font-semibold text-gray-700 mb-1">
               Tags (comma-separated)
             </label>
             <Input
               name="tags"
               onChange={handleInputChange}
-              className="border-[2px] border-gray-600 rounded-md p-2 focus:border-gray-700 focus:font-medium transition-all"
+              placeholder="e.g. electronics, phone, sale"
             />
             {errors.tags && (
               <p className="text-red-500 text-xs mt-1">{errors.tags}</p>
             )}
           </div>
 
-          <div>
-            <label className="block text-sm text-gray-700 font-semibold mb-1">
-              Stock Quantity
-            </label>
-            <Input
-              name="inventoryInStock"
-              type="number"
-              onChange={handleInputChange}
-              className="border-[2px] border-gray-600 rounded-md p-2 focus:border-gray-700 focus:font-medium transition-all"
-            />
-            {errors.inventoryInStock && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.inventoryInStock}
-              </p>
-            )}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[15px] sm:text-base font-semibold text-gray-700 mb-1">
+                Stock Quantity
+              </label>
+              <Input
+                name="inventoryInStock"
+                type="number"
+                onChange={handleInputChange}
+                placeholder="e.g. 100"
+              />
+              {errors.inventoryInStock && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.inventoryInStock}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-[15px] sm:text-base font-semibold text-gray-700 mb-1">
+                Featured Label
+              </label>
+              <Input
+                name="featured"
+                onChange={handleInputChange}
+                placeholder="e.g. Best Seller"
+              />
+              {errors.featured && (
+                <p className="text-red-500 text-xs mt-1">{errors.featured}</p>
+              )}
+            </div>
           </div>
 
           <div>
-            <label className="block text-sm text-gray-700 font-semibold mb-1">
-              Featured Name
-            </label>
-            <Input
-              name="featured"
-              onChange={handleInputChange}
-              className="border-[2px] border-gray-600 rounded-md p-2 focus:border-gray-700 focus:font-medium transition-all"
-            />
-            {errors.featured && (
-              <p className="text-red-500 text-xs mt-1">{errors.featured}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm text-gray-700 font-semibold mb-1">
+            <label className="block text-[15px] sm:text-base font-semibold text-gray-700 mb-1">
               Slug
             </label>
             <Input
               name="slug"
               value={newProduct.slug}
               disabled
-              className="border border-gray-300 rounded-md p-2 bg-gray-100"
+              className="bg-gray-100"
             />
           </div>
 
@@ -255,21 +259,45 @@ const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
                 setNewProduct((prev) => ({ ...prev, isNew: checked }))
               }
             />
-            <span className="text-sm  text-gray-700 font-semibold">
-              New Product
+            <span className="text-[15px] sm:text-base font-semibold text-gray-700">
+              Mark as New Product
             </span>
           </div>
 
           <div>
-            <label className="block text-sm  text-gray-700 font-semibold mb-1">
+            <label className="block text-[15px] sm:text-base font-semibold text-gray-700 mb-2">
               Product Image
             </label>
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="border-[2px] border-gray-600 rounded-md p-2 focus:border-gray-700 focus:font-medium transition-all"
-            />
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center text-gray-500 hover:border-gray-400 transition cursor-pointer"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                const file = e.dataTransfer.files[0];
+                setNewProduct((prev) => ({ ...prev, productImage: file }));
+                setErrors((prevErrors) => ({ ...prevErrors, productImage: "" }));
+              }
+            }}
+            >
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+                id="fileInput"
+              />
+              <label htmlFor="fileInput" className="cursor-pointer text-center">
+                {newProduct.productImage ? (
+                  <span className="text-[15px] sm:text-base font-semibold text-gray-800">
+                    {newProduct.productImage.name}
+                  </span>
+                ) : (
+                  <span className="text-[15px] sm:text-base">
+                    Click to upload or drag & drop
+                  </span>
+                )}
+              </label>
+            </div>
             {errors.productImage && (
               <p className="text-red-500 text-xs mt-1">{errors.productImage}</p>
             )}
@@ -278,9 +306,9 @@ const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
 
         <Button
           onClick={addProduct}
-          className="bg-[--bgSoft] hover:bg-[#182237e2] text-white w-full mt-4 py-2 rounded-lg text-sm font-medium shadow-md transition-all"
+          className="bg-[#3f3fad] hover:bg-[#313195] text-white w-full mt-6 py-2 rounded-lg text-[15px] sm:text-base font-medium shadow-md transition"
         >
-          Submit
+          Submit Product
         </Button>
       </DialogContent>
     </Dialog>

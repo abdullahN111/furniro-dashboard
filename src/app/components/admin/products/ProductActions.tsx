@@ -24,7 +24,7 @@ const ProductActions = ({ action, onDelete, link }: ProductActionsProps) => {
         body: JSON.stringify({ id: action }),
       });
 
-      const data = await response.json(); // Parse response
+      const data = await response.json(); 
       if (!response.ok)
         throw new Error(data.message || "Failed to delete product");
 

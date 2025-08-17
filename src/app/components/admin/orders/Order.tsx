@@ -20,6 +20,7 @@ import { useSearch } from "@/app/dashboard/search/SearchContext";
 
 import { fetchOrders, Order } from "./OrderData";
 import PaginationControls from "@/app/components/admin/pagination/PaginationControls";
+import Link from "next/link";
 
 interface OrdersProps {
   showAll?: boolean;
@@ -118,11 +119,14 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
       {
         accessorKey: "action",
         header: "Action",
-        cell: () => (
+        cell: ({ row }: { row: { original: Order } }) => (
           <div className="flex items-center gap-2">
-            <button className="bg-red-700 text-white px-2 py-1 rounded-md text-xs sm:text-sm">
+            <Link
+              href={`/dashboard/orders/order/${row.original._id}`}
+              className="bg-red-700 text-white px-2 py-1 rounded-md text-xs sm:text-sm"
+            >
               Details
-            </button>
+            </Link>
             <button className="bg-green-700 text-white px-2 py-1 rounded-md text-xs sm:text-[13px]">
               Process
             </button>
@@ -225,9 +229,12 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
                   </p>
 
                   <div className="flex gap-2 mt-3">
-                    <button className="bg-red-700 text-white px-2 py-1 rounded-md text-[13px] shadow">
+                    <Link
+                      href={`/dashboard/orders/order/${order._id}`}
+                      className="bg-red-700 text-white px-2 py-1 rounded-md text-[13px] shadow"
+                    >
                       Details
-                    </button>
+                    </Link>
                     <button className="bg-green-700 text-white px-2 py-1 rounded-md text-[13px] shadow">
                       Process
                     </button>
