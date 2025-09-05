@@ -182,10 +182,10 @@ const OrderDetailPage = async ({ params }: { params: { id: string } }) => {
           </button>
           <button className={`${
                 order.status === 'completed' || order.status == 'processing'
-                  ? 'bg-green-600 opacity-35 cursor-none' 
-                  : 'bg-green-700 hover:bg-green-800 cursor-pointer'
+                  ? 'bg-red-600 opacity-35 cursor-none' 
+                  : 'bg-red-700 hover:bg-red-800 cursor-pointer'
               } text-white px-5 py-2 rounded-md`}>
-            Process Order
+            Dispatch Order
           </button>
         </div>
       </div>

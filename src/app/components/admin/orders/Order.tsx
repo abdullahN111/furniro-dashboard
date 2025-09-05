@@ -21,6 +21,7 @@ import { useSearch } from "@/app/dashboard/search/SearchContext";
 import { fetchOrders, Order } from "./OrderData";
 import PaginationControls from "@/app/components/admin/pagination/PaginationControls";
 import Link from "next/link";
+import { DispatchConfirmation } from "./DispatchConfirmation";
 
 interface OrdersProps {
   showAll?: boolean;
@@ -31,6 +32,37 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
   const { pageSearchQuery } = useSearch();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [dispatchOrderId, setDispatchOrderId] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [isDispatching, setIsDispatching] = useState(false);
+
+  const handleDispatch = async () => {
+    if (!dispatchOrderId) return;
+  
+    setIsDispatching(true);
+    try {
+      const res = await fetch(`/api/orders/${dispatchOrderId}/dispatch`, {
+        method: "POST",
+      });
+  
+      if (!res.ok) throw new Error("Failed to dispatch order");
+  
+      const updatedOrder: Order = await res.json();
+  
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order._id === dispatchOrderId ? updatedOrder : order
+        )
+      );
+  
+      setDispatchOrderId(null);
+    } catch (error) {
+      console.error("Failed to dispatch order:", error);
+    } finally {
+      setIsDispatching(false);
+    }
+  };
+  
 
   useEffect(() => {
     const getOrders = async () => {
@@ -123,12 +155,20 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
           <div className="flex items-center gap-2">
             <Link
               href={`/dashboard/orders/order/${row.original._id}`}
-              className="bg-red-700 text-white px-2 py-1 rounded-md text-xs sm:text-sm"
+              className="bg-green-700 text-white px-2 py-1 rounded-md text-xs sm:text-sm"
             >
               Details
             </Link>
-            <button className="bg-green-700 text-white px-2 py-1 rounded-md text-xs sm:text-[13px]">
-              Process
+            <button
+              onClick={() => setDispatchOrderId(row.original._id)}
+              className={`bg-red-700 text-white px-2 py-1 rounded-md text-xs sm:text-[13px] ${
+                row.original.status === "Shipped"
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
+              disabled={row.original.status === "Shipped"}
+            >
+              {row.original.status === "Shipped" ? "Dispatched" : "Dispatch"}
             </button>
           </div>
         ),
@@ -142,6 +182,13 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
 
   return (
     <div className="container bg-[--bgSoft] p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
+      {dispatchOrderId && (
+        <DispatchConfirmation
+          orderId={dispatchOrderId}
+          onConfirm={handleDispatch}
+          onCancel={() => setDispatchOrderId(null)}
+        />
+      )}
       <div className="text-[--textSoft] text-lg font-bold capitalize py-2">
         {heading}
       </div>
@@ -231,12 +278,20 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
                   <div className="flex gap-2 mt-3">
                     <Link
                       href={`/dashboard/orders/order/${order._id}`}
-                      className="bg-red-700 text-white px-2 py-1 rounded-md text-[13px] shadow"
+                      className="bg-green-700 text-white px-2 py-1 rounded-md text-[13px] shadow"
                     >
                       Details
                     </Link>
-                    <button className="bg-green-700 text-white px-2 py-1 rounded-md text-[13px] shadow">
-                      Process
+                    <button
+                      onClick={() => setDispatchOrderId(order._id)}
+                      className={`bg-red-700 text-white px-2 py-1 rounded-md text-[13px] shadow ${
+                        order.status === "Shipped"
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }`}
+                      disabled={order.status === "Shipped"}
+                    >
+                      {order.status === "Shipped" ? "Dispatched" : "Dispatch"}
                     </button>
                   </div>
                 </div>

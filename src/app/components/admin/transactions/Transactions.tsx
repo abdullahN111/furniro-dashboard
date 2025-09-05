@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import PaginationControls from "@/app/components/admin/pagination/PaginationControls";
 import {
   Table,
@@ -25,103 +26,28 @@ interface TransactionsProps {
 }
 
 const Transactions = ({ showAll = false, heading }: TransactionsProps) => {
+  const [payments, setPayments] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchPayments = async () => {
+      const res = await fetch("/api/transactions");
+      const data = await res.json();
+      setPayments(data);
+    };
+    fetchPayments();
+  }, []);
+
   const { pageSearchQuery } = useSearch();
 
-  const transactions = useMemo(
-    () => [
-      {
-        id: "#T001",
-        name: "John Doe",
-        status: "Pending",
-        date: "12.02.2025",
-        amount: "$320.00",
-        statusColor: "bg-[#f7cb7375]",
-      },
-      {
-        id: "#T002",
-        name: "Alice Green",
-        status: "Done",
-        date: "11.02.2025",
-        amount: "$210.00",
-        statusColor: "bg-[#afd6ee75]",
-      },
-      {
-        id: "#T003",
-        name: "Michael Brown",
-        status: "Cancelled",
-        date: "10.02.2025",
-        amount: "$500.00",
-        statusColor: "bg-[#f7737375]",
-      },
-      {
-        id: "#T004",
-        name: "Emma Smith",
-        status: "Pending",
-        date: "09.02.2025",
-        amount: "$150.00",
-        statusColor: "bg-[#f7cb7375]",
-      },
-      {
-        id: "#T005",
-        name: "Sophia White",
-        status: "Done",
-        date: "08.02.2025",
-        amount: "$750.00",
-        statusColor: "bg-[#afd6ee75]",
-      },
-      {
-        id: "#T006",
-        name: "Olivia Clark",
-        status: "Pending",
-        date: "07.02.2025",
-        amount: "$620.00",
-        statusColor: "bg-[#f7cb7375]",
-      },
-      {
-        id: "#T007",
-        name: "Liam Wilson",
-        status: "Cancelled",
-        date: "06.02.2025",
-        amount: "$410.00",
-        statusColor: "bg-[#f7737375]",
-      },
-      {
-        id: "#T008",
-        name: "Noah Miller",
-        status: "Done",
-        date: "05.02.2025",
-        amount: "$300.00",
-        statusColor: "bg-[#afd6ee75]",
-      },
-      {
-        id: "#T009",
-        name: "Mia Davis",
-        status: "Pending",
-        date: "04.02.2025",
-        amount: "$290.00",
-        statusColor: "bg-[#f7cb7375]",
-      },
-      {
-        id: "#T010",
-        name: "William Taylor",
-        status: "Done",
-        date: "03.02.2025",
-        amount: "$530.00",
-        statusColor: "bg-[#afd6ee75]",
-      },
-    ],
-    []
-  );
 
   const filteredTransactions = useMemo(() => {
-    if (!pageSearchQuery) return transactions;
-    return transactions.filter(
-      (t) =>
-        t.id.toLowerCase().includes(pageSearchQuery.toLowerCase()) ||
-        t.name.toLowerCase().includes(pageSearchQuery.toLowerCase()) ||
-        t.status.toLowerCase().includes(pageSearchQuery.toLowerCase())
+    if (!pageSearchQuery) return payments;
+    return payments.filter(
+      (p) =>
+        p.id.toLowerCase().includes(pageSearchQuery.toLowerCase()) ||
+        p.status.toLowerCase().includes(pageSearchQuery.toLowerCase())
     );
-  }, [pageSearchQuery, transactions]);
+  }, [pageSearchQuery, payments]);
 
   const displayedTransactions = useMemo(
     () => (showAll ? filteredTransactions : filteredTransactions.slice(0, 5)),
@@ -129,24 +55,46 @@ const Transactions = ({ showAll = false, heading }: TransactionsProps) => {
   );
 
   const columns = [
-    { accessorKey: "name", header: "Name" },
+  {
+  accessorKey: "id",
+  header: "Payment ID",
+  cell: (info: any) => {
+    const id = info.getValue();
+    return id.substring(0, 8); 
+  },
+}
+,
     {
       accessorKey: "status",
       header: "Status",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cell: (info: any) => {
         const row = info.row.original;
+        const color =
+          row.status === "succeeded"
+            ? "bg-[#afd6ee75]"
+            : row.status === "processing"
+              ? "bg-[#f7cb7375]"
+              : "bg-[#f7737375]";
         return (
           <span
-            className={`${row.statusColor} rounded-[5px] p-[5px] text-[14px] text-white`}
+            className={`${color} rounded-[5px] p-[5px] text-[14px] text-white`}
           >
             {row.status}
           </span>
         );
       },
     },
-    { accessorKey: "date", header: "Date" },
-    { accessorKey: "amount", header: "Amount" },
+    {
+      accessorKey: "created",
+      header: "Date",
+      cell: (info: any) =>
+        new Date(info.getValue() * 1000).toLocaleDateString(),
+    },
+    {
+      accessorKey: "amount",
+      header: "Amount",
+      cell: (info: any) => `$${(info.getValue() / 100).toFixed()}`,
+    },
     {
       accessorKey: "action",
       header: "Action",

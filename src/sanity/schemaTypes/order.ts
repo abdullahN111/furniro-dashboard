@@ -57,6 +57,12 @@ export const order = defineType({
       options: {
         list: ["Pending", "Shipped", "Delivered"],
       },
+      initialValue: "Pending",
+    },
+    {
+      name: "dispatchedAt",
+      title: "Dispatched At",
+      type: "datetime",
     },
     {
       name: "paymentMethod",
