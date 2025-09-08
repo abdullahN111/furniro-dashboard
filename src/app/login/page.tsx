@@ -1,6 +1,7 @@
 "use client";
 
 import { signIn, useSession } from "next-auth/react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
@@ -103,12 +104,12 @@ const LoginPage = () => {
             />
             Remember me
           </label>
-          <a
-            href="#"
+          <Link
+            href="/forgot-password"
             className="text-white hover:underline"
           >
             Forgot Password?
-          </a>
+          </Link>
         </div>
 
         <button
