@@ -15,20 +15,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No account with this email" }, { status: 404 });
     }
 
-    // Generate token
+    
     const token = crypto.randomBytes(32).toString("hex");
-    const expiry = Date.now() + 1000 * 60 * 60; // 1 hour
+    const expiry = Date.now() + 1000 * 60 * 60; 
 
     user.forgotPasswordToken = token;
     user.forgotPasswordTokenExpiry = expiry;
     await user.save();
 
-    // Reset link
+ 
     const resetLink = `${process.env.NEXTAUTH_URL}/reset-password?token=${token}`;
 
-    // Send email
     const transporter = nodemailer.createTransport({
-      service: "gmail", // or your SMTP service
+      service: "gmail", 
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,

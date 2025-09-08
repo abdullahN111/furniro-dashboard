@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     await connectToDB();
     const user = await User.findOne({
       forgotPasswordToken: token,
-      forgotPasswordTokenExpiry: { $gt: Date.now() }, // not expired
+      forgotPasswordTokenExpiry: { $gt: Date.now() }, 
     });
 
     if (!user) {
