@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 export const DispatchConfirmation = ({
   orderId,
@@ -27,29 +27,36 @@ export const DispatchConfirmation = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleCancel}>
-      <DialogContent className="bg-[--bg] text-[--text] border-[#2e374a]">
+      <DialogContent className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-xl shadow-xl border border-gray-300 dark:border-gray-700 max-w-md mx-auto">
         <DialogHeader>
-          <DialogTitle>Confirm Dispatch</DialogTitle>
+          <DialogTitle className="text-lg font-bold text-gray-800 dark:text-gray-100">
+            Process Order
+          </DialogTitle>
+          <DialogDescription className="text-gray-600 dark:text-gray-300 mt-1">
+            You&apos;re about to move this order to the <strong>Dispatched</strong> status.
+          </DialogDescription>
         </DialogHeader>
+
         <div className="py-4">
-          <p className="mb-4">
-            Are you sure you want to dispatch order <strong>{orderId.slice(0, 8)}</strong>?
+          <p className="text-gray-800 dark:text-gray-200 mb-2">
+            Order ID: <span className="font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">{orderId.slice(0, 8)}</span>
           </p>
-          <p className="text-sm text-[--textSoft]">
-            This action will mark the order as shipped and cannot be undone.
+          <p className="text-gray-600 dark:text-gray-400 text-sm">
+            Once confirmed, the order will be marked as <strong>Dispatched</strong> and will appear in the Dispatch Center.
           </p>
         </div>
-        <div className="flex justify-end gap-3">
+
+        <div className="flex justify-end gap-3 mt-4">
           <Button
             variant="outline"
             onClick={handleCancel}
-            className="border-[#2e374a] text-[--text]"
+            className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
           >
             Cancel
           </Button>
           <Button
             onClick={handleConfirm}
-            className="bg-green-700 hover:bg-green-800"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow transition"
           >
             Confirm Dispatch
           </Button>

@@ -11,16 +11,15 @@ import {
   MdClose,
 } from "react-icons/md";
 import SearchBar from "@/app/dashboard/search/SearchBar";
+import Link from "next/link";
 
 const Navbar = () => {
-  // const pathname = usePathname();
   const { data: session } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <div className="flex justify-between items-center w-full p-3 sm:p-4 lg:p-5 rounded-lg bg-[--bgSoft]">
       <div className="text-[--textSoft] font-bold capitalize text-sm sm:text-base truncate">
-        {/* {pathname.split("/").pop()?.replace(/-/g, " ")} */}
         {session?.user?.name}
       </div>
       <div className="hidden lg:flex items-center gap-[20px]">
@@ -28,12 +27,22 @@ const Navbar = () => {
         <div className="flex items-center gap-[10px]">
           <MdOutlineChat size={20} />
           <MdNotifications size={20} />
-          <MdPublic size={20} />
+          <Link
+            href="https://furniro-abd.vercel.app/"
+            className="cursor-pointer"
+            target="_blank"
+          >
+            <MdPublic size={20} />
+          </Link>
         </div>
       </div>
       <div className="lg:hidden">
         <button onClick={() => setMenuOpen(!menuOpen)} className="p-1">
-          {menuOpen ? <MdClose size={20} className="sm:w-6 sm:h-6" /> : <MdMenu size={20} className="sm:w-6 sm:h-6" />}
+          {menuOpen ? (
+            <MdClose size={20} className="sm:w-6 sm:h-6" />
+          ) : (
+            <MdMenu size={20} className="sm:w-6 sm:h-6" />
+          )}
         </button>
       </div>
       <div
@@ -46,11 +55,16 @@ const Navbar = () => {
               <MdOutlineChat size={18} className="sm:w-5 sm:h-5" /> Messages
             </button>
             <button className="flex items-center gap-[10px] text-sm sm:text-base">
-              <MdNotifications size={18} className="sm:w-5 sm:h-5" /> Notifications
+              <MdNotifications size={18} className="sm:w-5 sm:h-5" />{" "}
+              Notifications
             </button>
-            <button className="flex items-center gap-[10px] text-sm sm:text-base">
+            <Link
+              href="https://furniro-abd.vercel.app/"
+              className="flex items-center gap-[10px] text-sm sm:text-base"
+              target="_blank"
+            >
               <MdPublic size={18} className="sm:w-5 sm:h-5" /> Explore
-            </button>
+            </Link>
           </div>
         </div>
       </div>

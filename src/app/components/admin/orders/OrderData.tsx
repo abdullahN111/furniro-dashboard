@@ -77,7 +77,7 @@ export async function fetchOrderById(id: string): Promise<Order | null> {
   const order: Order = await serverClient.fetch(query, { id });
   return order || null;
 }
-export async function fetchOrdersForDispatch(): Promise<Order[]> {
+export async function fetchReadyToShipOrders(): Promise<Order[]> {
   const query = `*[_type == "order" && status == "Processing"]{
     _id,
     orderId,
@@ -101,8 +101,8 @@ export async function fetchOrdersForDispatch(): Promise<Order[]> {
   return orders;
 }
 
-export async function fetchShippedOrders(): Promise<Order[]> {
-  const query = `*[_type == "order" && status == "Shipped"]{
+export async function fetchDispatchedOrders(): Promise<Order[]> {
+  const query = `*[_type == "order" && status == "Dispatched"]{
     _id,
     orderId,
     user,

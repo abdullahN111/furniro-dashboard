@@ -10,7 +10,7 @@ export async function POST(
     const updatedOrder = await serverClient
       .patch(params.id)
       .set({
-        status: "Shipped",
+        status: "Dispatched",
         dispatchedAt: new Date().toISOString(),
       })
       .commit();

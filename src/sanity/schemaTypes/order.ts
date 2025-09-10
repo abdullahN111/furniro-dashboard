@@ -55,7 +55,7 @@ export const order = defineType({
       title: "Status",
       type: "string",
       options: {
-        list: ["Pending", "Shipped", "Delivered"],
+        list: ["Pending", "Dispatched", "Shipped", "Delivered"],
       },
       initialValue: "Pending",
     },

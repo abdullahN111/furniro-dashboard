@@ -130,7 +130,7 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
             {row.original.items.map((p, index) => (
               <div key={index} className="flex justify-start gap-5">
                 <span>{row.original.itemQuantities[index]}x</span>
-                <span>${p.price.toFixed(2)}</span>
+                <span>${p.price}</span>
               </div>
             ))}
           </div>
@@ -162,13 +162,13 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
             <button
               onClick={() => setDispatchOrderId(row.original._id)}
               className={`bg-red-700 text-white px-2 py-1 rounded-md text-xs sm:text-[13px] ${
-                row.original.status === "Shipped"
+                row.original.status === "Dispatched"
                   ? "opacity-50 cursor-not-allowed"
                   : ""
               }`}
-              disabled={row.original.status === "Shipped"}
+              disabled={row.original.status === "Dispatched"}
             >
-              {row.original.status === "Shipped" ? "Dispatched" : "Dispatch"}
+              {row.original.status === "Dispatched" ? "Dispatched" : "Process"}
             </button>
           </div>
         ),
@@ -285,13 +285,13 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
                     <button
                       onClick={() => setDispatchOrderId(order._id)}
                       className={`bg-red-700 text-white px-2 py-1 rounded-md text-[13px] shadow ${
-                        order.status === "Shipped"
+                        order.status === "Dispatched"
                           ? "opacity-50 cursor-not-allowed"
                           : ""
                       }`}
-                      disabled={order.status === "Shipped"}
+                      disabled={order.status === "Dispatched"}
                     >
-                      {order.status === "Shipped" ? "Dispatched" : "Dispatch"}
+                      {order.status === "Dispatched" ? "Dispatched" : "Process"}
                     </button>
                   </div>
                 </div>

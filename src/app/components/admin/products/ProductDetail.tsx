@@ -35,7 +35,6 @@ const ProductDetail = () => {
       });
 
       if (response.ok) {
-      
         setProducts((prevProducts) =>
           prevProducts.map((p) =>
             p._id === productId
@@ -146,41 +145,98 @@ const ProductDetail = () => {
                 Stock: {product.inventoryInStock}
               </button>
             </DialogTrigger>
-            <DialogContent className="bg-white p-6 rounded-lg max-w-sm">
-              <DialogHeader>
-                <DialogTitle>Adjust Stock</DialogTitle>
+            <DialogContent className="bg-white p-6 rounded-xl max-w-md border-0 shadow-xl">
+              <DialogHeader className="pb-2">
+                <DialogTitle className="text-xl font-semibold text-gray-800 text-center">
+                  Adjust Stock Level
+                </DialogTitle>
               </DialogHeader>
-              <div className="mt-4">
-                <label className="block mb-2">Adjustment Amount</label>
-                <Input
-                  type="number"
-                  value={stockAdjustment}
-                  onChange={(e) => setStockAdjustment(Number(e.target.value))}
-                  min="-9999"
-                  max="9999"
-                  disabled={loading}
-                />
-                <p className="text-sm text-gray-600 mt-2">
-                  Current Stock: {product.inventoryInStock}
-                </p>
-                <p className="text-sm text-gray-600 mt-1">
-                  New Stock: {product.inventoryInStock + stockAdjustment}
-                </p>
+
+              <div className="mt-4 space-y-4">
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Adjustment Amount
+                  </label>
+                  <Input
+                    type="number"
+                    value={stockAdjustment}
+                    onChange={(e) => setStockAdjustment(Number(e.target.value))}
+                    min="-9999"
+                    max="9999"
+                    disabled={loading}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-600"
+                  />
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">
+                        Current Stock
+                      </p>
+                      <p className="text-lg font-semibold text-gray-800">
+                        {product.inventoryInStock}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">
+                        New Stock
+                      </p>
+                      <p
+                        className={`text-lg font-semibold ${
+                          product.inventoryInStock + stockAdjustment < 0
+                            ? "text-red-600"
+                            : "text-green-600"
+                        }`}
+                      >
+                        {product.inventoryInStock + stockAdjustment}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
+
               <div className="mt-6 flex justify-end space-x-3">
                 <Button
                   variant="outline"
                   onClick={() => setIsStockModalOpen(false)}
                   disabled={loading}
+                  className="px-4 py-2 border-gray-300 text-gray-700 hover:bg-gray-100"
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={() => handleStockUpdate(product._id)}
-                  className="bg-blue-600 hover:bg-blue-700"
                   disabled={loading || stockAdjustment === 0}
+                  className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? "Updating..." : "Update Stock"}
+                  {loading ? (
+                    <span className="flex items-center">
+                      <svg
+                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Updating...
+                    </span>
+                  ) : (
+                    "Update Stock"
+                  )}
                 </Button>
               </div>
             </DialogContent>
