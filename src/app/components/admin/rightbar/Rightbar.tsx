@@ -4,7 +4,7 @@ import { MdPlayCircleFilled, MdReadMore } from "react-icons/md";
 const Rightbar = () => {
   return (
     <div className="w-full max-w-[250px]">
-      <div className="hidden lg:block">
+      <div className="hidden xl:block">
         <div className="bg-gradient-to-t from-[#182237] to-[#253352] py-[20px] px-[16px] rounded-[10px] mb-[20px] relative">
           <div className="absolute right-0 bottom-0 w-[50%] h-[50%]">
             <Image
@@ -39,7 +39,6 @@ const Rightbar = () => {
           </div>
         </div>
 
-        
         <div className="bg-gradient-to-t from-[#182237] to-[#253352] py-[20px] px-[24px] rounded-[10px] mb-[20px] relative">
           <div className="flex flex-col gap-[20px]">
             <span className="font-bold">🚀 Coming Soon</span>

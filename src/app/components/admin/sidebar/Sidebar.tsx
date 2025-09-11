@@ -42,7 +42,11 @@ const menuItems = [
     title: "Analytics",
     list: [
       { title: "Revenue", path: "/dashboard/revenue", icon: <MdWork /> },
-      { title: "Reports", path: "/dashboard/reports", icon: <MdAnalytics /> },
+      {
+        title: "Reports",
+        path: "/dashboard/dispatched-orders",
+        icon: <MdAnalytics />,
+      },
       // { title: "Teams", path: "/dashboard/teams", icon: <MdPeople /> },
     ],
   },
@@ -104,25 +108,24 @@ const Sidebar = () => {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="lg+:hidden fixed top-14 left-4 z-40 p-2 sm:p-4 text-white rounded-md bg-[--bgSoft] menu-button"
+        className="lg:hidden fixed top-14 left-4 z-40 p-2 sm:p-4 text-white rounded-md bg-[--bgSoft] menu-button"
       >
         <MdMenu size={20} className="sm:w-6 sm:h-6" />
       </button>
 
-   
       {isOpen && (
         <div
-          className="lg+:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
           onClick={closeSidebar}
         />
       )}
 
       <div
-        className={`fixed lg+:sticky top-0 left-0 h-screen bg-[--bgSoft] p-3 sm:p-4 transition-transform duration-300 z-50 w-[180px] sm:w-[200px] lg:w-[220px] overflow-y-auto sidebar ${
+        className={`fixed lg:sticky top-0 left-0 h-screen bg-[--bgSoft] p-3 sm:p-4 transition-transform duration-300 z-50 w-[180px] sm:w-[200px] lg:w-[220px] overflow-y-auto sidebar ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } lg+:translate-x-0`}
+        } lg:translate-x-0`}
       >
-        <div className="flex justify-end mb-3 lg+:hidden">
+        <div className="flex justify-end mb-3 lg:hidden">
           <button
             onClick={closeSidebar}
             className="text-white hover:text-[--textSoft] p-1"

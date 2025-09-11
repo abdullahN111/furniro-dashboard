@@ -39,7 +39,6 @@ const Transactions = ({ showAll = false, heading }: TransactionsProps) => {
 
   const { pageSearchQuery } = useSearch();
 
-
   const filteredTransactions = useMemo(() => {
     if (!pageSearchQuery) return payments;
     return payments.filter(
@@ -55,15 +54,14 @@ const Transactions = ({ showAll = false, heading }: TransactionsProps) => {
   );
 
   const columns = [
-  {
-  accessorKey: "id",
-  header: "Payment ID",
-  cell: (info: any) => {
-    const id = info.getValue();
-    return id.substring(0, 8); 
-  },
-}
-,
+    {
+      accessorKey: "id",
+      header: "Payment ID",
+      cell: (info: any) => {
+        const id = info.getValue();
+        return id.substring(0, 8);
+      },
+    },
     {
       accessorKey: "status",
       header: "Status",
@@ -123,7 +121,7 @@ const Transactions = ({ showAll = false, heading }: TransactionsProps) => {
   });
 
   return (
-    <div className="container bg-[--bgSoft] p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
+    <div className="container bg-[--bgSoft] p-4 lg:p-2 xl:p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
       <div className="text-[--textSoft] text-lg font-bold capitalize py-2">
         {heading}
       </div>
@@ -131,8 +129,8 @@ const Transactions = ({ showAll = false, heading }: TransactionsProps) => {
         <SearchBar scope="page" />
       </div>
 
-      <div className="hidden lg+:block w-full overflow-auto rounded-lg shadow">
-        <Table className="w-full min-w-[600px]">
+      <div className="hidden lg:block w-full overflow-auto rounded-lg shadow">
+        <Table className="w-full xl:min-w-[600px]">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -161,7 +159,7 @@ const Transactions = ({ showAll = false, heading }: TransactionsProps) => {
         </Table>
       </div>
 
-      <div className="lg+:hidden flex flex-col gap-4">
+      <div className="lg:hidden flex flex-col gap-4">
         {displayedTransactions.map((transaction) => (
           <div
             key={transaction.id}

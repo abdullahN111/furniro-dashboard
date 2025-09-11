@@ -38,23 +38,23 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
 
   const handleDispatch = async () => {
     if (!dispatchOrderId) return;
-  
+
     setIsDispatching(true);
     try {
       const res = await fetch(`/api/orders/${dispatchOrderId}/dispatch`, {
         method: "POST",
       });
-  
+
       if (!res.ok) throw new Error("Failed to dispatch order");
-  
+
       const updatedOrder: Order = await res.json();
-  
+
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
           order._id === dispatchOrderId ? updatedOrder : order
         )
       );
-  
+
       setDispatchOrderId(null);
     } catch (error) {
       console.error("Failed to dispatch order:", error);
@@ -62,7 +62,6 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
       setIsDispatching(false);
     }
   };
-  
 
   useEffect(() => {
     const getOrders = async () => {
@@ -181,7 +180,7 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
   });
 
   return (
-    <div className="container bg-[--bgSoft] p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
+    <div className="container bg-[--bgSoft] p-4 lg:p-2 xl:p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
       {dispatchOrderId && (
         <DispatchConfirmation
           orderId={dispatchOrderId}
@@ -202,8 +201,8 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
         </div>
       ) : (
         <>
-          <div className="hidden lg+:block w-full overflow-auto rounded-lg shadow">
-            <Table className="w-full min-w-[600px]">
+          <div className="hidden lg:block w-full overflow-auto rounded-lg shadow">
+            <Table className="w-full xl:min-w-[600px]">
               <TableHeader>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
@@ -235,7 +234,7 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
             </Table>
           </div>
 
-          <div className="lg+:hidden flex flex-col gap-4">
+          <div className="lg:hidden flex flex-col gap-4">
             {displayedOrders
               .slice(
                 pagination.pageIndex * pagination.pageSize,

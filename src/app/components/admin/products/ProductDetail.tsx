@@ -80,9 +80,9 @@ const ProductDetail = () => {
   }
 
   return (
-    <div className="w-full mx-auto py-5 sm:py-7 lg+:py-9 mb-6 sm:mb-10 px-3 sm:px-5 font-poppins flex flex-col lg+:flex-row gap-6">
-      <div className="flex flex-col lg+:flex-row gap-3 lg+:gap-4 w-full lg+:w-1/2">
-        <div className="flex lg+:flex-col gap-2 sm:gap-3 overflow-x-auto lg+:overflow-visible lg+:w-[80px]">
+    <div className="w-full mx-auto py-5 sm:py-7 lg:py-9 mb-6 sm:mb-10 px-3 sm:px-5 font-poppins flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row gap-3 lg:gap-4 w-full lg:w-1/2">
+        <div className="flex lg:flex-col gap-2 sm:gap-3 overflow-x-auto lg:overflow-visible lg:w-[80px]">
           {product.sideImages?.map((img, idx) => (
             <Image
               key={idx}
@@ -95,7 +95,7 @@ const ProductDetail = () => {
           ))}
         </div>
 
-        <div className="relative flex justify-center items-center bg-[--bgSoft] rounded-md flex-1 h-[300px] sm:h-[400px] lg+:h-[500px] overflow-hidden">
+        <div className="relative flex justify-center items-center bg-[--bgSoft] rounded-md flex-1 h-[300px] sm:h-[400px] lg:h-[500px] overflow-hidden">
           <Image
             src={product.image}
             alt={`${product.title} main image`}
@@ -106,11 +106,11 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 lg+:w-1/2">
-        <h1 className="text-2xl sm:text-3xl lg+:text-4xl font-semibold">
+      <div className="flex flex-col gap-3 lg:w-1/2">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold">
           {product.title}
         </h1>
-        <p className="text-lg+ sm:text-xl lg+:text-[21px] text-[#9F9F9F]">
+        <p className="text-lg+ sm:text-xl lg:text-[21px] text-[#9F9F9F]">
           $ {product.price}.00
         </p>
         <div className="flex items-center gap-3 sm:gap-5 my-1">
@@ -138,7 +138,7 @@ const ProductDetail = () => {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg+:gap-2 mt-4 sm:mt-6 items-start sm:items-center text-sm sm:text-base">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-2 mt-4 sm:mt-6 items-start sm:items-center text-sm sm:text-base">
           <Dialog open={isStockModalOpen} onOpenChange={setIsStockModalOpen}>
             <DialogTrigger asChild>
               <button className="bg-blue-700 text-white px-2 sm:px-3 py-1 sm:py-2 rounded-md text-xs sm:text-[13px] shadow">

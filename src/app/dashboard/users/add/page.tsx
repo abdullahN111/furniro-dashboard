@@ -19,9 +19,9 @@ const AddUserPage = () => {
   };
 
   return (
-    <div className="flex flex-col lg+:flex-row gap-8 mt-5">
+    <div className="flex flex-col lg:flex-row gap-8 mt-5">
       <div className="flex-1 bg-[--bgSoft] p-3 sm:p-5 rounded-[10px] font-bold text-[--textSoft] h-max flex flex-col items-center justify-center">
-        <div className="w-[230px] sm:w-[250px] lg+:w-full h-[270px] lg+:h-[280px] relative rounded-[10px] overflow-hidden mb-5">
+        <div className="w-[230px] sm:w-[250px] lg:w-full h-[270px] lg:h-[280px] relative rounded-[10px] overflow-hidden mb-5">
           {imagePreview ? (
             <Image src={imagePreview} alt="Preview" fill />
           ) : (
@@ -79,7 +79,6 @@ const AddUserPage = () => {
           </select>
           <label className="text-sm">Is Active?</label>
           <select
-          
             name="isActive"
             className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
           >

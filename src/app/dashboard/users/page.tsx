@@ -52,7 +52,7 @@ const Users = () => {
   }, [pageSearchQuery, users]);
 
   return (
-    <div className="sm:w-full w-auto bg-[--bgSoft] w-full p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
+    <div className="bg-[--bgSoft] w-full p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
       <div className="mt-2 mb-3 flex justify-between">
         <SearchBar scope="page" />
         {(session?.user as { role?: string })?.role === "admin" ? (
@@ -70,7 +70,7 @@ const Users = () => {
         )}
       </div>
 
-      <div className="hidden lg+:block overflow-x-auto">
+      <div className="hidden lg:block overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="bg-[#2e374a] text-white">
@@ -118,7 +118,7 @@ const Users = () => {
         </table>
       </div>
 
-      <div className="lg+:hidden flex flex-col gap-4">
+      <div className="lg:hidden flex flex-col gap-4">
         {filteredUsers.map((user, index) => (
           <div
             key={user._id}

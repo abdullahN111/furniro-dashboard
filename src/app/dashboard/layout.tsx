@@ -12,7 +12,7 @@ const Layout = ({
     <div className="flex flex-col lg:flex-row min-h-screen w-full">
       <Sidebar />
 
-      <div className="flex-1 min-w-0 p-5 md:p-7">
+      <div className="flex-1 min-w-0 p-4 md:p-7 lg:p-4">
         <Navbar />
         <div className="overflow-x-auto">{children}</div>
         <Footer />

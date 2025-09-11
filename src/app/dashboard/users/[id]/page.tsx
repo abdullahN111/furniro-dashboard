@@ -40,9 +40,9 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
 
   return (
     <>
-      <div className="flex flex-col lg+:flex-row gap-8 mt-5" key={id}>
+      <div className="flex flex-col lg:flex-row gap-8 mt-5" key={id}>
         <div className="flex-1 bg-[--bgSoft] p-3 sm:p-5 rounded-[10px] font-bold text-[--textSoft] h-max flex flex-col items-center justify-center">
-          <div className="w-[230px] sm:w-[250px] lg+:w-full h-[270px] lg+:h-[280px] relative rounded-[10px] overflow-hidden mb-5">
+          <div className="w-[230px] sm:w-[250px] lg:w-full h-[270px] lg:h-[280px] relative rounded-[10px] overflow-hidden mb-5">
             <Image
               src={user.img || "/images/noavatar.png"}
               alt={user.username}

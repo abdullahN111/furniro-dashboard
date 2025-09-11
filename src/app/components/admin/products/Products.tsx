@@ -129,7 +129,7 @@ const Products = ({ showAll = false, heading }: ProductsProps) => {
   });
 
   return (
-    <div className="container bg-[--bgSoft] p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
+    <div className="container bg-[--bgSoft] p-4 lg:p-2 xl:p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
       <div className="text-[--textSoft] text-lg font-bold capitalize py-2">
         {heading}
       </div>
@@ -137,8 +137,8 @@ const Products = ({ showAll = false, heading }: ProductsProps) => {
         <SearchBar scope="page" />
         <AddProduct onProductAdded={() => fetchProducts().then(setProducts)} />
       </div>
-      <div className="hidden lg+:block w-full overflow-auto rounded-lg shadow">
-        <Table className="w-full min-w-[600px]">
+      <div className="hidden lg:block w-full overflow-auto rounded-lg shadow">
+        <Table className="w-full xl:min-w-[600px]">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -181,7 +181,7 @@ const Products = ({ showAll = false, heading }: ProductsProps) => {
         </Table>
       </div>
 
-      <div className="lg+:hidden flex flex-col gap-4">
+      <div className="lg:hidden flex flex-col gap-4">
         {loading ? (
           <div className="text-center py-32 text-lg font-semibold text-[--textSoft]">
             Loading products...
