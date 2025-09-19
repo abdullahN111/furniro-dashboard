@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import SearchBar from "@/app/dashboard/search/SearchBar";
+import LocalSearchBar from "@/app/dashboard/search/LocalSearchBar";
 import { useSearch } from "@/app/dashboard/search/SearchContext";
 import { fetchUsers } from "@/app/lib/data";
 import Image from "next/image";
@@ -54,7 +54,7 @@ const Users = () => {
   return (
     <div className="bg-[--bgSoft] w-full p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
       <div className="mt-2 mb-3 flex justify-between">
-        <SearchBar scope="page" />
+        <LocalSearchBar scope="page" />
         {(session?.user as { role?: string })?.role === "admin" ? (
           <Link href="/dashboard/users/add">
             <button className="bg-[#3f3fad] hover:bg-[#3f3faddc] text-white px-3 py-2 rounded-md text-xs sm:text-sm shadow">

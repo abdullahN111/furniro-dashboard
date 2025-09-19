@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-// import { usePathname } from "next/navigation";
+
 import { useSession } from "next-auth/react";
 import {
   MdNotifications,
@@ -9,22 +9,31 @@ import {
   MdPublic,
   MdMenu,
   MdClose,
+  MdSearch,
 } from "react-icons/md";
-import SearchBar from "@/app/dashboard/search/SearchBar";
+
 import Link from "next/link";
+import DashboardSearchBox from "@/app/dashboard/search/DashboardSearchBox";
 
 const Navbar = () => {
   const { data: session } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [openSearch, setOpenSearch] = useState(false);
 
   return (
-    <div className="flex justify-between items-center w-full p-3 sm:p-4 lg:p-5 rounded-lg bg-[--bgSoft]">
+    <div className="flex justify-between items-center w-full p-3 sm:p-4 lg:p-5 rounded-lg bg-[--bgSoft] border border-[#2e374a]">
       <div className="text-[--textSoft] font-bold capitalize text-sm sm:text-base truncate">
         {session?.user?.name}
       </div>
       <div className="hidden lg:flex items-center gap-[20px]">
-        <SearchBar scope="global" />
         <div className="flex items-center gap-[10px]">
+          <button onClick={() => setOpenSearch(true)} className="transition">
+            <MdSearch size={22} />
+          </button>
+
+          {openSearch && (
+            <DashboardSearchBox close={() => setOpenSearch(false)} />
+          )}
           <MdOutlineChat size={20} />
           <MdNotifications size={20} />
           <Link
@@ -49,8 +58,16 @@ const Navbar = () => {
         className={`absolute top-[60px] sm:top-[70px] right-0 w-[200px] sm:w-[250px] bg-[--bgSoft] p-3 sm:p-5 rounded-[10px] shadow-lg transition-all duration-300 ${menuOpen ? "opacity-100 visible z-[1000]" : "opacity-0 invisible"}`}
       >
         <div className="flex flex-col gap-3 sm:gap-[20px]">
-          <SearchBar scope="global" />
           <div className="flex flex-col gap-2 sm:gap-[15px]">
+            <button
+              onClick={() => setOpenSearch(true)}
+              className="flex items-center gap-[10px] text-sm sm:text-base transition"
+            >
+              <MdSearch size={22} className="sm:w-5 sm:h-5" /> Search
+            </button>
+            {openSearch && (
+              <DashboardSearchBox close={() => setOpenSearch(false)} />
+            )}
             <button className="flex items-center gap-[10px] text-sm sm:text-base">
               <MdOutlineChat size={18} className="sm:w-5 sm:h-5" /> Messages
             </button>

@@ -108,7 +108,7 @@ const Sidebar = () => {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="lg:hidden fixed top-14 left-4 z-40 p-2 sm:p-4 text-white rounded-md bg-[--bgSoft] menu-button"
+        className="lg:hidden fixed top-14 left-4 z-40 p-2 sm:p-4 text-white rounded-md bg-[--bgSoft] menu-button border border-[#2e374a]"
       >
         <MdMenu size={20} className="sm:w-6 sm:h-6" />
       </button>
@@ -121,7 +121,7 @@ const Sidebar = () => {
       )}
 
       <div
-        className={`fixed lg:sticky top-0 left-0 h-screen bg-[--bgSoft] p-3 sm:p-4 transition-transform duration-300 z-50 w-[180px] sm:w-[200px] lg:w-[220px] overflow-y-auto sidebar ${
+        className={`fixed lg:sticky top-0 left-0 h-screen bg-[--bgSoft] border border-[#2e374a] p-3 sm:p-4 transition-transform duration-300 z-50 w-[180px] sm:w-[200px] lg:w-[220px] overflow-y-auto sidebar ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
       >

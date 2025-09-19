@@ -50,7 +50,7 @@ export default function ForgotPasswordPage() {
 
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="w-full bg-[#3f3fad] hover:bg-[#313195] text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4343a9] focus:ring-offset-2"
             >
               Send Reset Link
             </button>
@@ -68,10 +68,10 @@ export default function ForgotPasswordPage() {
             </div>
           )}
 
-          <div className="mt-6 text-center">
+          <div className="mt-3 text-center">
             <Link
               href="/login"
-              className="text-blue-600 hover:text-blue-500 text-sm"
+              className="text-[#3f3fad] hover:text-[#313195] text-sm"
             >
               Back to Login
             </Link>

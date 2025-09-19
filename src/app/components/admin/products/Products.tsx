@@ -15,7 +15,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import SearchBar from "@/app/dashboard/search/SearchBar";
+import LocalSearchBar from "@/app/dashboard/search/LocalSearchBar";
 import { useSearch } from "@/app/dashboard/search/SearchContext";
 import Image from "next/image";
 import { fetchProducts, Product } from "./ProductData";
@@ -134,7 +134,7 @@ const Products = ({ showAll = false, heading }: ProductsProps) => {
         {heading}
       </div>
       <div className="mt-2 mb-3 flex justify-between">
-        <SearchBar scope="page" />
+        <LocalSearchBar scope="page" />
         <AddProduct onProductAdded={() => fetchProducts().then(setProducts)} />
       </div>
       <div className="hidden lg:block w-full overflow-auto rounded-lg shadow">

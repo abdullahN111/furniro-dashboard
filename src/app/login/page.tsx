@@ -47,13 +47,9 @@ const LoginPage = () => {
   return (
     <div className="flex flex-col justify-center items-center bg-[--dark] lg:rounded-lg py-8 sm:py-16 lg:py-24 px-8 min-h-screen">
       <div className="text-center w-full max-w-sm">
-        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white my-4">
-          Unlock Your Home&apos;s Elegance
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white my-8">
+          Login
         </h2>
-        <p className="text-white text-sm lg:text-base mb-6">
-          Sign in now and start creating your dream space with our premium
-          furniture.
-        </p>
       </div>
 
       <form
@@ -104,10 +100,7 @@ const LoginPage = () => {
             />
             Remember me
           </label>
-          <Link
-            href="/forgot-password"
-            className="text-white hover:underline"
-          >
+          <Link href="/forgot-password" className="text-white hover:underline">
             Forgot Password?
           </Link>
         </div>

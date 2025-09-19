@@ -15,7 +15,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import SearchBar from "@/app/dashboard/search/SearchBar";
+import LocalSearchBar from "@/app/dashboard/search/LocalSearchBar";
 import { useSearch } from "@/app/dashboard/search/SearchContext";
 
 import { fetchOrders, Order } from "./OrderData";
@@ -192,7 +192,7 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
         {heading}
       </div>
       <div className="mt-2 mb-3">
-        <SearchBar scope="page" />
+        <LocalSearchBar scope="page" />
       </div>
 
       {loading ? (

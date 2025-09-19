@@ -29,10 +29,8 @@ export interface Order {
   createdAt: string;
 }
 
-
-
 export async function fetchOrders(): Promise<Order[]> {
-  const query = `*[_type == "order"]{
+  const query = `*[_type == "order"] | order(createdAt desc) {
     _id,
     orderId,
     user,
@@ -53,7 +51,6 @@ export async function fetchOrders(): Promise<Order[]> {
   const orders: Order[] = await serverClient.fetch(query);
   return orders;
 }
-
 
 export async function fetchOrderById(id: string): Promise<Order | null> {
   const query = `*[_type == "order" && _id == $id][0]{

@@ -17,7 +17,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import SearchBar from "@/app/dashboard/search/SearchBar";
+import LocalSearchBar from "@/app/dashboard/search/LocalSearchBar";
 import { useSearch } from "@/app/dashboard/search/SearchContext";
 
 interface TransactionsProps {
@@ -126,7 +126,7 @@ const Transactions = ({ showAll = false, heading }: TransactionsProps) => {
         {heading}
       </div>
       <div className="mt-2 mb-3">
-        <SearchBar scope="page" />
+        <LocalSearchBar scope="page" />
       </div>
 
       <div className="hidden lg:block w-full overflow-auto rounded-lg shadow">
