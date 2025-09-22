@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 interface AddProductModalProps {
   onProductAdded: () => void;
@@ -128,6 +129,14 @@ const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
     <DialogTitle className="text-2xl font-bold text-gray-800 text-center">
       Add New Product
     </DialogTitle>
+    <DialogClose asChild>
+  <button className="absolute right-0 top-0 p-2 rounded-full hover:bg-gray-100 transition-colors">
+    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </button>
+</DialogClose>
+
   </DialogHeader>
 
   <div className="space-y-5 mt-5">

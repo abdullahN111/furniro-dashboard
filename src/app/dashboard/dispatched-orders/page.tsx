@@ -139,31 +139,31 @@ const DispatchPage = () => {
                     <tr>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-[--textSoft] uppercase tracking-wider"
+                        className="px-4 py-3 text-left text-xs font-medium text-[--textSoft] uppercase tracking-wider"
                       >
                         Order ID
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-[--textSoft] uppercase tracking-wider"
+                        className="px-4 py-3 text-left text-xs font-medium text-[--textSoft] uppercase tracking-wider"
                       >
                         Customer
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-[--textSoft] uppercase tracking-wider"
+                        className="px-4 py-3 text-left text-xs font-medium text-[--textSoft] uppercase tracking-wider"
                       >
                         Items
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-[--textSoft] uppercase tracking-wider"
+                        className="px-4 py-3 text-left text-xs font-medium text-[--textSoft] uppercase tracking-wider"
                       >
                         Order Date
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-[--textSoft] uppercase tracking-wider"
+                        className="px-4 py-3 text-left text-xs font-medium text-[--textSoft] uppercase tracking-wider"
                       >
                         Action
                       </th>
@@ -172,20 +172,20 @@ const DispatchPage = () => {
                   <tbody className="bg-[--bgSoft] divide-y divide-[#2e374a]">
                     {readyToShipOrders.map((order) => (
                       <tr key={order._id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                        <td className="p-4 whitespace-nowrap text-sm font-medium text-white">
                           {order.orderId}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="p-4 whitespace-nowrap text-sm text-white">
                           {order.user.firstname} {order.user.lastname}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="p-4 whitespace-nowrap text-sm text-white">
                           {order.items.length} item
                           {order.items.length !== 1 ? "s" : ""}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="p-4 whitespace-nowrap text-sm text-white">
                           {formatDate(order.createdAt)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td className="p-4 whitespace-nowrap text-sm font-medium">
                           <Button
                             onClick={() => handleDispatch(order._id)}
                             disabled={processingOrder === order._id}
@@ -262,37 +262,37 @@ const DispatchPage = () => {
                     <tr>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-[--textSoft] uppercase tracking-wider"
+                        className="px-4 py-3 text-left text-xs font-medium text-[--textSoft] uppercase tracking-wider"
                       >
                         Order ID
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-[--textSoft] uppercase tracking-wider"
+                        className="px-4 py-3 text-left text-xs font-medium text-[--textSoft] uppercase tracking-wider"
                       >
                         Customer
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-[--textSoft] uppercase tracking-wider"
+                        className="px-4 py-3 text-left text-xs font-medium text-[--textSoft] uppercase tracking-wider"
                       >
                         Items
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-[--textSoft] uppercase tracking-wider"
+                        className="px-4 py-3 text-left text-xs font-medium text-[--textSoft] uppercase tracking-wider"
                       >
                         Order Date
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-[--textSoft] uppercase tracking-wider"
+                        className="px-4 py-3 text-left text-xs font-medium text-[--textSoft] uppercase tracking-wider"
                       >
                         Dispatched Date
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-[--textSoft] uppercase tracking-wider"
+                        className="px-4 py-3 text-left text-xs font-medium text-[--textSoft] uppercase tracking-wider"
                       >
                         Status
                       </th>
@@ -301,25 +301,25 @@ const DispatchPage = () => {
                   <tbody className="bg-[--bgSoft]">
                     {dispatchedOrders.map((order) => (
                       <tr key={order._id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                        <td className="p-4 whitespace-nowrap text-sm font-medium text-white">
                           {order.orderId}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="p-4 whitespace-nowrap text-sm text-white">
                           {order.user.firstname} {order.user.lastname}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="p-4 whitespace-nowrap text-sm text-white">
                           {order.items.length} item
                           {order.items.length !== 1 ? "s" : ""}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="p-4 whitespace-nowrap text-sm text-white">
                           {formatDate(order.createdAt)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="p-4 whitespace-nowrap text-sm text-white">
                           {order.dispatchedAt
                             ? formatDate(order.dispatchedAt)
                             : "N/A"}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="p-4 whitespace-nowrap">
                           <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                             Dispatched
                           </span>
