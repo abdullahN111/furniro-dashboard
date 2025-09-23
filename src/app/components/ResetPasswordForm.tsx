@@ -28,14 +28,14 @@ export default function ResetPasswordForm() {
 
   return (
     <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md">
-      <h2 className="text-xl mb-4">Reset Password</h2>
+      <h2 className="text-xl mb-4 text-gray-800">Reset Password</h2>
       <input
         type="password"
         placeholder="Enter new password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
-        className="border px-3 py-2 rounded w-full mb-4"
+        className="border px-3 py-2 rounded w-full mb-4 text-gray-800"
       />
       <button className="bg-green-600 text-white px-4 py-2 rounded w-full">
         Reset Password
