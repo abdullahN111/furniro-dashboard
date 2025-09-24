@@ -11,10 +11,10 @@ const Admin = () => {
       <div className="flex-1 flex flex-col gap-3 sm:gap-4 min-w-0">
         <ReportCards />
 
+        <Chart />
         <Order heading={"Orders"} />
         <Transactions heading={"Transactions"} />
         <Products heading="Products" />
-        <Chart />
       </div>
 
       <Rightbar />
