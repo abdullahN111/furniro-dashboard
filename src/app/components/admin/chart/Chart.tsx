@@ -97,7 +97,7 @@ const Chart = () => {
   }
 
   return (
-    <div className="h-[400px] sm:h-[450px] container bg-[--bgSoft] p-4 lg:p-2 xl:p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
+    <div className="container bg-[--bgSoft] p-4 lg:p-2 xl:p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
       <h2 className="text-[--textSoft] text-lg font-bold capitalize py-2 mb-4">
         Weekly Revenue Recap
       </h2>
