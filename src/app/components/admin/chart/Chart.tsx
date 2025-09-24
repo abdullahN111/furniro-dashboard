@@ -148,7 +148,7 @@ const Chart = () => {
         </LineChart>
       </ResponsiveContainer>
 
-      <div className="mt-4 flex justify-between text-xs text-[--textSoft]">
+      <div className="my-6 flex justify-between text-xs text-[--textSoft]">
         <div>
           Total Orders: {chartData.reduce((sum, week) => sum + week.orders, 0)}
         </div>
