@@ -11,6 +11,7 @@ export async function GET() {
       limit: 20,
     });
 
+    
     return NextResponse.json(payments.data);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {

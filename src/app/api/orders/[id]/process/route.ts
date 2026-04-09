@@ -9,14 +9,16 @@ export async function POST(
     const updatedOrder = await serverClient
       .patch(params.id)
       .set({
-        status: "Dispatched",
-        dispatchedAt: new Date().toISOString(),
+        status: "Processing",
       })
       .commit();
 
     return NextResponse.json(updatedOrder);
   } catch (err) {
-    console.error("Failed to update order:", err);
-    return NextResponse.json({ error: "Failed to update order" }, { status: 500 });
+    console.error("Failed to process order:", err);
+    return NextResponse.json(
+      { error: "Failed to process order" },
+      { status: 500 }
+    );
   }
 }

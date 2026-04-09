@@ -36,6 +36,8 @@ const Transactions = ({ showAll = false, heading }: TransactionsProps) => {
     };
     fetchPayments();
   }, []);
+  // console.log(payments);
+  
 
   const { pageSearchQuery } = useSearch();
 

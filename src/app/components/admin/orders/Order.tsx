@@ -36,6 +36,28 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isDispatching, setIsDispatching] = useState(false);
 
+
+
+  const handleProcess = async (orderId: string) => {
+    try {
+      const res = await fetch(`/api/orders/${orderId}/process`, {
+        method: "POST",
+      });
+
+      if (!res.ok) throw new Error("Failed to process order");
+
+      const updatedOrder: Order = await res.json();
+
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order._id === orderId ? updatedOrder : order,
+        ),
+      );
+    } catch (error) {
+      console.error("Failed to process order:", error);
+    }
+  };
+
   const handleDispatch = async () => {
     if (!dispatchOrderId) return;
 
@@ -51,8 +73,8 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
 
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
-          order._id === dispatchOrderId ? updatedOrder : order
-        )
+          order._id === dispatchOrderId ? updatedOrder : order,
+        ),
       );
 
       setDispatchOrderId(null);
@@ -62,6 +84,7 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
       setIsDispatching(false);
     }
   };
+
 
   useEffect(() => {
     const getOrders = async () => {
@@ -90,7 +113,7 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
 
   const displayedOrders = useMemo(
     () => (showAll ? filteredOrders : filteredOrders.slice(0, 5)),
-    [filteredOrders, showAll]
+    [filteredOrders, showAll],
   );
 
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
@@ -142,7 +165,7 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
           const subtotal = row.original.items.reduce(
             (sum, item, index) =>
               sum + item.price * (row.original.itemQuantities[index] || 0),
-            0
+            0,
           );
           return `$${subtotal.toFixed(2)}`;
         },
@@ -159,7 +182,13 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
               Details
             </Link>
             <button
-              onClick={() => setDispatchOrderId(row.original._id)}
+              onClick={() => {
+                if (row.original.status === "Pending") {
+                  handleProcess(row.original._id);
+                } else if (row.original.status === "Processing") {
+                  setDispatchOrderId(row.original._id);
+                }
+              }}
               className={`bg-red-700 text-white px-2 py-1 rounded-md text-xs sm:text-[13px] ${
                 row.original.status === "Dispatched"
                   ? "opacity-50 cursor-not-allowed"
@@ -167,7 +196,11 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
               }`}
               disabled={row.original.status === "Dispatched"}
             >
-              {row.original.status === "Dispatched" ? "Dispatched" : "Process"}
+              {row.original.status === "Pending"
+                ? "Process"
+                : row.original.status === "Processing"
+                  ? "Dispatch"
+                  : "Dispatched"}
             </button>
           </div>
         ),
@@ -210,7 +243,7 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
                       <TableHead key={header.id}>
                         {flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                       </TableHead>
                     ))}
@@ -224,7 +257,7 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     ))}
@@ -238,7 +271,7 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
             {displayedOrders
               .slice(
                 pagination.pageIndex * pagination.pageSize,
-                (pagination.pageIndex + 1) * pagination.pageSize
+                (pagination.pageIndex + 1) * pagination.pageSize,
               )
               .map((order) => (
                 <div
@@ -269,7 +302,7 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
                       .reduce(
                         (sum, item, index) =>
                           sum + item.price * (order.itemQuantities[index] || 0),
-                        0
+                        0,
                       )
                       .toFixed(2)}
                   </p>
@@ -282,15 +315,25 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
                       Details
                     </Link>
                     <button
-                      onClick={() => setDispatchOrderId(order._id)}
-                      className={`bg-red-700 text-white px-2 py-1 rounded-md text-[13px] shadow ${
+                      onClick={() => {
+                        if (order.status === "Pending") {
+                          handleProcess(order._id);
+                        } else if (order.status === "Processing") {
+                          setDispatchOrderId(order._id);
+                        }
+                      }}
+                      className={`bg-red-700 text-white px-2 py-1 rounded-md text-xs sm:text-[13px] ${
                         order.status === "Dispatched"
                           ? "opacity-50 cursor-not-allowed"
                           : ""
                       }`}
                       disabled={order.status === "Dispatched"}
                     >
-                      {order.status === "Dispatched" ? "Dispatched" : "Process"}
+                      {order.status === "Pending"
+                        ? "Process"
+                        : order.status === "Processing"
+                          ? "Dispatch"
+                          : "Dispatched"}
                     </button>
                   </div>
                 </div>

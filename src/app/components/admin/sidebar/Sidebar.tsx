@@ -22,7 +22,7 @@ import Image from "next/image";
 
 const menuItems = [
   {
-    title: "Pages",
+    title: "Main",
     list: [
       { title: "Dashboard", path: "/dashboard", icon: <MdDashboard /> },
       {
@@ -41,17 +41,17 @@ const menuItems = [
   {
     title: "Analytics",
     list: [
-      { title: "Revenue", path: "/dashboard/revenue", icon: <MdWork /> },
       {
-        title: "Reports",
+        title: "Dispatch Center",
         path: "/dashboard/dispatched-orders",
         icon: <MdAnalytics />,
       },
+      { title: "Revenue", path: "/dashboard/revenue", icon: <MdWork /> },
       // { title: "Teams", path: "/dashboard/teams", icon: <MdPeople /> },
     ],
   },
   {
-    title: "User",
+    title: "Account",
     list: [
       {
         title: "Users",
@@ -144,13 +144,13 @@ const Sidebar = () => {
           />
           <div className="flex flex-col text-xs min-w-0 flex-1">
             <span className="font-semibold text-xs sm:text-sm truncate">
-              {session?.user?.name || "Loading..."}
+              {session?.user?.name?.trim().split(" ")[0] || "Loading..."}
             </span>
             <span className="text-[--textSoft] text-xs truncate">
               {(session?.user as { role?: string })?.role === "admin"
                 ? "Administrator"
                 : "Editor"}
-            </span>
+            </span>     
           </div>
         </div>
 
@@ -160,7 +160,7 @@ const Sidebar = () => {
               <span className="text-[--textSoft] font-bold text-xs sm:text-sm block mb-2 sm:mb-3">
                 {category.title}
               </span>
-              <div className="space-y-1">
+              <div>
                 {category.list.map((item) => (
                   <MenuLink
                     item={item}
@@ -175,9 +175,9 @@ const Sidebar = () => {
 
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 p-2 sm:p-3 mt-4 sm:mt-6 w-full rounded-lg cursor-pointer hover:bg-[#2e374a] text-sm sm:text-base"
+          className="flex items-center gap-2 sm:p-3 mt-4 w-full rounded-lg cursor-pointer hover:bg-[#2e374a] text-[15px]"
         >
-          <MdLogout className="w-4 h-4 sm:w-5 sm:h-5" /> Logout
+          <MdLogout className="w-4 h-4" /> Logout
         </button>
       </div>
     </>

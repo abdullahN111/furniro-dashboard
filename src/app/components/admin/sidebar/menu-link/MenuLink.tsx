@@ -28,7 +28,7 @@ const MenuLink = ({
     <Link
       href={item.path}
       onClick={handleClick}
-      className={`flex items-center gap-2 sm:gap-[10px] p-2 sm:p-3 lg:p-[18px] hover:bg-[#2e374a] my-1 sm:my-[5px] mx-0 rounded-[10px] text-xs sm:text-sm lg:text-base transition-colors ${
+      className={`flex items-center gap-2 px-[6px] lg:p-[18px] hover:bg-[#2e374a] my-1 mx-0 rounded-[10px] text-xs sm:text-sm transition-colors ${
         pathname === item.path ? "bg-[#2e374a]" : ""
       }`}
     >

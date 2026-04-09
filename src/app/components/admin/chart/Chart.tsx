@@ -90,7 +90,7 @@ const Chart = () => {
 
   if (loading) {
     return (
-      <div className="h-[400px] sm:h-[450px] w-full bg-[--bgSoft] p-[20px] rounded-[10px] flex items-center justify-center">
+      <div className="h-[400px] w-full max-w-full bg-[--bgSoft] p-[20px] rounded-[10px] flex items-center justify-center overflow-hidden">
         <div className="text-[--textSoft]">Loading chart data...</div>
       </div>
     );

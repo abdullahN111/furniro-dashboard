@@ -3,6 +3,7 @@ import Image from "next/image";
 import { fetchOrderById } from "@/app/components/admin/orders/OrderData";
 import { formatDate } from "@/app/lib/formatDate";
 import Link from "next/link";
+import OrderActions from "@/app/components/admin/orders/OrderActions";
 
 const OrderDetailPage = async ({ params }: { params: { id: string } }) => {
   const order = await fetchOrderById(params.id);
@@ -36,17 +37,21 @@ const OrderDetailPage = async ({ params }: { params: { id: string } }) => {
               <span className="bg-[--bgSoft] px-3 py-1 rounded-md text-sm">
                 Order ID: {order.orderId}
               </span>
-              <span
-                className={`px-3 py-1 rounded-md text-sm ${
-                  order.status === "completed"
-                    ? "bg-green-900 text-green-200"
-                    : order.status === "processing"
-                      ? "bg-yellow-900 text-yellow-200"
-                      : "bg-blue-900 text-blue-200"
-                }`}
-              >
-                {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-              </span>
+            <span
+  className={`px-3 py-1 rounded-md text-sm ${
+    order.status === "Pending"
+      ? "bg-gray-700 text-gray-200"
+      : order.status === "Processing"
+      ? "bg-yellow-900 text-yellow-200"
+      : order.status === "Dispatched"
+      ? "bg-blue-900 text-blue-200"
+      : order.status === "Shipped"
+      ? "bg-purple-900 text-purple-200"
+      : "bg-green-900 text-green-200"
+  }`}
+>
+  {order.status}
+</span>
             </div>
           </div>
           <Link
@@ -187,15 +192,7 @@ const OrderDetailPage = async ({ params }: { params: { id: string } }) => {
           <button className="bg-blue-700 hover:bg-blue-800 text-white px-5 py-2 rounded-md">
             Print Invoice
           </button>
-          <button
-            className={`${
-              order.status === "completed" || order.status == "processing"
-                ? "bg-red-600 opacity-35 cursor-none"
-                : "bg-red-700 hover:bg-red-800 cursor-pointer"
-            } text-white px-5 py-2 rounded-md`}
-          >
-            Dispatch Order
-          </button>
+          <OrderActions orderId={order._id} status={order.status} />
         </div>
       </div>
     </div>
