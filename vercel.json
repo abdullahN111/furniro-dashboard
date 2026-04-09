@@ -3,6 +3,6 @@
     {
       "path": "/api/orders/auto-update",
       "schedule": "*/1 * * * *"
-    }
+    } 
   ]
 }
