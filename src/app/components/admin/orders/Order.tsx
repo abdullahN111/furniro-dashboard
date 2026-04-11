@@ -86,6 +86,7 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
   useEffect(() => {
     const getOrders = async () => {
       setLoading(true);
+      await fetch("/api/auto-shipped-and-delivered");
       const fetchedOrders = await fetchOrders();
       setOrders(fetchedOrders);
       setLoading(false);
