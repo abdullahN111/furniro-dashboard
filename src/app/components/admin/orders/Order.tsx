@@ -36,8 +36,6 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isDispatching, setIsDispatching] = useState(false);
 
-
-
   const handleProcess = async (orderId: string) => {
     try {
       const res = await fetch(`/api/orders/${orderId}/process`, {
@@ -84,7 +82,6 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
       setIsDispatching(false);
     }
   };
-
 
   useEffect(() => {
     const getOrders = async () => {
@@ -189,18 +186,36 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
                   setDispatchOrderId(row.original._id);
                 }
               }}
-              className={`bg-red-700 text-white px-2 py-1 rounded-md text-xs sm:text-[13px] ${
-                row.original.status === "Dispatched"
-                  ? "opacity-50 cursor-not-allowed"
-                  : ""
+              className={`text-white px-2 py-1 rounded-md text-xs sm:text-[13px] ${
+                row.original.status === "Pending"
+                  ? "bg-yellow-600 hover:bg-yellow-700"
+                  : row.original.status === "Processing"
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : row.original.status === "Dispatched"
+                      ? "bg-purple-600 opacity-50 cursor-not-allowed"
+                      : row.original.status === "Shipped"
+                        ? "bg-indigo-600 opacity-50 cursor-not-allowed"
+                        : row.original.status === "Delivered"
+                          ? "bg-green-600 opacity-50 cursor-not-allowed"
+                          : "bg-gray-600"
               }`}
-              disabled={row.original.status === "Dispatched"}
+              disabled={
+                row.original.status === "Dispatched" ||
+                row.original.status === "Shipped" ||
+                row.original.status === "Delivered"
+              }
             >
               {row.original.status === "Pending"
                 ? "Process"
                 : row.original.status === "Processing"
                   ? "Dispatch"
-                  : "Dispatched"}
+                  : row.original.status === "Dispatched"
+                    ? "Dispatched"
+                    : row.original.status === "Shipped"
+                      ? "Shipped"
+                      : row.original.status === "Delivered"
+                        ? "Delivered"
+                        : "N/A"}
             </button>
           </div>
         ),
@@ -314,27 +329,49 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
                     >
                       Details
                     </Link>
-                    <button
-                      onClick={() => {
-                        if (order.status === "Pending") {
-                          handleProcess(order._id);
-                        } else if (order.status === "Processing") {
-                          setDispatchOrderId(order._id);
-                        }
-                      }}
-                      className={`bg-red-700 text-white px-2 py-1 rounded-md text-xs sm:text-[13px] ${
-                        order.status === "Dispatched"
-                          ? "opacity-50 cursor-not-allowed"
-                          : ""
-                      }`}
-                      disabled={order.status === "Dispatched"}
-                    >
-                      {order.status === "Pending"
-                        ? "Process"
-                        : order.status === "Processing"
-                          ? "Dispatch"
-                          : "Dispatched"}
-                    </button>
+
+
+
+
+                   <button
+  onClick={() => {
+    if (order.status === "Pending") {
+      handleProcess(order._id);
+    } else if (order.status === "Processing") {
+      setDispatchOrderId(order._id);
+    }
+  }}
+  className={`text-white px-2 py-1 rounded-md text-xs sm:text-[13px] ${
+    order.status === "Pending"
+      ? "bg-yellow-600 hover:bg-yellow-700"
+      : order.status === "Processing"
+      ? "bg-blue-600 hover:bg-blue-700"
+      : order.status === "Dispatched"
+      ? "bg-purple-600 opacity-50 cursor-not-allowed"
+      : order.status === "Shipped"
+      ? "bg-indigo-600 opacity-50 cursor-not-allowed"
+      : order.status === "Delivered"
+      ? "bg-green-600 opacity-50 cursor-not-allowed"
+      : "bg-gray-600"
+  }`}
+  disabled={
+    order.status === "Dispatched" ||
+    order.status === "Shipped" ||
+    order.status === "Delivered"
+  }
+>
+  {order.status === "Pending"
+    ? "Process"
+    : order.status === "Processing"
+    ? "Dispatch"
+    : order.status === "Dispatched"
+    ? "Dispatched"
+    : order.status === "Shipped"
+    ? "Shipped"
+    : order.status === "Delivered"
+    ? "Delivered"
+    : "N/A"}
+</button>
                   </div>
                 </div>
               ))}

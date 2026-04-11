@@ -74,50 +74,39 @@ export async function fetchOrderById(id: string): Promise<Order | null> {
   const order: Order = await serverClient.fetch(query, { id });
   return order || null;
 }
-export async function fetchReadyToShipOrders(): Promise<Order[]> {
-  const query = `*[_type == "order" && status == "Processing"]{
-    _id,
-    orderId,
-    user,
-    "items": items[]->{
-      _id,
-      title,
-      "productImage": productImage.asset->url,
-      price
-    },
-    itemPrices,
-    itemQuantities,
-    total,
-    status,
-    dispatchedAt,
-    paymentMethod,
-    createdAt
-  }`;
 
-  const orders: Order[] = await serverClient.fetch(query);
-  return orders;
-}
+// export async function fetchDispatchedOrders(): Promise<Order[]> {
+//   const query = `*[_type == "order" && status == "Dispatched"]{
+//     _id,
+//     orderId,
+//     user,
+//     "items": items[]->{
+//       _id,
+//       title,
+//       "productImage": productImage.asset->url,
+//       price
+//     },
+//     itemPrices,
+//     itemQuantities,
+//     total,
+//     status,
+//     dispatchedAt,
+//     paymentMethod,
+//     createdAt
+//   } | order(dispatchedAt desc)`;
 
-export async function fetchDispatchedOrders(): Promise<Order[]> {
-  const query = `*[_type == "order" && status == "Dispatched"]{
-    _id,
-    orderId,
-    user,
-    "items": items[]->{
-      _id,
-      title,
-      "productImage": productImage.asset->url,
-      price
-    },
-    itemPrices,
-    itemQuantities,
-    total,
-    status,
-    dispatchedAt,
-    paymentMethod,
-    createdAt
-  } | order(dispatchedAt desc)`;
+//   const orders: Order[] = await serverClient.fetch(query);
+//   return orders;
+// }
 
-  const orders: Order[] = await serverClient.fetch(query);
-  return orders;
-}
+export const fetchDispatchedOrders = async () => {
+  return await serverClient.fetch(`*[_type == "order" && status == "Dispatched"] | order(_createdAt desc)`);
+};
+
+export const fetchShippedOrders = async () => {
+  return await serverClient.fetch(`*[_type == "order" && status == "Shipped"] | order(_createdAt desc)`);
+};
+
+export const fetchDeliveredOrders = async () => {
+  return await serverClient.fetch(`*[_type == "order" && status == "Delivered"] | order(_createdAt desc)`);
+};

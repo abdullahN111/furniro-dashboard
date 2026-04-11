@@ -20,10 +20,10 @@ const ReportCards = () => {
 
   const totalOrders = orders.length;
   const deliveredOrders = orders.filter(
-    (order) => order.status === "Dispatched"
+    (order) => order.status === "Delivered"
   ).length;
   const totalRevenue = orders
-    .filter((order) => order.status === "Dispatched")
+    .filter((order) => order.status === "Delivered")
     .reduce((sum, order) => sum + order.total, 0);
 
   if (loading) {

@@ -5,7 +5,6 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import {
   MdNotifications,
-  MdOutlineChat,
   MdPublic,
   MdMenu,
   MdClose,
@@ -34,7 +33,7 @@ const Navbar = () => {
           {openSearch && (
             <DashboardSearchBox close={() => setOpenSearch(false)} />
           )}
-          <MdOutlineChat size={20} />
+
           <MdNotifications size={20} />
           <Link
             href="https://furniro-abd.vercel.app/"
@@ -68,9 +67,7 @@ const Navbar = () => {
             {openSearch && (
               <DashboardSearchBox close={() => setOpenSearch(false)} />
             )}
-            <button className="flex items-center gap-[10px] text-sm sm:text-base">
-              <MdOutlineChat size={18} className="sm:w-5 sm:h-5" /> Messages
-            </button>
+
             <button className="flex items-center gap-[10px] text-sm sm:text-base">
               <MdNotifications size={18} className="sm:w-5 sm:h-5" />{" "}
               Notifications

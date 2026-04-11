@@ -25,16 +25,17 @@ const menuItems = [
     title: "Main",
     list: [
       { title: "Dashboard", path: "/dashboard", icon: <MdDashboard /> },
-      {
-        title: "Products",
-        path: "/dashboard/products",
-        icon: <MdShoppingBag />,
-      },
+
       { title: "Orders", path: "/dashboard/orders", icon: <MdShoppingBag /> },
       {
         title: "Transactions",
         path: "/dashboard/transactions",
         icon: <MdAttachMoney />,
+      },
+      {
+        title: "Products",
+        path: "/dashboard/products",
+        icon: <MdShoppingBag />,
       },
     ],
   },
@@ -150,7 +151,7 @@ const Sidebar = () => {
               {(session?.user as { role?: string })?.role === "admin"
                 ? "Administrator"
                 : "Editor"}
-            </span>     
+            </span>
           </div>
         </div>
 

@@ -145,16 +145,16 @@ const ProductDetail = () => {
                 Stock: {product.inventoryInStock}
               </button>
             </DialogTrigger>
-            <DialogContent className="bg-white p-6 rounded-xl max-w-md border-0 shadow-xl">
+            <DialogContent className="bg-[--bgSoft] text-[--text] p-6 rounded-xl max-w-md border-0 shadow-xl">
               <DialogHeader className="pb-2">
-                <DialogTitle className="text-xl font-semibold text-gray-800 text-center">
+                <DialogTitle className="text-xl font-semibold text-center">
                   Adjust Stock Level
                 </DialogTitle>
               </DialogHeader>
 
               <div className="mt-4 space-y-4">
                 <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                  <label className="block mb-2 text-sm font-medium text-[--textSoft]">
                     Adjustment Amount
                   </label>
                   <Input
@@ -164,22 +164,22 @@ const ProductDetail = () => {
                     min="-9999"
                     max="9999"
                     disabled={loading}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-600"
+                    className="w-full bg-[--bg] text-[--text] border border-[#2e374a] placeholder:text-[--textSoft] focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div className="bg-[--bg] p-4 rounded-lg border border-[#2e374a]">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">
+                      <p className="text-sm font-medium text-[-textSoft]">
                         Current Stock
                       </p>
-                      <p className="text-lg font-semibold text-gray-800">
+                      <p className="text-lg font-semibold text-[-textSoft]">
                         {product.inventoryInStock}
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-600">
+                      <p className="text-sm font-medium text-[-textSoft]">
                         New Stock
                       </p>
                       <p

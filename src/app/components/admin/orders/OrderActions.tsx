@@ -22,23 +22,47 @@ export default function OrderActions({ orderId, status }: { orderId: string; sta
   };
 
   return (
-    <button
-      onClick={() => {
-        if (currentStatus === "Pending") handleProcess();
-        else if (currentStatus === "Processing") handleDispatch();
-      }}
-      className={`text-white px-5 py-2 rounded-md ${
-        currentStatus === "Dispatched"
-          ? "bg-red-600 opacity-40 cursor-not-allowed"
-          : "bg-red-700 hover:bg-red-800"
-      }`}
-      disabled={currentStatus === "Dispatched"}
-    >
-      {currentStatus === "Pending"
-        ? "Process Order"
-        : currentStatus === "Processing"
-        ? "Dispatch Order"
-        : "Dispatched"}
-    </button>
+
+
+<button
+  onClick={() => {
+    if (currentStatus === "Pending") {
+      handleProcess();
+    } else if (currentStatus === "Processing") {
+      handleDispatch();
+    }
+  }}
+  className={`text-white px-2 py-1 rounded-md text-xs sm:text-[13px] ${
+    currentStatus === "Pending"
+      ? "bg-yellow-600 hover:bg-yellow-700"
+      : currentStatus === "Processing"
+      ? "bg-blue-600 hover:bg-blue-700"
+      : currentStatus === "Dispatched"
+      ? "bg-purple-600 opacity-50 cursor-not-allowed"
+      : currentStatus === "Shipped"
+      ? "bg-indigo-600 opacity-50 cursor-not-allowed"
+      : currentStatus === "Delivered"
+      ? "bg-green-600 opacity-50 cursor-not-allowed"
+      : "bg-gray-600"
+  }`}
+  disabled={
+    currentStatus === "Dispatched" ||
+    currentStatus === "Shipped" ||
+    currentStatus === "Delivered"
+  }
+>
+  {currentStatus === "Pending"
+    ? "Process"
+    : currentStatus === "Processing"
+    ? "Dispatch"
+    : currentStatus === "Dispatched"
+    ? "Dispatched"
+    : currentStatus === "Shipped"
+    ? "Shipped"
+    : currentStatus === "Delivered"
+    ? "Delivered"
+    : "N/A"}
+</button>
+
   );
 }
