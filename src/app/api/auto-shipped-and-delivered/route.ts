@@ -13,7 +13,7 @@ export async function GET() {
     const hoursPassed =
       (now.getTime() - dispatchedTime.getTime()) / (1000 * 60 * 60);
 
-    //Dispatched → Shipped (6h)
+
     //Shipped → Delivered (24h)
     if (hoursPassed >= 24 && order.status !== "Delivered") {
       await serverClient.patch(order._id).set({ status: "Delivered" }).commit();
