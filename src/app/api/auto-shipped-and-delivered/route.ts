@@ -13,9 +13,8 @@ export async function GET() {
     const hoursPassed =
       (now.getTime() - dispatchedTime.getTime()) / (1000 * 60 * 60);
 
-
-    //Shipped → Delivered (24h)
-    if (hoursPassed >= 24 && order.status !== "Delivered") {
+    //Shipped → Delivered
+    if (hoursPassed >= 24 && order.status === "Shipped") {
       await serverClient.patch(order._id).set({ status: "Delivered" }).commit();
       continue;
     }
@@ -24,15 +23,15 @@ export async function GET() {
     if (hoursPassed >= 6 && order.status === "Dispatched") {
       await serverClient.patch(order._id).set({ status: "Shipped" }).commit();
     }
-    console.log("Running auto update...");
-    console.log(
-      "Order:",
-      order._id,
-      "Hours:",
-      hoursPassed,
-      "Status:",
-      order.status,
-    );
+    // console.log("Running auto update...");
+    // console.log(
+    //   "Order:",
+    //   order._id,
+    //   "Hours:",
+    //   hoursPassed,
+    //   "Status:",
+    //   order.status,
+    // );
   }
 
   return NextResponse.json({ success: true });
