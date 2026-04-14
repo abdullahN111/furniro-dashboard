@@ -29,7 +29,11 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
   }, [id]);
 
   if (loading) {
-    return <div className="p-4">Loading...</div>;
+        return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
   }
 
   if (!user) {
@@ -68,8 +72,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
             <input
               type="text"
               name="username"
-              placeholder={user.username}
-              readOnly={!canEdit}
+              value={user.username}
               className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             />
 
@@ -77,32 +80,30 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
             <input
               type="email"
               name="email"
-              placeholder={user.email}
+              value={user.email}
               readOnly={!canEdit}
               className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             />
             <label className="text-sm">Password</label>
             <input
-              type="password"
+              type="password" 
               name="password"
               readOnly={!canEdit}
               className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
-              placeholder="********"
+              value="********"
             />
             <label className="text-sm">Phone</label>
             <input
               type="text"
               name="phone"
-              placeholder={user.phone}
-              readOnly={!canEdit}
+              value={user.phone}
               className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             />
             <label className="text-sm">Address</label>
             <textarea
               typeof="text"
               name="address"
-              placeholder={user.address}
-              readOnly={!canEdit}
+              value={user.address}
               className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             />
             <label className="text-sm">Role</label>
@@ -110,7 +111,6 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               name="isAdmin"
               id="isAdmin"
               defaultValue={user.isAdmin ? "Yes" : "No"}
-              disabled={!canEdit}
               className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             >
               <option value="Yes">Admin</option>
@@ -121,7 +121,6 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               name="isActive"
               id="isActive"
               defaultValue={user.isActive ? "Yes" : "No"}
-              disabled={!canEdit}
               className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             >
               <option value="Yes">Yes</option>
@@ -133,7 +132,6 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               type="file"
               accept="image/*"
               name="image"
-              disabled={!canEdit}
               className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             />
             <button

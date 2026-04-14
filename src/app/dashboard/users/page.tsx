@@ -87,7 +87,7 @@ const Users = () => {
             {filteredUsers.map((user, index) => (
               <tr
                 key={user._id}
-                className="bg-[--bgSoft] text-white hover:bg-zinc-100/50"
+                className="bg-[--bgSoft] text-white"
               >
                 <td className="p-[10px] text-left">{index + 1}</td>
                 <td className="p-[10px] text-left">

@@ -32,7 +32,7 @@ export default function OrderActions({ orderId, status }: { orderId: string; sta
       handleDispatch();
     }
   }}
-  className={`text-white px-2 py-1 rounded-md text-xs sm:text-[13px] ${
+  className={`text-white px-2 py-1 rounded-md text-xs sm:text-sm ${
     currentStatus === "Pending"
       ? "bg-yellow-600 hover:bg-yellow-700"
       : currentStatus === "Processing"

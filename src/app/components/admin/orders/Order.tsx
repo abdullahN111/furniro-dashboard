@@ -187,7 +187,7 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
                   setDispatchOrderId(row.original._id);
                 }
               }}
-              className={`text-white px-2 py-1 rounded-md text-xs sm:text-[13px] ${
+              className={`text-white px-2 py-1 rounded-md text-xs sm:text-sm ${
                 row.original.status === "Pending"
                   ? "bg-yellow-600 hover:bg-yellow-700"
                   : row.original.status === "Processing"

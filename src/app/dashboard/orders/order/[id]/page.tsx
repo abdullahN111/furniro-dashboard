@@ -24,7 +24,7 @@ const OrderDetailPage = async ({ params }: { params: { id: string } }) => {
   }
 
   const itemSubtotals = order.items.map(
-    (item, index) => item.price * (order.itemQuantities[index] || 0)
+    (item, index) => item.price * (order.itemQuantities[index] || 0),
   );
 
   return (
@@ -37,21 +37,21 @@ const OrderDetailPage = async ({ params }: { params: { id: string } }) => {
               <span className="bg-[--bgSoft] px-3 py-1 rounded-md text-sm">
                 Order ID: {order.orderId}
               </span>
-            <span
-  className={`px-3 py-1 rounded-md text-sm ${
-    order.status === "Pending"
-      ? "bg-gray-700 text-gray-200"
-      : order.status === "Processing"
-      ? "bg-yellow-900 text-yellow-200"
-      : order.status === "Dispatched"
-      ? "bg-blue-900 text-blue-200"
-      : order.status === "Shipped"
-      ? "bg-purple-900 text-purple-200"
-      : "bg-green-900 text-green-200"
-  }`}
->
-  {order.status}
-</span>
+              <span
+                className={`px-3 py-1 rounded-md text-sm ${
+                  order.status === "Pending"
+                    ? "bg-gray-700 text-gray-200"
+                    : order.status === "Processing"
+                      ? "bg-yellow-900 text-yellow-200"
+                      : order.status === "Dispatched"
+                        ? "bg-blue-900 text-blue-200"
+                        : order.status === "Shipped"
+                          ? "bg-purple-900 text-purple-200"
+                          : "bg-green-900 text-green-200"
+                }`}
+              >
+                {order.status}
+              </span>
             </div>
           </div>
           <Link
