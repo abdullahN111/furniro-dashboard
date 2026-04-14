@@ -28,6 +28,18 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
     getUser();
   }, [id]);
 
+  const handleChange = (
+  e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+) => {
+  const { name, value } = e.target;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  setUser((prev: any) => ({
+    ...prev,
+    [name]: value,
+  }));
+};
+
   if (loading) {
         return (
       <div className="flex justify-center items-center h-64">
@@ -73,6 +85,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               type="text"
               name="username"
               value={user.username}
+              onChange={handleChange}
               className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             />
 
@@ -97,6 +110,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               type="text"
               name="phone"
               value={user.phone}
+              onChange={handleChange}
               className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             />
             <label className="text-sm">Address</label>
@@ -104,6 +118,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               typeof="text"
               name="address"
               value={user.address}
+              onChange={handleChange}
               className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             />
             <label className="text-sm">Role</label>
@@ -111,6 +126,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               name="isAdmin"
               id="isAdmin"
               defaultValue={user.isAdmin ? "Yes" : "No"}
+              onChange={handleChange}
               className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             >
               <option value="Yes">Admin</option>
@@ -121,8 +137,10 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               name="isActive"
               id="isActive"
               defaultValue={user.isActive ? "Yes" : "No"}
+              onChange={handleChange}
               className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             >
+            
               <option value="Yes">Yes</option>
               <option value="No">No</option>
             </select>
