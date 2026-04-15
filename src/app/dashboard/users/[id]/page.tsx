@@ -43,7 +43,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
       setErrorMessage("Passwords do not match");
       return;
     }
-    
+
     if (newPassword.length < 6) {
       setErrorMessage("Password must be at least 6 characters");
       return;
@@ -127,17 +127,19 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
   return (
     <>
       <div className="flex flex-col lg:flex-row gap-8 mt-5" key={id}>
-        <div className="flex-1 bg-[--bgSoft] p-3 sm:p-5 rounded-[10px] font-bold text-[--textSoft] h-max flex flex-col items-center justify-center">
-          <div className="w-[230px] sm:w-[250px] lg:w-full h-[270px] lg:h-[280px] relative rounded-[10px] overflow-hidden mb-5">
+        <div className="flex-1 bg-[--bgSoft] p-5 rounded-2xl font-bold text-[--textSoft] h-max flex flex-col items-center justify-center shadow-md border border-[#2e374a]">
+          <div className="w-[180px] h-[180px] relative rounded-full overflow-hidden mb-4 border-4 border-[#2e374a] shadow-lg">
             <Image
               src={user.img || "/images/noavatar.png"}
               alt={user.username}
               fill
+              className="object-cover"
             />
           </div>
-          {user.username}
+          <p className="text-lg font-semibold text-[--text]">{user.username}</p>
+          <p className="text-xs text-[--textSoft] mt-1">User Profile</p>
         </div>
-        <div className="flex-[3] bg-[--bgSoft] p-3 sm:p-5 rounded-[10px]">
+        <div className="flex-[3] bg-[--bgSoft] p-5 rounded-2xl shadow-md border border-[#2e374a]">
           {!canEdit && (
             <div className="text-orange-500 font-semibold text-center mb-4">
               👁️ View Only - You can only edit your own profile
@@ -148,7 +150,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               type="hidden"
               name="id"
               value={user._id}
-              className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
+              className="px-4 py-3 border border-[#2e374a] rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
             />
             <label className="text-sm">Username</label>
             <input
@@ -156,7 +158,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               name="username"
               value={user.username || ""}
               onChange={handleChange}
-              className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
+              className="px-4 py-3 border border-[#2e374a] rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
             />
 
             <label className="text-sm">Email</label>
@@ -165,14 +167,14 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               name="email"
               value={user.email}
               readOnly={!canEdit}
-              className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
+              className="px-4 py-3 border border-[#2e374a] rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
             />
             <label className="text-sm">Password</label>
             <input
               type="password"
               name="password"
               readOnly={!canEdit}
-              className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
+              className="px-4 py-3 border border-[#2e374a] rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
               value="********"
             />
 
@@ -298,7 +300,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               name="phone"
               value={user.phone || ""}
               onChange={handleChange}
-              className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
+              className="px-4 py-3 border border-[#2e374a] rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
             />
             <label className="text-sm">Address</label>
             <textarea
@@ -306,7 +308,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               name="address"
               value={user.address || ""}
               onChange={handleChange}
-              className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
+              className="px-4 py-3 border border-[#2e374a] rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
             />
             <label className="text-sm">Role</label>
             <select
@@ -314,7 +316,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               id="isAdmin"
               value={user.isAdmin ? "Yes" : "No"}
               onChange={handleChange}
-              className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
+              className="px-4 py-3 border border-[#2e374a] rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
             >
               <option value="Yes">Admin</option>
               <option value="No">Editor</option>
@@ -325,7 +327,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               id="isActive"
               value={user.isActive ? "Yes" : "No"}
               onChange={handleChange}
-              className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
+              className="px-4 py-3 border border-[#2e374a] rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
             >
               <option value="Yes">Yes</option>
               <option value="No">No</option>
@@ -336,7 +338,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               type="file"
               accept="image/*"
               name="image"
-              className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
+              className="px-4 py-3 border border-[#2e374a] rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
             />
             <button
               className={`w-full px-5 py-5 border-none rounded-md cursor-pointer mt-5 ${
