@@ -54,16 +54,11 @@ export const updateUser = async (formData: FormData) => {
       const buffer = Buffer.from(await imageFile.arrayBuffer());
       imgData = `data:${imageFile.type};base64,${buffer.toString("base64")}`;
     }
-    const hashedPassword = await bcryptjs.hash(
-      formEntries.password as string,
-      10
-    );
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateFields: Record<string, any> = {
       username: formEntries.username,
       email: formEntries.email,
-      password: hashedPassword,
       phone: formEntries.phone,
       address: formEntries.address,
       img: imgData,

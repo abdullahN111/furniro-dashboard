@@ -5,13 +5,83 @@ import { fetchUser } from "@/app/lib/data";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const SingleUserPage = ({ params }: { params: { id: string } }) => {
   const { data: session } = useSession();
   const { id } = params;
+  const [isStockModalOpen, setIsStockModalOpen] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+
+  const handlePasswordUpdate = async () => {
+    setErrorMessage("");
+    setSuccessMessage("");
+    // validation
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setErrorMessage("All fields are required");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setErrorMessage("Passwords do not match");
+      return;
+    }
+    
+    if (newPassword.length < 6) {
+      setErrorMessage("Password must be at least 6 characters");
+      return;
+    }
+    setIsUpdatingPassword(true);
+    try {
+      const res = await fetch("/api/users/change-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user._id,
+          currentPassword,
+          newPassword,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setErrorMessage(data.error);
+        return;
+      }
+
+      setSuccessMessage("Password updated successfully");
+
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setIsStockModalOpen(false);
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    } finally {
+      setIsUpdatingPassword(false);
+    }
+  };
 
   useEffect(() => {
     const getUser = async () => {
@@ -28,20 +98,20 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
     getUser();
   }, [id]);
 
-  const handleChange = (
-  e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-) => {
-  const { name, value } = e.target;
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  setUser((prev: any) => ({
-    ...prev,
-    [name]: value,
-  }));
-};
+  const handleChange = (e: { target: { name: any; value: any } }) => {
+    const { name, value } = e.target;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setUser((prev: any) => ({
+      ...prev,
+      [name]:
+        name === "isAdmin" || name === "isActive" ? value === "Yes" : value,
+    }));
+  };
 
   if (loading) {
-        return (
+    return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
@@ -84,7 +154,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
             <input
               type="text"
               name="username"
-              value={user.username}
+              value={user.username || ""}
               onChange={handleChange}
               className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             />
@@ -99,17 +169,134 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
             />
             <label className="text-sm">Password</label>
             <input
-              type="password" 
+              type="password"
               name="password"
               readOnly={!canEdit}
               className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
               value="********"
             />
+
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-2 mb-2 items-start sm:items-center text-sm sm:text-base">
+              <Dialog
+                open={isStockModalOpen}
+                onOpenChange={setIsStockModalOpen}
+              >
+                <DialogTrigger asChild>
+                  <button className="mx-auto bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-md text-[13px] shadow">
+                    Change Password
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="bg-[--bgSoft] text-[--text] p-6 rounded-xl max-w-md border-0 shadow-xl">
+                  <DialogHeader className="pb-2">
+                    <DialogTitle className="text-xl font-semibold text-center">
+                      Change Password
+                    </DialogTitle>
+                  </DialogHeader>
+
+                  <div className="mt-4 space-y-4">
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-[--textSoft]">
+                        Current Password
+                      </label>
+                      <Input
+                        type="password"
+                        placeholder="Enter your current password"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        disabled={loading}
+                        className="w-full bg-[--bg] text-[--text] border border-[#2e374a] placeholder:text-[--textSoft] focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-[--textSoft]">
+                        New Password
+                      </label>
+                      <Input
+                        type="password"
+                        placeholder="Enter your new password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        disabled={isUpdatingPassword}
+                        className="w-full bg-[--bg] text-[--text] border border-[#2e374a] placeholder:text-[--textSoft] focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-[--textSoft]">
+                        Confirm New Password
+                      </label>
+                      <Input
+                        type="password"
+                        placeholder="Confirm your new password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        disabled={isUpdatingPassword}
+                        className="w-full bg-[--bg] text-[--text] border border-[#2e374a] placeholder:text-[--textSoft] focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex justify-end space-x-3">
+                    {errorMessage && (
+                      <div className="bg-red-500/10 text-red-500 px-1 py-2 rounded-md text-[13px]">
+                        {errorMessage}
+                      </div>
+                    )}
+
+                    {successMessage && (
+                      <div className="bg-green-500/10 text-green-500 px-1 py-2 rounded-md text-[13px]">
+                        {successMessage}
+                      </div>
+                    )}
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsStockModalOpen(false)}
+                      disabled={isUpdatingPassword}
+                      className="px-4 py-2 border-gray-300 text-gray-700 hover:bg-gray-100"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={handlePasswordUpdate}
+                      disabled={isUpdatingPassword}
+                    >
+                      {isUpdatingPassword ? (
+                        <span className="flex items-center">
+                          <svg
+                            className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                          Updating...
+                        </span>
+                      ) : (
+                        "Update Password"
+                      )}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
             <label className="text-sm">Phone</label>
             <input
               type="text"
               name="phone"
-              value={user.phone}
+              value={user.phone || ""}
               onChange={handleChange}
               className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             />
@@ -117,7 +304,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
             <textarea
               typeof="text"
               name="address"
-              value={user.address}
+              value={user.address || ""}
               onChange={handleChange}
               className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             />
@@ -125,7 +312,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
             <select
               name="isAdmin"
               id="isAdmin"
-              defaultValue={user.isAdmin ? "Yes" : "No"}
+              value={user.isAdmin ? "Yes" : "No"}
               onChange={handleChange}
               className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             >
@@ -136,11 +323,10 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
             <select
               name="isActive"
               id="isActive"
-              defaultValue={user.isActive ? "Yes" : "No"}
+              value={user.isActive ? "Yes" : "No"}
               onChange={handleChange}
               className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             >
-            
               <option value="Yes">Yes</option>
               <option value="No">No</option>
             </select>
