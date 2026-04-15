@@ -150,7 +150,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               type="hidden"
               name="id"
               value={user._id}
-              className="px-4 py-3 border border-[#2e374a] rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
+              className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             />
             <label className="text-sm">Username</label>
             <input
@@ -158,7 +158,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               name="username"
               value={user.username || ""}
               onChange={handleChange}
-              className="px-4 py-3 border border-[#2e374a] rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
+              className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             />
 
             <label className="text-sm">Email</label>
@@ -167,14 +167,14 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               name="email"
               value={user.email}
               readOnly={!canEdit}
-              className="px-4 py-3 border border-[#2e374a] rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
+              className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             />
             <label className="text-sm">Password</label>
             <input
               type="password"
               name="password"
               readOnly={!canEdit}
-              className="px-4 py-3 border border-[#2e374a] rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
+              className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
               value="********"
             />
 
@@ -300,7 +300,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               name="phone"
               value={user.phone || ""}
               onChange={handleChange}
-              className="px-4 py-3 border border-[#2e374a] rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
+              className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             />
             <label className="text-sm">Address</label>
             <textarea
@@ -308,7 +308,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               name="address"
               value={user.address || ""}
               onChange={handleChange}
-              className="px-4 py-3 border border-[#2e374a] rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
+              className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             />
             <label className="text-sm">Role</label>
             <select
@@ -316,7 +316,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               id="isAdmin"
               value={user.isAdmin ? "Yes" : "No"}
               onChange={handleChange}
-              className="px-4 py-3 border border-[#2e374a] rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
+              className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             >
               <option value="Yes">Admin</option>
               <option value="No">Editor</option>
@@ -327,7 +327,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               id="isActive"
               value={user.isActive ? "Yes" : "No"}
               onChange={handleChange}
-              className="px-4 py-3 border border-[#2e374a] rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
+              className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             >
               <option value="Yes">Yes</option>
               <option value="No">No</option>
@@ -338,7 +338,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               type="file"
               accept="image/*"
               name="image"
-              className="px-4 py-3 border border-[#2e374a] rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
+              className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             />
             <button
               className={`w-full px-5 py-5 border-none rounded-md cursor-pointer mt-5 ${
