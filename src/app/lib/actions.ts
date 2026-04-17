@@ -10,10 +10,21 @@ export const addUser = async (formData: FormData) => {
   connectToDB();
 
   try {
+    const existingUser = await User.findOne({
+      $or: [
+        { email: formEntries.email },
+        { username: formEntries.username },
+      ],
+    });
+
+    if (existingUser) {
+      throw new Error("User already exists with this email or username");
+    }
+
     const imageFile = formData.get("image");
     let imgData = "";
 
-    if (imageFile instanceof File) {
+    if (imageFile instanceof File && imageFile.size > 0) {
       const buffer = Buffer.from(await imageFile.arrayBuffer());
       imgData = `data:${imageFile.type};base64,${buffer.toString("base64")}`;
     }
@@ -21,7 +32,7 @@ export const addUser = async (formData: FormData) => {
     const salt = await bcryptjs.genSalt(10);
     const hashedPassword = await bcryptjs.hash(
       String(formEntries.password),
-      salt,
+      salt
     );
 
     const newUser = new User({
@@ -30,15 +41,15 @@ export const addUser = async (formData: FormData) => {
       password: hashedPassword,
       phone: formEntries.phone,
       address: formEntries.address,
-      img: imgData || formEntries.img,
-      isAdmin: formEntries.isAdmin,
-      isActive: formEntries.isActive,
+      img: imgData,
+      isAdmin: formEntries.isAdmin === "true",
+      isActive: formEntries.isActive === "true",
     });
 
     await newUser.save();
   } catch (error) {
-    console.error("Error adding user:", error);
-    throw new Error(error instanceof Error ? error.message : String(error));
+    console.error("❌ Error adding user:", error);
+    throw error;
   }
 };
 
