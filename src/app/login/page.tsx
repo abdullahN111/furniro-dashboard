@@ -1,9 +1,11 @@
 "use client";
 
 import { signIn, useSession } from "next-auth/react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import Logo from "../../.././public/images/Logo.png";
 
 const LoginPage = () => {
   const router = useRouter();
@@ -52,24 +54,30 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center bg-[--dark] lg:rounded-lg py-8 sm:py-16 lg:py-24 px-8 min-h-screen">
-      <div className="text-center w-full max-w-sm">
-        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white my-8">
-          Login
-        </h2>
+    <div className="flex flex-col justify-center items-center bg-[--dark] lg:rounded-lg py-6 sm:py-16 px-8 min-h-screen">
+      <div className="text-center w-full max-w-sm space-y-6 mb-6">
+        <div className="flex items-center justify-center gap-2">
+          <Image src={Logo} alt="furniro logo" width={45} height={30} />
+            <h2 className="text-3xl font-bold">
+              Furniro
+            </h2>
+        </div>
+       <p className="text-white text-base">
+         Login now to access your account
+       </p>
       </div>
 
       <form
         onSubmit={handleLogin}
-        className="w-full max-w-sm flex flex-col gap-4 sm:gap-6"
+        className="w-full max-w-sm flex flex-col gap-5"
       >
-        <div className="flex flex-col gap-2">
-          <label className="text-base sm:text-lg font-semibold">
+        <div className="flex flex-col gap-2"> 
+          <label className="text-base font-semibold">
             Email Address
           </label>
           <input
             placeholder="Enter your email"
-            className="text-sm sm:text-base text-[#333] border border-black py-2 sm:py-3 px-3 sm:px-4 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[--bgSoft]"
+            className="text-sm text-[#333] border border-black p-3 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[--bgSoft]"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -78,12 +86,12 @@ const LoginPage = () => {
         </div>
 
         <div className="flex flex-col gap-2 relative">
-          <label className="text-base sm:text-lg font-semibold">Password</label>
+          <label className="text-base font-semibold">Password</label>
           <div className="relative w-full">
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
-              className="text-sm sm:text-base text-[#333] border border-black py-2 sm:py-3 px-3 sm:px-4 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[--bgSoft]"
+              className="text-sm text-[#333] border border-black p-3 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[--bgSoft]"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -91,7 +99,7 @@ const LoginPage = () => {
 
             <button
               type="button"
-              className="absolute right-3 sm:right-4 top-2 sm:top-3 text-gray-500 hover:text-[--bgSoft]"
+              className="absolute right-3 top-3 text-gray-500 hover:text-[--bgSoft]"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? "🙈" : "👁"}
@@ -99,7 +107,7 @@ const LoginPage = () => {
           </div>
         </div>
 
-        <div className="flex justify-between items-start sm:items-center w-full text-[13px] sm:text-[15px]">
+        <div className="flex justify-between items-start sm:items-center w-full text-[13px]">
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
@@ -113,7 +121,7 @@ const LoginPage = () => {
         </div>
 
         <button
-          className="text-white text-base sm:text-lg bg-[#3f3fad] hover:bg-[#313195] rounded-md py-2 sm:py-3 px-4 sm:px-6 font-semibold shadow-md transition duration-300 w-full max-w-sm mt-4 sm:mt-6 disabled:opacity-70 disabled:cursor-not-allowed"
+          className="text-white text-base bg-[#3f3fad] hover:bg-[#313195] rounded-md py-2 font-semibold shadow-md transition duration-300 w-full max-w-sm mt-2 disabled:opacity-70 disabled:cursor-not-allowed"
           type="submit"
           disabled={loading}
         >

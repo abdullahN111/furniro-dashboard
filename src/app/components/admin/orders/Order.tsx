@@ -94,6 +94,8 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
     getOrders();
   }, []);
 
+  
+
   const filteredOrders = useMemo(() => {
     if (!pageSearchQuery) return orders;
 
@@ -227,6 +229,14 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
     state: { pagination },
     onPaginationChange: setPagination,
   });
+
+   if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="container bg-[--bgSoft] p-4 lg:p-2 xl:p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">

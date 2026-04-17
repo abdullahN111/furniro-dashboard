@@ -170,122 +170,125 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               value="********"
             />
 
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-2 mb-2 items-start sm:items-center text-sm sm:text-base">
-              <Dialog
-                open={isStockModalOpen}
-                onOpenChange={setIsStockModalOpen}
-              >
-                <DialogTrigger asChild>
-                  <button className="mx-auto bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-md text-[13px] shadow">
-                    Change Password
-                  </button>
-                </DialogTrigger>
-                <DialogContent className="bg-[--bgSoft] text-[--text] p-6 rounded-xl max-w-md border-0 shadow-xl">
-                  <DialogHeader className="pb-2">
-                    <DialogTitle className="text-xl font-semibold text-center">
+            {(session?.user as any)?.id === user._id && (
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-2 mb-2 items-start sm:items-center text-sm sm:text-base">
+                <Dialog
+                  open={isStockModalOpen}
+                  onOpenChange={setIsStockModalOpen}
+                >
+                  <DialogTrigger asChild>
+                    <button className="mx-auto bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-md text-[13px] shadow">
                       Change Password
-                    </DialogTitle>
-                  </DialogHeader>
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="bg-[--bgSoft] text-[--text] p-6 rounded-xl max-w-md border-0 shadow-xl">
+                    <DialogHeader className="pb-2">
+                      <DialogTitle className="text-xl font-semibold text-center">
+                        Change Password
+                      </DialogTitle>
+                    </DialogHeader>
 
-                  <div className="mt-4 space-y-4">
-                    <div>
-                      <label className="block mb-2 text-sm font-medium text-[--textSoft]">
-                        Current Password
-                      </label>
-                      <Input
-                        type="password"
-                        placeholder="Enter your current password"
-                        value={currentPassword}
-                        onChange={(e) => setCurrentPassword(e.target.value)}
-                        disabled={loading}
-                        className="w-full bg-[--bg] text-[--text] border border-[#2e374a] placeholder:text-[--textSoft] focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block mb-2 text-sm font-medium text-[--textSoft]">
-                        New Password
-                      </label>
-                      <Input
-                        type="password"
-                        placeholder="Enter your new password"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        disabled={isUpdatingPassword}
-                        className="w-full bg-[--bg] text-[--text] border border-[#2e374a] placeholder:text-[--textSoft] focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block mb-2 text-sm font-medium text-[--textSoft]">
-                        Confirm New Password
-                      </label>
-                      <Input
-                        type="password"
-                        placeholder="Confirm your new password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        disabled={isUpdatingPassword}
-                        className="w-full bg-[--bg] text-[--text] border border-[#2e374a] placeholder:text-[--textSoft] focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mt-6 flex justify-end space-x-3">
-                    {errorMessage && (
-                      <div className="bg-red-500/10 text-red-500 px-1 py-2 rounded-md text-[13px]">
-                        {errorMessage}
+                    <div className="mt-4 space-y-4">
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-[--textSoft]">
+                          Current Password
+                        </label>
+                        <Input
+                          type="password"
+                          placeholder="Enter your current password"
+                          value={currentPassword}
+                          onChange={(e) => setCurrentPassword(e.target.value)}
+                          disabled={loading}
+                          className="w-full bg-[--bg] text-[--text] border border-[#2e374a] placeholder:text-[--textSoft] focus:ring-2 focus:ring-blue-500"
+                        />
                       </div>
-                    )}
-
-                    {successMessage && (
-                      <div className="bg-green-500/10 text-green-500 px-1 py-2 rounded-md text-[13px]">
-                        {successMessage}
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-[--textSoft]">
+                          New Password
+                        </label>
+                        <Input
+                          type="password"
+                          placeholder="Enter your new password"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          disabled={isUpdatingPassword}
+                          className="w-full bg-[--bg] text-[--text] border border-[#2e374a] placeholder:text-[--textSoft] focus:ring-2 focus:ring-blue-500"
+                        />
                       </div>
-                    )}
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsStockModalOpen(false)}
-                      disabled={isUpdatingPassword}
-                      className="px-4 py-2 border-gray-300 text-gray-700 hover:bg-gray-100"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                      onClick={handlePasswordUpdate}
-                      disabled={isUpdatingPassword}
-                    >
-                      {isUpdatingPassword ? (
-                        <span className="flex items-center">
-                          <svg
-                            className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                          </svg>
-                          Updating...
-                        </span>
-                      ) : (
-                        "Update Password"
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-[--textSoft]">
+                          Confirm New Password
+                        </label>
+                        <Input
+                          type="password"
+                          placeholder="Confirm your new password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          disabled={isUpdatingPassword}
+                          className="w-full bg-[--bg] text-[--text] border border-[#2e374a] placeholder:text-[--textSoft] focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="mt-6 flex justify-end space-x-3">
+                      {errorMessage && (
+                        <div className="bg-red-500/10 text-red-500 px-1 py-2 rounded-md text-[13px]">
+                          {errorMessage}
+                        </div>
                       )}
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
+
+                      {successMessage && (
+                        <div className="bg-green-500/10 text-green-500 px-1 py-2 rounded-md text-[13px]">
+                          {successMessage}
+                        </div>
+                      )}
+
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsStockModalOpen(false)}
+                        disabled={isUpdatingPassword}
+                        className="px-4 py-2 border-gray-300 text-gray-700 hover:bg-gray-100"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={handlePasswordUpdate}
+                        disabled={isUpdatingPassword}
+                      >
+                        {isUpdatingPassword ? (
+                          <span className="flex items-center">
+                            <svg
+                              className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                              ></path>
+                            </svg>
+                            Updating...
+                          </span>
+                        ) : (
+                          "Update Password"
+                        )}
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            )}
             <label className="text-sm">Phone</label>
             <input
               type="text"

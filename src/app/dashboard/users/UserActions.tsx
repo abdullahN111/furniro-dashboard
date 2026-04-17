@@ -33,6 +33,7 @@ const UserActions = ({
     }, []);
 
     const admins = users.filter((u) => u === "admin");
+    const editors = users.filter((u) => u === "editor");
 
   return (
     <div className="flex items-center gap-2">
@@ -41,7 +42,7 @@ const UserActions = ({
           View
         </button>
       </Link>
-      {(session?.user as { role?: string })?.role === "admin" && admins.length > 1 ? (
+      {(session?.user as { role?: string })?.role === "admin" && admins.length > 1 && editors.length >= 1 ? (
         <button
         className="bg-red-700 text-white px-2 py-1 rounded-md text-[13px] shadow"
         onClick={() => setIsConfirming(true)}

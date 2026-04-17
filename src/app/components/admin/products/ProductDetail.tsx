@@ -78,6 +78,13 @@ const ProductDetail = () => {
       </div>
     );
   }
+   if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full mx-auto py-5 sm:py-7 lg:py-9 mb-6 sm:mb-10 px-3 sm:px-5 font-poppins flex flex-col lg:flex-row gap-6">
