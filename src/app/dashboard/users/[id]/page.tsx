@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { updateUser } from "@/app/lib/actions";
@@ -98,11 +99,9 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
     getUser();
   }, [id]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleChange = (e: { target: { name: any; value: any } }) => {
     const { name, value } = e.target;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setUser((prev: any) => ({
       ...prev,
       [name]:
@@ -122,8 +121,6 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
     return <div className="p-4 text-red-500">User not found</div>;
   }
 
-  const canEdit = (session?.user as { id?: string })?.id === id;
-
   return (
     <>
       <div className="flex flex-col lg:flex-row gap-8 mt-5" key={id}>
@@ -139,18 +136,13 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
           <p className="text-lg font-semibold text-[--text]">{user.username}</p>
           <p className="text-xs text-[--textSoft] mt-1">User Profile</p>
         </div>
-        <div className="flex-[3] bg-[--bgSoft] p-5 rounded-2xl shadow-md border border-[#2e374a]">
-          {!canEdit && (
-            <div className="text-orange-500 font-semibold text-center mb-4">
-              👁️ View Only - You can only edit your own profile
-            </div>
-          )}
+        <div className="flex-[3] bg-[--bgSoft] p-5 rounded-[10px] shadow-md border border-[#2e374a]">
           <form action={updateUser} className="flex flex-col">
+            <input type="hidden" name="id" value={user._id} />
             <input
               type="hidden"
-              name="id"
-              value={user._id}
-              className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
+              name="sessionUserId"
+              value={(session?.user as any)?.id}
             />
             <label className="text-sm">Username</label>
             <input
@@ -166,14 +158,14 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               type="email"
               name="email"
               value={user.email}
-              readOnly={!canEdit}
+              readOnly
               className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             />
             <label className="text-sm">Password</label>
             <input
               type="password"
               name="password"
-              readOnly={!canEdit}
+              readOnly
               className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
               value="********"
             />
@@ -340,17 +332,15 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
               name="image"
               className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
             />
-            <button
-              className={`w-full px-5 py-5 border-none rounded-md cursor-pointer mt-5 ${
-                canEdit
-                  ? "bg-teal-500 text-[var(--text)]"
-                  : "bg-gray-500 text-gray-300 cursor-not-allowed"
-              }`}
-              type="submit"
-              disabled={!canEdit}
-            >
-              {canEdit ? "Update" : "View Only"}
-            </button>
+
+            {(session?.user as any)?.id === user._id && (
+              <button
+                className="w-full px-5 py-5 bg-teal-500 text-[var(--text)] border-none rounded-md cursor-pointer mt-5"
+                type="submit"
+              >
+                Update
+              </button>
+            )}
           </form>
         </div>
       </div>

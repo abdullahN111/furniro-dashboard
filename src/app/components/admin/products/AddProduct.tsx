@@ -21,6 +21,8 @@ interface AddProductModalProps {
 const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const [newProduct, setNewProduct] = useState({
     title: "",
@@ -79,6 +81,9 @@ const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
       return;
     }
 
+    setLoading(true);
+    setError("");
+
     try {
       const formData = new FormData();
       formData.append("title", newProduct.title);
@@ -110,9 +115,13 @@ const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
         setIsOpen(false);
       } else {
         console.error("Failed to add product:", result.message);
+        setError(result.message || "Failed to add product");
       }
     } catch (error) {
       console.error("Error adding product:", error);
+      setError("An error occurred while adding the product.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -343,9 +352,44 @@ const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
           <Button
             onClick={addProduct}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors shadow-md"
+            disabled={loading}
           >
-            Submit Product
+            {loading ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg
+                className="animate-spin h-5 w-5"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 
+          0 0 5.373 0 12h4zm2 5.291A7.962 
+          7.962 0 014 12H0c0 3.042 1.135 
+          5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Adding...
+            </span>
+          ) : (
+            "Add Product"
+          )}
           </Button>
+           {error && (
+          <div className="mt-3 bg-red-500/10 text-red-400 text-sm px-3 py-2 rounded-md text-center">
+            {error}
+          </div>
+        )}
         </div>
       </DialogContent>
     </Dialog>

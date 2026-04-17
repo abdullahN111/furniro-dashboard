@@ -11,6 +11,8 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     console.log("🔍 Session status:", status);
@@ -24,6 +26,9 @@ const LoginPage = () => {
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
+
+    setLoading(true);
+    setError("");
     try {
       const res = await signIn("credentials", {
         email,
@@ -34,13 +39,15 @@ const LoginPage = () => {
       if (res?.ok) {
         router.push("/dashboard");
       } else {
-        alert("Login failed: " + (res?.error ?? "Unknown error"));
+        setError(res?.error || "Invalid email or password");
       }
 
       console.log("🧪 signIn result:", res);
     } catch (error) {
       console.error("❌ signIn error:", error);
-      alert("Login failed");
+      setError("Something went wrong. Try again.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -106,11 +113,46 @@ const LoginPage = () => {
         </div>
 
         <button
-          className="text-white text-base sm:text-lg bg-[#3f3fad] hover:bg-[#313195] rounded-md py-2 sm:py-3 px-4 sm:px-6 font-semibold shadow-md transition duration-300 w-full max-w-sm mt-4 sm:mt-6"
+          className="text-white text-base sm:text-lg bg-[#3f3fad] hover:bg-[#313195] rounded-md py-2 sm:py-3 px-4 sm:px-6 font-semibold shadow-md transition duration-300 w-full max-w-sm mt-4 sm:mt-6 disabled:opacity-70 disabled:cursor-not-allowed"
           type="submit"
+          disabled={loading}
         >
-          Sign In
+          {loading ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg
+                className="animate-spin h-5 w-5"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 
+          0 0 5.373 0 12h4zm2 5.291A7.962 
+          7.962 0 014 12H0c0 3.042 1.135 
+          5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Signing in...
+            </span>
+          ) : (
+            "Sign In"
+          )}
         </button>
+        {error && (
+          <div className="mt-3 bg-red-500/10 text-red-400 text-sm px-3 py-2 rounded-md text-center">
+            {error}
+          </div>
+        )}
       </form>
     </div>
   );

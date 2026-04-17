@@ -21,7 +21,7 @@ export const addUser = async (formData: FormData) => {
     const salt = await bcryptjs.genSalt(10);
     const hashedPassword = await bcryptjs.hash(
       String(formEntries.password),
-      salt
+      salt,
     );
 
     const newUser = new User({
@@ -44,6 +44,14 @@ export const addUser = async (formData: FormData) => {
 
 export const updateUser = async (formData: FormData) => {
   const formEntries = Object.fromEntries(formData);
+
+  const sessionUserId = formEntries.sessionUserId;
+  const targetUserId = formEntries.id;
+
+  if (!sessionUserId || sessionUserId !== targetUserId) {
+    throw new Error("You can only update your own profile");
+  }
+
   connectToDB();
 
   try {
@@ -69,7 +77,7 @@ export const updateUser = async (formData: FormData) => {
     Object.keys(updateFields).forEach(
       (key) =>
         (updateFields[key] === "" || updateFields[key] === undefined) &&
-        delete updateFields[key]
+        delete updateFields[key],
     );
 
     await User.findByIdAndUpdate(formEntries.id, updateFields, { new: true });
