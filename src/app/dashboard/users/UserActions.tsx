@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { deleteUser } from "@/app/lib/actions";
 import { useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const UserActions = ({
   viewLink,
@@ -21,8 +23,8 @@ const UserActions = ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [users, setUsers] = useState([]);
   const { data: session } = useSession();
+  const router = useRouter();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const isCurrentUserAdmin = (session?.user as any)?.role === "admin";
 
   const canDelete = isCurrentUserAdmin && (!isAdmin || adminsCount > 1);
@@ -60,8 +62,14 @@ const UserActions = ({
             Are you sure you want to delete the user?
           </p>
           <div className="flex flex-col gap-2 mt-4">
-            <form action={deleteUser}>
+            <form
+              action={async (formData) => {
+                await deleteUser(formData);
+                router.refresh();
+              }}
+            >
               <input type="hidden" name="id" value={userId} />
+              <input type="hidden" name="sessionUserId" value={(session?.user as any)?.id} />
               <button
                 className="bg-red-600 text-white p-2 rounded-md text-sm w-full"
                 onClick={() => {

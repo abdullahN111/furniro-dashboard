@@ -98,9 +98,12 @@ export const updateUser = async (formData: FormData) => {
 };
 
 export const deleteUser = async (formData: FormData) => {
-  const { id } = Object.fromEntries(formData);
+  const { id, sessionUserId } = Object.fromEntries(formData);
 
   if (!id) throw new Error("User ID is missing!");
+  if (sessionUserId === id) {
+    throw new Error("You cannot delete your own account");
+  }
 
   await connectToDB();
 
@@ -118,6 +121,7 @@ export const deleteUser = async (formData: FormData) => {
         throw new Error("Cannot delete the last admin");
       }
     }
+
     await User.findByIdAndDelete(id);
 
     revalidatePath("/dashboard/users");
