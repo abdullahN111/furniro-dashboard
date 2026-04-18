@@ -38,6 +38,10 @@ const Users = () => {
 
     getUsers();
   }, []);
+  const getUsers = async () => {
+    const data = await fetchUsers();
+    setUsers(data);
+  };
 
   const { pageSearchQuery } = useSearch();
 
@@ -111,6 +115,7 @@ const Users = () => {
                     userId={user._id}
                     isAdmin={user.isAdmin}
                     adminsCount={adminsCount}
+                    onUserDeleted={getUsers}
                   />
                 </td>
               </tr>
@@ -156,6 +161,7 @@ const Users = () => {
                 userId={user._id}
                 isAdmin={user.isAdmin}
                 adminsCount={adminsCount}
+                onUserDeleted={getUsers}
               />
             </div>
           </div>

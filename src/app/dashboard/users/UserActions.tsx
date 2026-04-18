@@ -5,25 +5,25 @@ import { deleteUser } from "@/app/lib/actions";
 import { useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 const UserActions = ({
   viewLink,
   userId,
   isAdmin,
   adminsCount,
+  onUserDeleted,
 }: {
   viewLink: string;
   userId: string;
   isAdmin: boolean;
   adminsCount: number;
+  onUserDeleted: () => void;
 }) => {
   const [isConfirming, setIsConfirming] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [users, setUsers] = useState([]);
   const { data: session } = useSession();
-  const router = useRouter();
 
   const isCurrentUserAdmin = (session?.user as any)?.role === "admin";
 
@@ -65,11 +65,17 @@ const UserActions = ({
             <form
               action={async (formData) => {
                 await deleteUser(formData);
-                router.refresh();
+                await onUserDeleted();
+                setIsDeleting(false);
+                setIsConfirming(false);
               }}
             >
               <input type="hidden" name="id" value={userId} />
-              <input type="hidden" name="sessionUserId" value={(session?.user as any)?.id} />
+              <input
+                type="hidden"
+                name="sessionUserId"
+                value={(session?.user as any)?.id}
+              />
               <button
                 className="bg-red-600 text-white p-2 rounded-md text-sm w-full"
                 onClick={() => {
