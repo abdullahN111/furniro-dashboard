@@ -11,10 +11,7 @@ export const addUser = async (formData: FormData) => {
 
   try {
     const existingUser = await User.findOne({
-      $or: [
-        { email: formEntries.email },
-        { username: formEntries.username },
-      ],
+      $or: [{ email: formEntries.email }, { username: formEntries.username }],
     });
 
     if (existingUser) {
@@ -32,7 +29,7 @@ export const addUser = async (formData: FormData) => {
     const salt = await bcryptjs.genSalt(10);
     const hashedPassword = await bcryptjs.hash(
       String(formEntries.password),
-      salt
+      salt,
     );
 
     const newUser = new User({
@@ -102,26 +99,30 @@ export const updateUser = async (formData: FormData) => {
 
 export const deleteUser = async (formData: FormData) => {
   const { id } = Object.fromEntries(formData);
-  const userToDelete = await User.findById(id);
 
   if (!id) throw new Error("User ID is missing!");
 
-if (userToDelete.isAdmin) {
-  const adminCount = await User.countDocuments({ isAdmin: true });
-
-  if (adminCount <= 1) {
-    throw new Error("Cannot delete the last admin");
-  }
-}
+  await connectToDB();
 
   try {
-    connectToDB();
+    const userToDelete = await User.findById(id);
+
+    if (!userToDelete) {
+      throw new Error("User not found");
+    }
+
+    if (userToDelete.isAdmin) {
+      const adminCount = await User.countDocuments({ isAdmin: true });
+
+      if (adminCount <= 1) {
+        throw new Error("Cannot delete the last admin");
+      }
+    }
     await User.findByIdAndDelete(id);
 
     revalidatePath("/dashboard/users");
-    // return { success: true };
   } catch (err) {
     console.error("Error deleting user:", err);
-    throw new Error("Failed to delete user!");
+    throw err;
   }
 };

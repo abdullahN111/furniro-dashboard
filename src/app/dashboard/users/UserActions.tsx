@@ -1,10 +1,9 @@
 "use client";
 
 import { deleteUser } from "@/app/lib/actions";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { fetchUsers } from "@/app/lib/data";
 
 const UserActions = ({
   viewLink,
@@ -23,24 +22,11 @@ const UserActions = ({
   const [users, setUsers] = useState([]);
   const { data: session } = useSession();
 
-  useEffect(() => {
-    const getUsers = async () => {
-      try {
-        const data = await fetchUsers();
-        setUsers(data);
-      } catch (err) {
-        console.error("Error fetching users:", err);
-      }
-    };
-
-    getUsers();
-  }, []);
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const isCurrentUserAdmin = (session?.user as any)?.role === "admin";
 
-
   const canDelete = isCurrentUserAdmin && (!isAdmin || adminsCount > 1);
+
   return (
     <div className="flex items-center gap-2">
       <Link href={viewLink}>
@@ -56,7 +42,10 @@ const UserActions = ({
           Delete
         </button>
       ) : (
-        <button className="bg-red-700 text-white px-2 py-1 rounded-md text-[13px] shadow opacity-70" disabled>
+        <button
+          className="bg-red-700 text-white px-2 py-1 rounded-md text-[13px] shadow opacity-70"
+          disabled
+        >
           Delete
         </button>
       )}
