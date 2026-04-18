@@ -9,32 +9,38 @@ import { fetchUsers } from "@/app/lib/data";
 const UserActions = ({
   viewLink,
   userId,
+  isAdmin,
+  adminsCount,
 }: {
   viewLink: string;
   userId: string;
+  isAdmin: boolean;
+  adminsCount: number;
 }) => {
   const [isConfirming, setIsConfirming] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [users, setUsers] = useState([]);
   const { data: session } = useSession();
 
-  
-    useEffect(() => {
-      const getUsers = async () => {
-        try {
-          const data = await fetchUsers();
-          setUsers(data);
-        } catch (err) {
-          console.error("Error fetching users:", err);
-        } 
+  useEffect(() => {
+    const getUsers = async () => {
+      try {
+        const data = await fetchUsers();
+        setUsers(data);
+      } catch (err) {
+        console.error("Error fetching users:", err);
       }
-  
-      getUsers();
-    }, []);
+    };
 
-    const admins = users.filter((u) => u === "admin");
-    const editors = users.filter((u) => u !== "admin");
+    getUsers();
+  }, []);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const isCurrentUserAdmin = (session?.user as any)?.role === "admin";
+
+
+  const canDelete = isCurrentUserAdmin && (!isAdmin || adminsCount > 1);
   return (
     <div className="flex items-center gap-2">
       <Link href={viewLink}>
@@ -42,19 +48,17 @@ const UserActions = ({
           View
         </button>
       </Link>
-      {(session?.user as { role?: string })?.role === "admin" && admins.length > 1 && editors.length >= 1 ? (
+      {canDelete ? (
         <button
-        className="bg-red-700 text-white px-2 py-1 rounded-md text-[13px] shadow"
-        onClick={() => setIsConfirming(true)}
-      >
-        Delete
-      </button>
-      ): (
-        <button
-        className="bg-red-700 text-white px-2 py-1 rounded-md text-[13px] shadow opacity-70"
-      >
-        Delete
-      </button>
+          className="bg-red-700 text-white px-2 py-1 rounded-md text-[13px] shadow"
+          onClick={() => setIsConfirming(true)}
+        >
+          Delete
+        </button>
+      ) : (
+        <button className="bg-red-700 text-white px-2 py-1 rounded-md text-[13px] shadow opacity-70" disabled>
+          Delete
+        </button>
       )}
 
       <div

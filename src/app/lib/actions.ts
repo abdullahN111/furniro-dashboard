@@ -102,8 +102,17 @@ export const updateUser = async (formData: FormData) => {
 
 export const deleteUser = async (formData: FormData) => {
   const { id } = Object.fromEntries(formData);
+  const userToDelete = await User.findById(id);
 
   if (!id) throw new Error("User ID is missing!");
+
+if (userToDelete.isAdmin) {
+  const adminCount = await User.countDocuments({ isAdmin: true });
+
+  if (adminCount <= 1) {
+    throw new Error("Cannot delete the last admin");
+  }
+}
 
   try {
     connectToDB();

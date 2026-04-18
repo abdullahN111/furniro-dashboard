@@ -47,9 +47,11 @@ const Users = () => {
       (u) =>
         u._id.toLowerCase().includes(pageSearchQuery.toLowerCase()) ||
         u.username.toLowerCase().includes(pageSearchQuery.toLowerCase()) ||
-        u.email.toLowerCase().includes(pageSearchQuery.toLowerCase())
+        u.email.toLowerCase().includes(pageSearchQuery.toLowerCase()),
     );
   }, [pageSearchQuery, users]);
+
+  const adminsCount = users.filter((u) => u.isAdmin).length;
 
   return (
     <div className="bg-[--bgSoft] w-full p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
@@ -85,10 +87,7 @@ const Users = () => {
           </thead>
           <tbody>
             {filteredUsers.map((user, index) => (
-              <tr
-                key={user._id}
-                className="bg-[--bgSoft] text-white"
-              >
+              <tr key={user._id} className="bg-[--bgSoft] text-white">
                 <td className="p-[10px] text-left">{index + 1}</td>
                 <td className="p-[10px] text-left">
                   <Image
@@ -110,6 +109,8 @@ const Users = () => {
                   <UserActions
                     viewLink={`/dashboard/users/${user._id}`}
                     userId={user._id}
+                    isAdmin={user.isAdmin}
+                    adminsCount={adminsCount}
                   />
                 </td>
               </tr>
@@ -153,6 +154,8 @@ const Users = () => {
               <UserActions
                 viewLink={`/dashboard/users/${user._id}`}
                 userId={user._id}
+                isAdmin={user.isAdmin}
+                adminsCount={adminsCount}
               />
             </div>
           </div>
