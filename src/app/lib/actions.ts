@@ -81,8 +81,8 @@ export const updateUser = async (formData: FormData) => {
       phone: formEntries.phone,
       address: formEntries.address,
       img: imgData,
-      isAdmin: formEntries.isAdmin === "Yes",
-      isActive: formEntries.isActive === "Yes",
+      isAdmin: formEntries.isAdmin === "true",
+      isActive: formEntries.isActive === "true",
     };
 
     Object.keys(updateFields).forEach(

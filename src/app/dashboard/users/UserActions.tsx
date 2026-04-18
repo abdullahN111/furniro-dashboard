@@ -33,7 +33,7 @@ const UserActions = ({
     }, []);
 
     const admins = users.filter((u) => u === "admin");
-    const editors = users.filter((u) => u === "editor");
+    const editors = users.filter((u) => u !== "admin");
 
   return (
     <div className="flex items-center gap-2">
