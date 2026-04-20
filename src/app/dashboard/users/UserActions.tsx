@@ -80,10 +80,6 @@ const UserActions = ({
                 className="bg-red-600 text-white p-2 rounded-md text-sm w-full"
                 onClick={() => {
                   setIsDeleting(true);
-                  setTimeout(() => {
-                    setIsDeleting(false);
-                    setIsConfirming(false);
-                  }, 2000);
                 }}
               >
                 {isDeleting ? "Deleting..." : "Confirm Delete"}

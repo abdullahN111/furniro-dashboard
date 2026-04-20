@@ -19,6 +19,7 @@ import {
 } from "react-icons/md";
 import MenuLink from "./menu-link/MenuLink";
 import Image from "next/image";
+import Link from "next/link";
 
 const menuItems = [
   {
@@ -135,7 +136,7 @@ const Sidebar = () => {
           </button>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+        <Link href={`/dashboard/users/${session?.user?.id || ""}`} className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
           <Image
             src="/images/noavatar.png"
             alt="user image"
@@ -153,7 +154,8 @@ const Sidebar = () => {
                 : "Editor"}
             </span>
           </div>
-        </div>
+        </Link>
+        
 
         <ul className="space-y-3 sm:space-y-4">
           {menuItems.map((category) => (

@@ -7,7 +7,7 @@ import bcryptjs from "bcryptjs";
 
 export const addUser = async (formData: FormData) => {
   const formEntries = Object.fromEntries(formData);
-  connectToDB();
+  await connectToDB();
 
   try {
     const existingUser = await User.findOne({
@@ -60,7 +60,7 @@ export const updateUser = async (formData: FormData) => {
     throw new Error("You can only update your own profile");
   }
 
-  connectToDB();
+  await connectToDB();
 
   try {
     const imageFile = formData.get("image");

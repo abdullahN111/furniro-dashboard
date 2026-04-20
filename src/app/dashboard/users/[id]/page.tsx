@@ -109,6 +109,11 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
     }));
   };
 
+  
+  if (!user) {
+    return <div className="p-4 text-red-500">User not found</div>;
+  }
+  
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -116,11 +121,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
       </div>
     );
   }
-
-  if (!user) {
-    return <div className="p-4 text-red-500">User not found</div>;
-  }
-
+  
   return (
     <>
       <div className="flex flex-col lg:flex-row gap-8 mt-5" key={id}>
