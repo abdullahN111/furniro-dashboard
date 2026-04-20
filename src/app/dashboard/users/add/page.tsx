@@ -7,10 +7,12 @@ const AddUserPage = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+    setSuccess("")
     setError("");
 
     try {
@@ -30,6 +32,7 @@ const AddUserPage = () => {
 
       e.currentTarget.reset();
       setImagePreview(null);
+      setSuccess("User added successfully.")
     } catch (err) {
       console.error(err);
       setError("Something went wrong");
@@ -160,9 +163,13 @@ const AddUserPage = () => {
               "Add User"
             )}
           </button>
-          {error && (
+          {error ? (
             <div className="mt-3 bg-red-500/10 text-red-400 text-sm px-3 py-2 rounded-md text-center">
               {error}
+            </div>
+          ): (
+             <div className="mt-3 bg-green-500/10 text-green-400 text-sm px-3 py-2 rounded-md text-center">
+              {success}
             </div>
           )}
         </form>
