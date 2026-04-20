@@ -168,7 +168,7 @@ const AddUserPage = () => {
               {error}
             </div>
           )}
-          {(
+          {success && (
              <div className="mt-3 bg-green-500/10 text-green-400 text-sm px-3 py-2 rounded-md text-center">
               {success}
             </div>
