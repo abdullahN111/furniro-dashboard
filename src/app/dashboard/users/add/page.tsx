@@ -11,9 +11,9 @@ const AddUserPage = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    setSuccess("")
     setError("");
+    setSuccess("");
+    setLoading(true);
 
     try {
       const formData = new FormData(e.currentTarget);
@@ -30,12 +30,14 @@ const AddUserPage = () => {
         return;
       }
 
-      setSuccess("User added successfully.")
+      setSuccess("User added successfully.");
+      setError("");
       e.currentTarget.reset();
       setImagePreview(null);
     } catch (err) {
       console.error(err);
       setError("Something went wrong");
+      setSuccess("");
     } finally {
       setLoading(false);
     }
@@ -55,11 +57,16 @@ const AddUserPage = () => {
   return (
     <div className="flex flex-col lg:flex-row gap-8 mt-5">
       <div className="flex-1 bg-[--bgSoft] p-3 sm:p-5 rounded-[10px] font-bold text-[--textSoft] h-max flex flex-col items-center justify-center">
-          <div className="w-[180px] h-[180px] relative rounded-full overflow-hidden mb-4 border-4 border-[#2e374a] shadow-lg">
+        <div className="w-[180px] h-[180px] relative rounded-full overflow-hidden mb-4 border-4 border-[#2e374a] shadow-lg">
           {imagePreview ? (
             <Image src={imagePreview} alt="Preview" fill />
           ) : (
-            <Image src="/images/noavatar.png" alt="No Avatar" fill className="object-cover" />
+            <Image
+              src="/images/noavatar.png"
+              alt="No Avatar"
+              fill
+              className="object-cover"
+            />
           )}
         </div>
         Profile Image
@@ -163,16 +170,15 @@ const AddUserPage = () => {
               "Add User"
             )}
           </button>
-          {error && (
+          {error ? (
             <div className="mt-3 bg-red-500/10 text-red-400 text-sm px-3 py-2 rounded-md text-center">
               {error}
             </div>
-          )}
-          {success && (
-             <div className="mt-3 bg-green-500/10 text-green-400 text-sm px-3 py-2 rounded-md text-center">
+          ) : success ? (
+            <div className="mt-3 bg-green-500/10 text-green-400 text-sm px-3 py-2 rounded-md text-center">
               {success}
             </div>
-          )}
+          ) : null}
         </form>
       </div>
     </div>
