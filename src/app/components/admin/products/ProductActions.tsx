@@ -25,6 +25,7 @@ const ProductActions = ({ action, onDelete, link }: ProductActionsProps) => {
       });
 
       const data = await response.json(); 
+      console.log("DELETE RESPONSE:", data);
       if (!response.ok)
         throw new Error(data.message || "Failed to delete product");
 
