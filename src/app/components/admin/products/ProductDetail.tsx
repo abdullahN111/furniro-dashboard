@@ -68,20 +68,21 @@ const ProductDetail = () => {
 
   const product = products.find((item) => item.slug?.current === id);
 
-  if (!product) {
+   if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+    if (!product) {
     return (
       <div className="text-center my-16">
         <p>Product not found. Please check the URL.</p>
         <a href="/" className="text-blue-500 underline">
           Go back to products
         </a>
-      </div>
-    );
-  }
-   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
     );
   }
