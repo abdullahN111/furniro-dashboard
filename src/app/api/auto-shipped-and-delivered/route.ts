@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
 import { serverClient } from "@/sanity/lib/serverClient";
 
-export async function GET() {
-  const now = new Date();
+export async function GET(request: Request) {
+  const authHeader = request.headers.get("authorization");
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
+  const now = new Date();
   const orders = await serverClient.fetch(`*[_type == "order"]`);
 
   for (const order of orders) {
@@ -13,25 +17,16 @@ export async function GET() {
     const hoursPassed =
       (now.getTime() - dispatchedTime.getTime()) / (1000 * 60 * 60);
 
-    //Shipped → Delivered
+    // Shipped → Delivered (24h)
     if (hoursPassed >= 24 && order.status === "Shipped") {
       await serverClient.patch(order._id).set({ status: "Delivered" }).commit();
       continue;
     }
 
-    //Dispatched → Shipped (6h)
+    // Dispatched → Shipped (6h)
     if (hoursPassed >= 6 && order.status === "Dispatched") {
       await serverClient.patch(order._id).set({ status: "Shipped" }).commit();
     }
-    // console.log("Running auto update...");
-    // console.log(
-    //   "Order:",
-    //   order._id,
-    //   "Hours:",
-    //   hoursPassed,
-    //   "Status:",
-    //   order.status,
-    // );
   }
 
   return NextResponse.json({ success: true });

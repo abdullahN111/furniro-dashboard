@@ -1,0 +1,16 @@
+name: Auto Update Order Status
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # runs every hour
+  workflow_dispatch:       # allows manual trigger from GitHub UI
+
+jobs:
+  call-api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call auto-update API
+        run: |
+          curl -f -X GET \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            https://dashboardfr.vercel.app/api/auto-shipped-and-delivered
