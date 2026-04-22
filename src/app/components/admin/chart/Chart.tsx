@@ -88,14 +88,13 @@ const Chart = () => {
     return `${startMonth} ${startDate} - ${endMonth} ${endDate}`;
   };
 
-  if (loading) {
+   if (loading) {
     return (
-      <div className="h-[400px] w-full max-w-full bg-[--bgSoft] p-[20px] rounded-[10px] flex items-center justify-center overflow-hidden">
-        <div className="text-[--textSoft]">Loading chart data...</div>
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
     );
   }
-
   return (
     <div className="h-[400px] container bg-[--bgSoft] p-4 lg:p-2 xl:p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
       <h2 className="text-[--textSoft] text-lg font-bold capitalize py-2 mb-4">

@@ -199,7 +199,7 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
                       : row.original.status === "Shipped"
                         ? "bg-indigo-600 opacity-50 cursor-not-allowed"
                         : row.original.status === "Delivered"
-                          ? "bg-green-600 opacity-50 cursor-not-allowed"
+                          ? "bg-orange-600 opacity-50 cursor-not-allowed"
                           : "bg-gray-600"
               }`}
               disabled={
@@ -362,7 +362,7 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
       : order.status === "Shipped"
       ? "bg-indigo-600 opacity-50 cursor-not-allowed"
       : order.status === "Delivered"
-      ? "bg-green-600 opacity-50 cursor-not-allowed"
+      ? "bg-orange-600 opacity-50 cursor-not-allowed"
       : "bg-gray-600"
   }`}
   disabled={

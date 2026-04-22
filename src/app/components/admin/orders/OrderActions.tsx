@@ -42,7 +42,7 @@ export default function OrderActions({ orderId, status }: { orderId: string; sta
       : currentStatus === "Shipped"
       ? "bg-indigo-600 opacity-50 cursor-not-allowed"
       : currentStatus === "Delivered"
-      ? "bg-green-600 opacity-50 cursor-not-allowed"
+      ? "bg-orange-600 opacity-50 cursor-not-allowed"
       : "bg-gray-600"
   }`}
   disabled={

@@ -40,14 +40,16 @@ const OrderDetailPage = async ({ params }: { params: { id: string } }) => {
               <span
                 className={`px-3 py-1 rounded-md text-sm ${
                   order.status === "Pending"
-                    ? "bg-gray-700 text-gray-200"
+                    ? "bg-yellow-600 hover:bg-yellow-700"
                     : order.status === "Processing"
-                      ? "bg-yellow-900 text-yellow-200"
+                      ? "bg-blue-600 hover:bg-blue-700"
                       : order.status === "Dispatched"
-                        ? "bg-blue-900 text-blue-200"
+                        ? "bg-purple-600 opacity-50 cursor-not-allowed"
                         : order.status === "Shipped"
-                          ? "bg-purple-900 text-purple-200"
-                          : "bg-green-900 text-green-200"
+                          ? "bg-indigo-600 opacity-50 cursor-not-allowed"
+                          : order.status === "Delivered"
+                            ? "bg-orange-600 opacity-50 cursor-not-allowed"
+                            : "bg-gray-600"
                 }`}
               >
                 {order.status}
