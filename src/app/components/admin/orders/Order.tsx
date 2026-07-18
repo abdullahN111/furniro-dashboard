@@ -43,14 +43,17 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
       });
 
       if (!res.ok) throw new Error("Failed to process order");
-
-      const updatedOrder: Order = await res.json();
-
-      setOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order._id === orderId ? updatedOrder : order,
-        ),
-      );
+setOrders(prev =>
+  prev.map(order =>
+    order._id === orderId
+      ? {
+          ...order,
+          status: "Processing",
+        }
+      : order
+  )
+);
+      
     } catch (error) {
       console.error("Failed to process order:", error);
     }
@@ -67,13 +70,17 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
 
       if (!res.ok) throw new Error("Failed to dispatch order");
 
-      const updatedOrder: Order = await res.json();
-
-      setOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order._id === dispatchOrderId ? updatedOrder : order,
-        ),
-      );
+     setOrders(prev =>
+  prev.map(order =>
+    order._id === dispatchOrderId
+      ? {
+          ...order,
+          status: "Dispatched",
+          dispatchedAt: new Date().toISOString(),
+        }
+      : order
+  )
+);
 
       setDispatchOrderId(null);
     } catch (error) {
@@ -94,19 +101,20 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
     getOrders();
   }, []);
 
-  
-
   const filteredOrders = useMemo(() => {
     if (!pageSearchQuery) return orders;
 
     return orders.filter((o) => {
-      const custName = `${o.user.firstname} ${o.user.lastname}`.toLowerCase();
+      const custName =
+        `${o.user?.firstname ?? ""} ${o.user?.lastname ?? ""}`.toLowerCase();
       const query = pageSearchQuery.toLowerCase();
 
       return (
-        o.orderId.toLowerCase().includes(query) ||
+        (o.orderId ?? "").toLowerCase().includes(query) ||
         custName.includes(query) ||
-        o.items.some((p) => p.title.toLowerCase().includes(query))
+        (o.items ?? []).some((p) =>
+          (p.title ?? "").toLowerCase().includes(query),
+        )
       );
     });
   }, [pageSearchQuery, orders]);
@@ -230,7 +238,7 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
     onPaginationChange: setPagination,
   });
 
-   if (loading) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
@@ -341,48 +349,45 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
                       Details
                     </Link>
 
-
-
-
-                   <button
-  onClick={() => {
-    if (order.status === "Pending") {
-      handleProcess(order._id);
-    } else if (order.status === "Processing") {
-      setDispatchOrderId(order._id);
-    }
-  }}
-  className={`text-white px-2 py-1 rounded-md text-xs sm:text-[13px] ${
-    order.status === "Pending"
-      ? "bg-yellow-600 hover:bg-yellow-700"
-      : order.status === "Processing"
-      ? "bg-blue-600 hover:bg-blue-700"
-      : order.status === "Dispatched"
-      ? "bg-purple-600 opacity-50 cursor-not-allowed"
-      : order.status === "Shipped"
-      ? "bg-indigo-600 opacity-50 cursor-not-allowed"
-      : order.status === "Delivered"
-      ? "bg-orange-600 opacity-50 cursor-not-allowed"
-      : "bg-gray-600"
-  }`}
-  disabled={
-    order.status === "Dispatched" ||
-    order.status === "Shipped" ||
-    order.status === "Delivered"
-  }
->
-  {order.status === "Pending"
-    ? "Process"
-    : order.status === "Processing"
-    ? "Dispatch"
-    : order.status === "Dispatched"
-    ? "Dispatched"
-    : order.status === "Shipped"
-    ? "Shipped"
-    : order.status === "Delivered"
-    ? "Delivered"
-    : "N/A"}
-</button>
+                    <button
+                      onClick={() => {
+                        if (order.status === "Pending") {
+                          handleProcess(order._id);
+                        } else if (order.status === "Processing") {
+                          setDispatchOrderId(order._id);
+                        }
+                      }}
+                      className={`text-white px-2 py-1 rounded-md text-xs sm:text-[13px] ${
+                        order.status === "Pending"
+                          ? "bg-yellow-600 hover:bg-yellow-700"
+                          : order.status === "Processing"
+                            ? "bg-blue-600 hover:bg-blue-700"
+                            : order.status === "Dispatched"
+                              ? "bg-purple-600 opacity-50 cursor-not-allowed"
+                              : order.status === "Shipped"
+                                ? "bg-indigo-600 opacity-50 cursor-not-allowed"
+                                : order.status === "Delivered"
+                                  ? "bg-orange-600 opacity-50 cursor-not-allowed"
+                                  : "bg-gray-600"
+                      }`}
+                      disabled={
+                        order.status === "Dispatched" ||
+                        order.status === "Shipped" ||
+                        order.status === "Delivered"
+                      }
+                    >
+                      {order.status === "Pending"
+                        ? "Process"
+                        : order.status === "Processing"
+                          ? "Dispatch"
+                          : order.status === "Dispatched"
+                            ? "Dispatched"
+                            : order.status === "Shipped"
+                              ? "Shipped"
+                              : order.status === "Delivered"
+                                ? "Delivered"
+                                : "N/A"}
+                    </button>
                   </div>
                 </div>
               ))}
