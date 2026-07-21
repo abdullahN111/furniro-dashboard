@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/auto-shipped-and-delivered",
-      "schedule": "0 * * * *"
+      "schedule": "0 0 * * *"
     }
   ]
 }
