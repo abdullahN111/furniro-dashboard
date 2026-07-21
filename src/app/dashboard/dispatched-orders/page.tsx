@@ -26,7 +26,6 @@ const DispatchPage = () => {
     const loadOrders = async () => {
       setLoading(true);
       try {
-        await fetch("/api/auto-shipped-and-delivered");
         const [dispatched, shipped, delivered] = await Promise.all([
           fetchDispatchedOrders(),
           fetchShippedOrders(),
@@ -53,7 +52,7 @@ const DispatchPage = () => {
       </div>
     );
   }
-     
+
   return (
     <div>
       <div className="py-6">

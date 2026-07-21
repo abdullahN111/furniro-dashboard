@@ -8,7 +8,16 @@ export async function GET(request: Request) {
   }
 
   const now = new Date();
-  const orders = await serverClient.fetch(`*[_type == "order"]`);
+  const orders = await serverClient.fetch(`
+  *[
+    _type == "order" &&
+    (status == "Dispatched" || status == "Shipped")
+  ]{
+    _id,
+    status,
+    dispatchedAt
+  }
+`);
 
   for (const order of orders) {
     if (!order.dispatchedAt) continue;
