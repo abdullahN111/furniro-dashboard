@@ -43,17 +43,16 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
       });
 
       if (!res.ok) throw new Error("Failed to process order");
-setOrders(prev =>
-  prev.map(order =>
-    order._id === orderId
-      ? {
-          ...order,
-          status: "Processing",
-        }
-      : order
-  )
-);
-      
+      setOrders((prev) =>
+        prev.map((order) =>
+          order._id === orderId
+            ? {
+                ...order,
+                status: "Processing",
+              }
+            : order,
+        ),
+      );
     } catch (error) {
       console.error("Failed to process order:", error);
     }
@@ -70,17 +69,17 @@ setOrders(prev =>
 
       if (!res.ok) throw new Error("Failed to dispatch order");
 
-     setOrders(prev =>
-  prev.map(order =>
-    order._id === dispatchOrderId
-      ? {
-          ...order,
-          status: "Dispatched",
-          dispatchedAt: new Date().toISOString(),
-        }
-      : order
-  )
-);
+      setOrders((prev) =>
+        prev.map((order) =>
+          order._id === dispatchOrderId
+            ? {
+                ...order,
+                status: "Dispatched",
+                dispatchedAt: new Date().toISOString(),
+              }
+            : order,
+        ),
+      );
 
       setDispatchOrderId(null);
     } catch (error) {
@@ -177,6 +176,12 @@ setOrders(prev =>
           );
           return `$${subtotal.toFixed(2)}`;
         },
+      },
+      {
+        accessorKey: "paymentMethod",
+        header: "Payment Method",
+        cell: ({ row }: { row: { original: Order } }) =>
+          `${row.original.paymentMethod}`,
       },
       {
         accessorKey: "action",
@@ -339,6 +344,9 @@ setOrders(prev =>
                         0,
                       )
                       .toFixed(2)}
+                  </p>
+                  <p className="text-sm text-white font-bold mt-2">
+                    Payment Method: {order.paymentMethod}
                   </p>
 
                   <div className="flex gap-2 mt-3">
