@@ -11,10 +11,16 @@ export async function GET() {
       limit: 20,
     });
 
-    
     return NextResponse.json(payments.data);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error(error);
+
+    return NextResponse.json(
+      {
+        error: "Failed to fetch transactions",
+      },
+      { status: 500 },
+    );
   }
 }

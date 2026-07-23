@@ -27,22 +27,30 @@ interface TransactionsProps {
 
 const Transactions = ({ showAll = false, heading }: TransactionsProps) => {
   const [payments, setPayments] = useState<any[]>([]);
-    const [loading, setLoading] = useState(false);
-  
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchPayments = async () => {
-          setLoading(true);
+      try {
+        setLoading(true);
 
-      const res = await fetch("/api/transactions");
-      const data = await res.json();
-      setPayments(data);
+        const res = await fetch("/api/transactions");
+
+        if (!res.ok) {
+          throw new Error("Failed");
+        }
+        const data = await res.json();
+
+        setPayments(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     };
+
     fetchPayments();
-    
   }, []);
-  // console.log(payments);
-  
 
   const { pageSearchQuery } = useSearch();
 
@@ -51,13 +59,13 @@ const Transactions = ({ showAll = false, heading }: TransactionsProps) => {
     return payments.filter(
       (p) =>
         p.id.toLowerCase().includes(pageSearchQuery.toLowerCase()) ||
-        p.status.toLowerCase().includes(pageSearchQuery.toLowerCase())
+        p.status.toLowerCase().includes(pageSearchQuery.toLowerCase()),
     );
   }, [pageSearchQuery, payments]);
 
   const displayedTransactions = useMemo(
     () => (showAll ? filteredTransactions : filteredTransactions.slice(0, 5)),
-    [filteredTransactions, showAll]
+    [filteredTransactions, showAll],
   );
 
   const columns = [
@@ -127,7 +135,7 @@ const Transactions = ({ showAll = false, heading }: TransactionsProps) => {
     onPaginationChange: setPagination,
   });
 
-   if (loading) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
@@ -153,7 +161,7 @@ const Transactions = ({ showAll = false, heading }: TransactionsProps) => {
                   <TableHead key={header.id}>
                     {flexRender(
                       header.column.columnDef.header,
-                      header.getContext()
+                      header.getContext(),
                     )}
                   </TableHead>
                 ))}
