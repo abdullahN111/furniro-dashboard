@@ -44,6 +44,7 @@ export const addUser = async (formData: FormData) => {
     });
 
     await newUser.save();
+    revalidatePath("/dashboard/users");
   } catch (error) {
     console.error("❌ Error adding user:", error);
     throw error;

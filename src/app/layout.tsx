@@ -33,7 +33,7 @@ export default function RootLayout({
               toastOptions={{
                 classNames: {
                   toast:
-                    "bg-[#2e374a] text-[var(--text)] border border-[#2e374a] shadow-lg",
+                    "bg-[--bgSoft] text-[var(--text)] border border-[#2e374a] shadow-lg",
                 },
               }}
             />

@@ -12,6 +12,8 @@ const AddUserPage = () => {
     e.preventDefault();
     setLoading(true);
 
+    const form = e.currentTarget;
+
     try {
       const formData = new FormData(e.currentTarget);
 
@@ -28,7 +30,7 @@ const AddUserPage = () => {
       }
 
       toast.success("User added successfully.");
-      e.currentTarget.reset();
+      form.reset();
       setImagePreview(null);
     } catch (err) {
       console.error(err);
