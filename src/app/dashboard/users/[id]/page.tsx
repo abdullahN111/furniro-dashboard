@@ -5,7 +5,7 @@ import { updateUser } from "@/app/lib/actions";
 import { fetchUser } from "@/app/lib/data";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -28,6 +28,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const isSubmittingRef = useRef(false); 
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [user, setUser] = useState<any>(null);
@@ -35,6 +36,8 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
 
   const handlePasswordUpdate = async () => {
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
     setErrorMessage("");
 
     if (!currentPassword || !newPassword || !confirmPassword) {
@@ -83,6 +86,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
       toast.error("Something went wrong");
     } finally {
       setIsUpdatingPassword(false);
+      isSubmittingRef.current = false; 
     }
   };
 

@@ -101,9 +101,11 @@ export const updateUser = async (formData: FormData) => {
 export const deleteUser = async (formData: FormData) => {
   const { id, sessionUserId } = Object.fromEntries(formData);
 
-  if (!id) throw new Error("User ID is missing!");
+  if (!id) {
+    return { success: false, error: "User ID is missing!" };
+  }
   if (sessionUserId === id) {
-    throw new Error("You cannot delete your own account");
+    return { success: false, error: "You cannot delete your own account" };
   }
 
   await connectToDB();
@@ -112,22 +114,22 @@ export const deleteUser = async (formData: FormData) => {
     const userToDelete = await User.findById(id);
 
     if (!userToDelete) {
-      throw new Error("User not found");
+      return { success: false, error: "User not found" };
     }
 
     if (userToDelete.isAdmin) {
       const adminCount = await User.countDocuments({ isAdmin: true });
-
       if (adminCount <= 1) {
-        throw new Error("Cannot delete the last admin");
+        return { success: false, error: "Cannot delete the last admin" };
       }
     }
 
     await User.findByIdAndDelete(id);
-
     revalidatePath("/dashboard/users");
+
+    return { success: true };
   } catch (err) {
     console.error("Error deleting user:", err);
-    throw err;
+    return { success: false, error: "Something went wrong while deleting the user" };
   }
 };

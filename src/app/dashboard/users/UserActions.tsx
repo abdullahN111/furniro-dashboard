@@ -29,23 +29,30 @@ const UserActions = ({
   const canDelete = isCurrentUserAdmin && (!isAdmin || adminsCount > 1);
 
   const handleDelete = async () => {
-    setIsDeleting(true);
-    try {
-      const formData = new FormData();
-      formData.append("id", userId);
-      formData.append("sessionUserId", (session?.user as any)?.id ?? "");
+  setIsDeleting(true);
+  try {
+    const formData = new FormData();
+    formData.append("id", userId);
+    formData.append("sessionUserId", (session?.user as any)?.id ?? "");
 
-      await deleteUser(formData);
-
-      toast.success("User deleted successfully.");
-      onUserDeleted();
-      setIsConfirming(false);
-    } catch (err: any) {
-      toast.error(err.message || "Failed to delete user");
-    } finally {
-      setIsDeleting(false);
+    const result = await deleteUser(formData);
+    if (!result.success) {
+      console.error(result.error || "Failed to delete user"); 
+      toast.error("Failed to delete user");
+      return;
     }
-  };
+
+    toast.success("User deleted successfully.");
+    onUserDeleted();
+    setIsConfirming(false);
+  } catch (err: any) {
+   
+    console.error("Error deleting user:", err);
+    toast.error("Failed to delete user");
+  } finally {
+    setIsDeleting(false);
+  }
+};
 
   return (
     <div className="flex items-center gap-2">
