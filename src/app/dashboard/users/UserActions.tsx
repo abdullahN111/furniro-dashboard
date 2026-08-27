@@ -22,7 +22,6 @@ const UserActions = ({
   const [isConfirming, setIsConfirming] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [users, setUsers] = useState([]);
   const { data: session } = useSession();
 
   const isCurrentUserAdmin = (session?.user as any)?.role === "admin";

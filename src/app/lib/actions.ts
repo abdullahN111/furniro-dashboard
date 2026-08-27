@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { User } from "./models";
 import { connectToDB } from "./utils";
 import bcryptjs from "bcryptjs";
+import { toast } from "sonner";
 
 export const addUser = async (formData: FormData) => {
   const formEntries = Object.fromEntries(formData);
@@ -90,8 +91,9 @@ export const updateUser = async (formData: FormData) => {
     );
 
     await User.findByIdAndUpdate(formEntries.id, updateFields, { new: true });
+    toast.success("User updated successfully.");
     revalidatePath(`/dashboard/users/${formEntries.id}`);
-    revalidatePath("/dashboard/users");
+    // revalidatePath("/dashboard/users");
   } catch (error) {
     console.error("Error updating user:", error);
     throw new Error(error instanceof Error ? error.message : String(error));
@@ -124,7 +126,7 @@ export const deleteUser = async (formData: FormData) => {
     }
 
     await User.findByIdAndDelete(id);
-
+    toast.success("User deleted successfully.");
     revalidatePath("/dashboard/users");
   } catch (err) {
     console.error("Error deleting user:", err);
