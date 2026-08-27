@@ -17,11 +17,11 @@ const LoginPage = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    console.log("🔍 Session status:", status);
-    console.log("🔍 Session data:", session);
+    // console.log("🔍 Session status:", status);
+    // console.log("🔍 Session data:", session);
 
     if (status === "authenticated" && session) {
-      console.log("✅ User is authenticated, redirecting to dashboard");
+      // console.log("✅ User is authenticated, redirecting to dashboard");
       router.push("/dashboard");
     }
   }, [session, status, router]);
@@ -44,7 +44,7 @@ const LoginPage = () => {
         setError(res?.error || "Invalid email or password");
       }
 
-      console.log("🧪 signIn result:", res);
+      // console.log("🧪 signIn result:", res);
     } catch (error) {
       console.error("❌ signIn error:", error);
       setError("Something went wrong. Try again.");
