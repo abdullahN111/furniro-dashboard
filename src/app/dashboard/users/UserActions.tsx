@@ -33,7 +33,7 @@ const UserActions = ({
     <div className="flex items-center gap-2">
       <Link href={viewLink}>
         <button className="bg-green-700 text-white px-2 py-1 rounded text-sm">
-          View
+          Edit
         </button>
       </Link>
       {canDelete ? (

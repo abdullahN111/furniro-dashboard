@@ -2,17 +2,14 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { toast } from "sonner";
 
 const AddUserPage = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
     setLoading(true);
 
     try {
@@ -26,18 +23,16 @@ const AddUserPage = () => {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Failed to add user");
+        toast.error(data.error || "Failed to add user");
         return;
       }
 
-      setSuccess("User added successfully.");
-      setError("");
+      toast.success("User added successfully.");
       e.currentTarget.reset();
       setImagePreview(null);
     } catch (err) {
       console.error(err);
-      setError("Something went wrong");
-      setSuccess("");
+      toast.error("Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -170,15 +165,6 @@ const AddUserPage = () => {
               "Add User"
             )}
           </button>
-          {error ? (
-            <div className="mt-3 bg-red-500/10 text-red-400 text-sm px-3 py-2 rounded-md text-center">
-              {error}
-            </div>
-          ) : success ? (
-            <div className="mt-3 bg-green-500/10 text-green-400 text-sm px-3 py-2 rounded-md text-center">
-              {success}
-            </div>
-          ) : null}
         </form>
       </div>
     </div>
