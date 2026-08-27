@@ -22,6 +22,7 @@ import { fetchOrders, Order } from "./OrderData";
 import PaginationControls from "@/app/components/admin/pagination/PaginationControls";
 import Link from "next/link";
 import { DispatchConfirmation } from "./DispatchConfirmation";
+import { toast } from "sonner";
 
 interface OrdersProps {
   showAll?: boolean;
@@ -53,8 +54,10 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
             : order,
         ),
       );
+      toast.success("Order processed successfully.");
     } catch (error) {
       console.error("Failed to process order:", error);
+      toast.error("Failed to process order.");
     }
   };
 
@@ -82,8 +85,10 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
       );
 
       setDispatchOrderId(null);
+      toast.success("Order dispatched successfully.");
     } catch (error) {
       console.error("Failed to dispatch order:", error);
+      toast.error("Failed to dispatch order.");
     } finally {
       setIsDispatching(false);
     }
@@ -92,7 +97,6 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
   useEffect(() => {
     const getOrders = async () => {
       setLoading(true);
-      await fetch("/api/auto-shipped-and-delivered");
       const fetchedOrders = await fetchOrders();
       setOrders(fetchedOrders);
       setLoading(false);

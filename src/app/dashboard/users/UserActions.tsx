@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { deleteUser } from "@/app/lib/actions";
 import { useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 const UserActions = ({
   viewLink,
@@ -21,12 +23,29 @@ const UserActions = ({
 }) => {
   const [isConfirming, setIsConfirming] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: session } = useSession();
 
   const isCurrentUserAdmin = (session?.user as any)?.role === "admin";
-
   const canDelete = isCurrentUserAdmin && (!isAdmin || adminsCount > 1);
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      const formData = new FormData();
+      formData.append("id", userId);
+      formData.append("sessionUserId", (session?.user as any)?.id ?? "");
+
+      await deleteUser(formData);
+
+      toast.success("User deleted successfully.");
+      onUserDeleted();
+      setIsConfirming(false);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete user");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div className="flex items-center gap-2">
@@ -35,6 +54,7 @@ const UserActions = ({
           Edit
         </button>
       </Link>
+
       {canDelete ? (
         <button
           className="bg-red-700 text-white px-2 py-1 rounded-md text-[13px] shadow"
@@ -58,32 +78,16 @@ const UserActions = ({
       >
         <div className="bg-white p-4 rounded-lg w-[250px] relative shadow-lg">
           <p className="mt-5 text-sm font-medium text-gray-700 text-center">
-            Are you sure you want to delete the user?
+            Are you sure you want to delete this user?
           </p>
           <div className="flex flex-col gap-2 mt-4">
-            <form
-              action={async (formData) => {
-                await deleteUser(formData);
-                await onUserDeleted();
-                setIsDeleting(false);
-                setIsConfirming(false);
-              }}
+            <button
+              className="bg-red-600 text-white p-2 rounded-md text-sm w-full"
+              onClick={handleDelete}
+              disabled={isDeleting}
             >
-              <input type="hidden" name="id" value={userId} />
-              <input
-                type="hidden"
-                name="sessionUserId"
-                value={(session?.user as any)?.id}
-              />
-              <button
-                className="bg-red-600 text-white p-2 rounded-md text-sm w-full"
-                onClick={() => {
-                  setIsDeleting(true);
-                }}
-              >
-                {isDeleting ? "Deleting..." : "Confirm Delete"}
-              </button>
-            </form>
+              {isDeleting ? "Deleting..." : "Confirm Delete"}
+            </button>
           </div>
 
           <button

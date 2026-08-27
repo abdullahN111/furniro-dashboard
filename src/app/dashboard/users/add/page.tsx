@@ -3,10 +3,12 @@
 import { useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const AddUserPage = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,6 +34,7 @@ const AddUserPage = () => {
       toast.success("User added successfully.");
       form.reset();
       setImagePreview(null);
+      router.push("/dashboard/users");
     } catch (err) {
       console.error(err);
       toast.error("Something went wrong");

@@ -12,7 +12,7 @@ import {
   MdAnalytics,
   // MdPeople,
   // MdOutlineSettings,
-  MdHelpCenter,
+  // MdHelpCenter,
   MdLogout,
   MdMenu,
   MdClose,
@@ -65,7 +65,7 @@ const menuItems = [
       //   path: "/dashboard/settings",
       //   icon: <MdOutlineSettings />,
       // },
-      { title: "Help", path: "/dashboard/help", icon: <MdHelpCenter /> },
+      // { title: "Help", path: "/dashboard/help", icon: <MdHelpCenter /> },
     ],
   },
 ];

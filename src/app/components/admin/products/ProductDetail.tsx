@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { fetchProducts, Product } from "./ProductData";
 import ProductActions from "./ProductActions";
+import { toast } from "sonner";
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -44,12 +45,15 @@ const ProductDetail = () => {
         );
         setIsStockModalOpen(false);
         setStockAdjustment(0);
+        toast.success("Stock updated successfully.");
       } else {
         const errorData = await response.json();
         console.error("Failed to update stock:", errorData.message);
+        toast.error("Failed to update stock");
       }
     } catch (error) {
       console.error("Network error:", error);
+      toast.error("Failed to update stock");
     } finally {
       setLoading(false);
     }

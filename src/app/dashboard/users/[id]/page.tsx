@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const SingleUserPage = ({ params }: { params: { id: string } }) => {
   const { data: session } = useSession();
@@ -24,7 +26,8 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [user, setUser] = useState<any>(null);
@@ -33,8 +36,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
 
   const handlePasswordUpdate = async () => {
     setErrorMessage("");
-    setSuccessMessage("");
-    // validation
+
     if (!currentPassword || !newPassword || !confirmPassword) {
       setErrorMessage("All fields are required");
       return;
@@ -70,7 +72,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
         return;
       }
 
-      setSuccessMessage("Password updated successfully");
+      toast.success("Password updated successfully");
 
       setCurrentPassword("");
       setNewPassword("");
@@ -78,7 +80,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
       setIsStockModalOpen(false);
     } catch (err) {
       console.error(err);
-      alert("Something went wrong");
+      toast.error("Something went wrong");
     } finally {
       setIsUpdatingPassword(false);
     }
@@ -109,18 +111,35 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
     }));
   };
 
-    if (loading) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
     );
   }
-  
+
   if (!user) {
     return <div className="p-4 text-red-500">User not found</div>;
   }
-  
+
+  const handleUpdateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const form = e.currentTarget;
+
+    try {
+      const formData = new FormData(form);
+      await updateUser(formData);
+      toast.success("User updated successfully.");
+      router.push("/dashboard/users");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update user");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <>
@@ -138,7 +157,7 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
           <p className="text-xs text-[--textSoft] mt-1">User Profile</p>
         </div>
         <div className="flex-[3] bg-[--bgSoft] p-5 rounded-[10px] shadow-md border border-[#2e374a]">
-          <form action={updateUser} className="flex flex-col">
+          <form onSubmit={handleUpdateSubmit} className="flex flex-col">
             <input type="hidden" name="id" value={user._id} />
             <input
               type="hidden"
@@ -238,12 +257,6 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
                         </div>
                       )}
 
-                      {successMessage && (
-                        <div className="bg-green-500/10 text-green-500 px-1 py-2 rounded-md text-[13px]">
-                          {successMessage}
-                        </div>
-                      )}
-
                       <Button
                         variant="outline"
                         onClick={() => setIsStockModalOpen(false)}
@@ -339,10 +352,11 @@ const SingleUserPage = ({ params }: { params: { id: string } }) => {
 
             {(session?.user as any)?.id === user._id && (
               <button
-                className="w-full px-5 py-5 bg-teal-500 text-[var(--text)] border-none rounded-md cursor-pointer mt-5"
+                className="w-full px-5 py-5 bg-teal-500 text-[var(--text)] border-none rounded-md cursor-pointer mt-5 disabled:opacity-50"
                 type="submit"
+                disabled={isSubmitting} // ✅ new
               >
-                Update
+                {isSubmitting ? "Updating..." : "Update"} {/* ✅ new */}
               </button>
             )}
           </form>

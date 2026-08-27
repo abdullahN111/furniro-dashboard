@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
 // import { client } from "@/sanity/lib/client";
 
 interface ProductActionsProps {
@@ -25,16 +26,17 @@ const ProductActions = ({ action, onDelete, link }: ProductActionsProps) => {
       });
 
       const data = await response.json(); 
-      console.log("DELETE RESPONSE:", data);
+      // console.log("DELETE RESPONSE:", data);
       if (!response.ok)
         throw new Error(data.message || "Failed to delete product");
 
       onDelete(action);
       setIsConfirming(false);
+      toast.success("Product deleted successfully.");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Delete error:", error);
-      alert(error.message || "Failed to delete product.");
+      toast.error(error.message || "Failed to delete product.");
     } finally {
       setIsDeleting(false);
     }

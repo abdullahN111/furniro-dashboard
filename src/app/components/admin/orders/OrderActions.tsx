@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function OrderActions({ orderId, status }: { orderId: string; status: string }) {
   const [currentStatus, setCurrentStatus] = useState(status);
@@ -11,6 +12,7 @@ export default function OrderActions({ orderId, status }: { orderId: string; sta
     });
     const updated = await res.json();
     setCurrentStatus(updated.status);
+    toast.success("Order processed successfully.");
   };
 
   const handleDispatch = async () => {
@@ -19,6 +21,7 @@ export default function OrderActions({ orderId, status }: { orderId: string; sta
     });
     const updated = await res.json();
     setCurrentStatus(updated.status);
+    toast.success("Order dispatched successfully.");
   };
 
   return (
