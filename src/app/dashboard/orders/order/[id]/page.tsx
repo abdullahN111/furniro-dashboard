@@ -4,6 +4,7 @@ import { fetchOrderById } from "@/app/components/admin/orders/OrderData";
 import { formatDate } from "@/app/lib/formatDate";
 import Link from "next/link";
 import OrderActions from "@/app/components/admin/orders/OrderActions";
+import { PrintInvoiceButton } from "@/app/components/admin/orders/PrintInvoiceButton";
 
 const OrderDetailPage = async ({ params }: { params: { id: string } }) => {
   const order = await fetchOrderById(params.id);
@@ -191,9 +192,7 @@ const OrderDetailPage = async ({ params }: { params: { id: string } }) => {
         </div>
 
         <div className="mt-8 flex flex-wrap gap-4 justify-end">
-          <button className="bg-blue-700 hover:bg-blue-800 text-white px-5 py-2 rounded-md">
-            Print Invoice
-          </button>
+          <PrintInvoiceButton order={order} />
           <OrderActions orderId={order._id} status={order.status} />
         </div>
       </div>
