@@ -71,7 +71,7 @@ export async function fetchOrderById(id: string): Promise<Order | null> {
     createdAt
   }`;
 
-  const order: Order = await serverClient.fetch(query, { id });
+  const order: Order = await serverClient.fetch(query, { id }, { cache: "no-store" });
   return order || null;
 }
 
