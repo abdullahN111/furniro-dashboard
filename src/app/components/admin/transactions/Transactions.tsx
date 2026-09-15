@@ -34,7 +34,9 @@ const Transactions = ({ showAll = false, heading }: TransactionsProps) => {
       try {
         setLoading(true);
 
-        const res = await fetch("/api/transactions");
+        const res = await fetch("/api/transactions", {
+  cache: "no-store", 
+});
 
         if (!res.ok) {
           throw new Error("Failed");
