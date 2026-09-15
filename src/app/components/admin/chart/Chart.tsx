@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   ResponsiveContainer,
   Legend,
@@ -10,152 +10,234 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  CartesianGrid,
 } from "recharts";
 import { fetchOrders, Order } from "@/app/components/admin/orders/OrderData";
+import DailyInsightsTable from "./DailyInsightsTable";
+
+const WINDOW_DAYS = 30;
+
+interface DayData {
+  dateKey: string;
+  label: string; 
+  fullDate: string;
+  orders: number;
+  revenue: number;
+}
 
 const Chart = () => {
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [allOrders, setAllOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [periodOffset, setPeriodOffset] = useState(0); // 0 = most recent 30 days
 
   useEffect(() => {
-    const loadChartData = async () => {
+    const loadOrders = async () => {
       try {
         const orders = await fetchOrders();
-        const weeklyData = processWeeklyData(orders);
-        setChartData(weeklyData);
+        setAllOrders(orders);
       } catch (error) {
         console.error("Failed to load chart data:", error);
       } finally {
         setLoading(false);
       }
     };
-
-    loadChartData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    loadOrders();
   }, []);
 
-  const processWeeklyData = (orders: Order[]) => {
-    const weeks = [];
+  // Compute the date range for the currently viewed window
+  const { rangeStart, rangeEnd, rangeLabel } = useMemo(() => {
     const today = new Date();
+    today.setHours(23, 59, 59, 999);
 
-    for (let i = 6; i >= 0; i--) {
-      const weekEnd = new Date(today);
-      weekEnd.setDate(today.getDate() - i * 7);
+    const end = new Date(today);
+    end.setDate(end.getDate() - periodOffset * WINDOW_DAYS);
 
-      const weekStart = new Date(weekEnd);
-      weekStart.setDate(weekEnd.getDate() - 6);
+    const start = new Date(end);
+    start.setDate(start.getDate() - (WINDOW_DAYS - 1));
+    start.setHours(0, 0, 0, 0);
 
-      const weekLabel = formatWeekLabel(weekStart, weekEnd);
+    const fmt = (d: Date) =>
+      d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const year = end.getFullYear();
 
-      weeks.push({
-        start: weekStart,
-        end: weekEnd,
-        weekLabel: weekLabel,
-        fullDateRange: `${weekStart.toLocaleDateString()} - ${weekEnd.toLocaleDateString()}`,
-      });
-    }
+    return {
+      rangeStart: start,
+      rangeEnd: end,
+      rangeLabel: `${fmt(start)} - ${fmt(end)}, ${year}`,
+    };
+  }, [periodOffset]);
 
-    return weeks.map((week) => {
-      const weekOrders = orders.filter((order) => {
+  const chartData: DayData[] = useMemo(() => {
+    const days: DayData[] = [];
+    const cursor = new Date(rangeStart);
+
+    while (cursor <= rangeEnd) {
+      const dateKey = cursor.toISOString().split("T")[0];
+      const dayOrders = allOrders.filter((order) => {
         const orderDate = new Date(order.createdAt);
-        return orderDate >= week.start && orderDate <= week.end;
+        return orderDate.toISOString().split("T")[0] === dateKey;
       });
 
-      const weekRevenue = weekOrders.reduce(
-        (sum, order) => sum + order.total,
-        0
-      );
+      days.push({
+        dateKey,
+        label: cursor.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        }),
+        fullDate: cursor.toLocaleDateString("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }),
+        orders: dayOrders.length,
+        revenue:
+          Math.round(dayOrders.reduce((sum, o) => sum + o.total, 0) * 100) /
+          100,
+      });
 
-      return {
-        name: week.weekLabel,
-        orders: weekOrders.length,
-        revenue: Math.round(weekRevenue * 100) / 100,
-        dateRange: week.fullDateRange,
-      };
-    });
-  };
-
-  const formatWeekLabel = (start: Date, end: Date): string => {
-    const startMonth = start.toLocaleDateString("en-US", { month: "short" });
-    const endMonth = end.toLocaleDateString("en-US", { month: "short" });
-    const startDate = start.getDate();
-    const endDate = end.getDate();
-
-    if (startMonth === endMonth) {
-      return `${startMonth} ${startDate}-${endDate}`;
+      cursor.setDate(cursor.getDate() + 1);
     }
 
-    return `${startMonth} ${startDate} - ${endMonth} ${endDate}`;
-  };
+    return days;
+  }, [allOrders, rangeStart, rangeEnd]);
 
-   if (loading) {
+  const totals = useMemo(() => {
+    const revenue = chartData.reduce((sum, d) => sum + d.revenue, 0);
+    const orders = chartData.reduce((sum, d) => sum + d.orders, 0);
+    return { revenue, orders };
+  }, [chartData]);
+
+  const isCurrentPeriod = periodOffset === 0;
+
+  // Don't let users navigate past when there's simply no order history back there
+  const earliestOrderDate = useMemo(() => {
+    if (allOrders.length === 0) return null;
+    return allOrders.reduce((earliest, o) => {
+      const d = new Date(o.createdAt);
+      return d < earliest ? d : earliest;
+    }, new Date());
+  }, [allOrders]);
+
+  const canGoOlder =
+    !earliestOrderDate ||
+    rangeStart > earliestOrderDate ||
+    rangeStart.toDateString() === earliestOrderDate.toDateString();
+
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
     );
   }
-  return (
-    <div className="h-[400px] container bg-[--bgSoft] p-4 lg:p-2 xl:p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
-      <h2 className="text-[--textSoft] text-lg font-bold capitalize py-2 mb-4">
-        Weekly Revenue Recap
-      </h2>
-      <ResponsiveContainer width="100%" height="90%">
-        <LineChart
-          data={chartData}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <XAxis dataKey="name" stroke="#8884d8" />
-          <YAxis stroke="#8884d8" />
-          <Tooltip
-            contentStyle={{
-              background: "#151c2c",
-              border: "none",
-              borderRadius: "8px",
-            }}
-            formatter={(value, name) => {
-              if (name === "revenue") return [`$${value}`, "Revenue"];
-              return [value, "Orders"];
-            }}
-            labelFormatter={(label: any, payload: any[]) => {
-              if (payload && payload[0]) {
-                return `Week: ${payload[0].payload.dateRange}`;
-              }
-              return label;
-            }}
-          />
-          <Legend />
-          <Line
-            type="monotone"
-            dataKey="orders"
-            stroke="#8884d8"
-            strokeDasharray="5 5"
-            name="Orders"
-          />
-          <Line
-            type="monotone"
-            dataKey="revenue"
-            stroke="#82ca9d"
-            strokeDasharray="3 4 5 2"
-            name="Revenue"
-          />
-        </LineChart>
-      </ResponsiveContainer>
 
-      <div className="my-6 flex justify-between text-xs text-[--textSoft]">
+  return (
+    <div className="container bg-[--bgSoft] p-4 lg:p-2 xl:p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-2 mb-2">
         <div>
-          Total Orders: {chartData.reduce((sum, week) => sum + week.orders, 0)}
+          <h2 className="text-[--textSoft] text-lg font-bold">Revenue Recap</h2>
+          <p className="text-xs text-[--textSoft] opacity-70">{rangeLabel}</p>
         </div>
-        <div>
-          Total Revenue: $
-          {chartData.reduce((sum, week) => sum + week.revenue, 0).toFixed(2)}
+
+        <div className="flex gap-2">
+          <button
+            onClick={() => setPeriodOffset((p) => p + 1)}
+            disabled={!canGoOlder && chartData.length > 0}
+            className="text-xs px-3 py-1.5 rounded-md bg-[#1e2943] text-[--text] hover:bg-[#2a3a5c] disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            ← Previous 30 Days
+          </button>
+          <button
+            onClick={() => setPeriodOffset((p) => Math.max(0, p - 1))}
+            disabled={isCurrentPeriod}
+            className="text-xs px-3 py-1.5 rounded-md bg-[#1e2943] text-[--text] hover:bg-[#2a3a5c] disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Next 30 Days →
+          </button>
+          {!isCurrentPeriod && (
+            <button
+              onClick={() => setPeriodOffset(0)}
+              className="text-xs px-3 py-1.5 rounded-md bg-teal-600 text-white hover:bg-teal-700"
+            >
+              Today
+            </button>
+          )}
         </div>
       </div>
+
+      <div className="h-[350px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={chartData}
+            margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#2e374a" />
+            <XAxis
+              dataKey="label"
+              stroke="#8884d8"
+              interval="preserveStartEnd"
+              minTickGap={20}
+            />
+            {/* Left axis: revenue (dollars) */}
+            <YAxis
+              yAxisId="revenue"
+              stroke="#82ca9d"
+              tickFormatter={(v) => `$${v}`}
+            />
+            {/* Right axis: order count — separate scale so it's actually visible */}
+            <YAxis
+              yAxisId="orders"
+              orientation="right"
+              stroke="#8884d8"
+              allowDecimals={false}
+            />
+            <Tooltip
+              contentStyle={{
+                background: "#151c2c",
+                border: "1px solid #2e374a",
+                borderRadius: "8px",
+              }}
+              formatter={(value, name) => {
+                if (name === "Revenue") return [`$${value}`, "Revenue"];
+                return [value, "Orders"];
+              }}
+              labelFormatter={(_label, payload: any[]) => {
+                if (payload && payload[0]) {
+                  return payload[0].payload.fullDate;
+                }
+                return _label;
+              }}
+            />
+            <Legend />
+            <Line
+              yAxisId="orders"
+              type="monotone"
+              dataKey="orders"
+              stroke="#8884d8"
+              strokeWidth={2}
+              dot={false}
+              name="Orders"
+            />
+            <Line
+              yAxisId="revenue"
+              type="monotone"
+              dataKey="revenue"
+              stroke="#82ca9d"
+              strokeWidth={2}
+              dot={false}
+              name="Revenue"
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="mt-4 flex justify-between text-xs text-[--textSoft] border-t border-[#2e374a] pt-3">
+        <div>Total Orders: {totals.orders}</div>
+        <div>Total Revenue: ${totals.revenue.toFixed(2)}</div>
+      </div>
+
+      <DailyInsightsTable days={chartData} />
     </div>
   );
 };
