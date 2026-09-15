@@ -44,7 +44,7 @@ const Chart = () => {
     loadOrders();
   }, []);
 
-  // Compute the date range for the currently viewed window
+  
   const { rangeStart, rangeEnd, rangeLabel } = useMemo(() => {
     const today = new Date();
     today.setHours(23, 59, 59, 999);
@@ -110,7 +110,7 @@ const Chart = () => {
 
   const isCurrentPeriod = periodOffset === 0;
 
-  // Don't let users navigate past when there's simply no order history back there
+
   const earliestOrderDate = useMemo(() => {
     if (allOrders.length === 0) return null;
     return allOrders.reduce((earliest, o) => {
@@ -179,13 +179,13 @@ const Chart = () => {
               interval="preserveStartEnd"
               minTickGap={20}
             />
-            {/* Left axis: revenue (dollars) */}
+            
             <YAxis
               yAxisId="revenue"
               stroke="#82ca9d"
               tickFormatter={(v) => `$${v}`}
             />
-            {/* Right axis: order count — separate scale so it's actually visible */}
+          
             <YAxis
               yAxisId="orders"
               orientation="right"

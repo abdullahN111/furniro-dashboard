@@ -23,15 +23,12 @@ const DailyInsightsTable = ({ days }: { days: DayData[] }) => {
         activeDays.reduce((sum, d) => sum + d.orders, 0)
       : 0;
 
-  // most recent first
-  const sortedDays = [...days].reverse();
+  const sortedDays = [...days].reverse().filter((d) => d.orders > 0);
 
   return (
     <div className="mt-6 border-t border-[#2e374a] pt-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
-        <h3 className="text-[--textSoft] text-sm font-bold">
-          Daily Breakdown
-        </h3>
+        <h3 className="text-[--textSoft] text-sm font-bold">Daily Breakdown</h3>
         <div className="flex gap-4 text-xs text-[--textSoft]">
           <span>
             Active days:{" "}
@@ -59,37 +56,43 @@ const DailyInsightsTable = ({ days }: { days: DayData[] }) => {
             </tr>
           </thead>
           <tbody>
-            {sortedDays.map((day) => {
-              const isBest = bestDay && day.dateKey === bestDay.dateKey;
-              const avg = day.orders > 0 ? day.revenue / day.orders : 0;
+            {sortedDays.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="p-4 text-center text-[--textSoft]">
+                  No orders in this period.
+                </td>
+              </tr>
+            ) : (
+              sortedDays.map((day) => {
+                const isBest = bestDay && day.dateKey === bestDay.dateKey;
+                const avg = day.orders > 0 ? day.revenue / day.orders : 0;
 
-              return (
-                <tr
-                  key={day.dateKey}
-                  className={`border-t border-[#2e374a] ${
-                    isBest ? "bg-teal-900/30" : ""
-                  } ${day.orders === 0 ? "opacity-40" : ""}`}
-                >
-                  <td className="p-2 text-[--text]">
-                    {day.fullDate}
-                    {isBest && (
-                      <span className="ml-2 text-teal-400 text-[10px] font-semibold">
-                        ★ BEST DAY
-                      </span>
-                    )}
-                  </td>
-                  <td className="p-2 text-right text-[--text]">
-                    {day.orders}
-                  </td>
-                  <td className="p-2 text-right text-[--text] font-medium">
-                    ${day.revenue.toFixed(2)}
-                  </td>
-                  <td className="p-2 text-right text-[--textSoft]">
-                    {day.orders > 0 ? `$${avg.toFixed(2)}` : "—"}
-                  </td>
-                </tr>
-              );
-            })}
+                return (
+                  <tr
+                    key={day.dateKey}
+                    className={`border-t border-[#2e374a] ${isBest ? "bg-teal-900/30" : ""}`}
+                  >
+                    <td className="p-2 text-[--text]">
+                      {day.fullDate}
+                      {isBest && (
+                        <span className="ml-2 text-teal-400 text-[10px] font-semibold">
+                          ★ BEST DAY
+                        </span>
+                      )}
+                    </td>
+                    <td className="p-2 text-right text-[--text]">
+                      {day.orders}
+                    </td>
+                    <td className="p-2 text-right text-[--text] font-medium">
+                      ${day.revenue.toFixed(2)}
+                    </td>
+                    <td className="p-2 text-right text-[--textSoft]">
+                      {day.orders > 0 ? `$${avg.toFixed(2)}` : "—"}
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>
