@@ -105,7 +105,7 @@ const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
         formData.append("productImage", newProduct.productImage);
       }
 
-      const response = await fetch("/api/product", {
+      const response = await fetch("/api/products", {
         method: "POST",
         body: formData,
       });

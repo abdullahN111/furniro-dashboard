@@ -115,10 +115,10 @@ const Transactions = ({ showAll = false, heading }: TransactionsProps) => {
       header: "Action",
       cell: () => (
         <div className="flex gap-2">
-          <button className="bg-red-700 text-white px-3 py-1 rounded-md text-xs sm:text-sm shadow">
+          <button className="bg-red-700 text-white px-3 py-1 rounded-md text-xs sm:text-[13px] shadow">
             Details
           </button>
-          <button className="bg-green-700 text-white px-3 py-1 rounded-md text-xs sm:text-sm shadow">
+          <button className="bg-green-700 text-white px-3 py-1 rounded-md text-xs sm:text-[13px] shadow">
             Process
           </button>
         </div>

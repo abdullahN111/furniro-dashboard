@@ -19,7 +19,7 @@ const ProductActions = ({ action, onDelete, link }: ProductActionsProps) => {
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      const response = await fetch("/api/delete", {
+      const response = await fetch("/api/products/delete", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: action }),

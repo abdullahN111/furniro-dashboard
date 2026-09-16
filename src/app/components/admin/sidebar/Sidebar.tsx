@@ -49,7 +49,7 @@ const menuItems = [
         path: "/dashboard/dispatched-orders",
         icon: <MdAnalytics />,
       },
-      { title: "Revenue", path: "/dashboard/insights", icon: <MdInsights /> },
+      { title: "Insights", path: "/dashboard/insights", icon: <MdInsights /> },
       // { title: "Teams", path: "/dashboard/teams", icon: <MdPeople /> },
     ],
   },

@@ -29,7 +29,7 @@ const ProductDetail = () => {
 
     setLoading(true);
     try {
-      const response = await fetch("/api/updateStock", {
+      const response = await fetch("/api/products/update-stock", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: productId, newStock: stockAdjustment }),
