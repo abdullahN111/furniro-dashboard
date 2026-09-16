@@ -1,3 +1,4 @@
+"use client";
 
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { OrderInvoicePDF } from "./OrderInvoicePDF";
