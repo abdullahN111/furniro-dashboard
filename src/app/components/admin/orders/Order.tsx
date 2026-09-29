@@ -37,7 +37,7 @@ const STATUS_OPTIONS = [
   "Delivered",
 ];
 
-// UI label -> stored value. "Stripe" stays in the DB, "Card" shows in the UI.
+
 const PAYMENT_METHOD_OPTIONS = [
   { label: "Card", value: "Stripe" },
   { label: "Cash On Delivery", value: "Cash On Delivery" },
@@ -56,7 +56,7 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isDispatching, setIsDispatching] = useState(false);
 
-  // ✅ new filter state
+
   const [statusFilter, setStatusFilter] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("");
   const [fromDate, setFromDate] = useState("");
@@ -131,7 +131,7 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
 
   const filteredOrders = useMemo(() => {
     return orders.filter((o) => {
-      // free-text search (unchanged)
+
       const custName =
         `${o.user?.firstname ?? ""} ${o.user?.lastname ?? ""}`.toLowerCase();
       const query = pageSearchQuery.toLowerCase();
@@ -144,14 +144,13 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
           (p.title ?? "").toLowerCase().includes(query),
         );
 
-      // ✅ status filter
+
       const matchesStatus = !statusFilter || o.status === statusFilter;
 
-      // ✅ payment method filter
+
       const matchesPayment =
         !paymentFilter || o.paymentMethod === paymentFilter;
 
-      // ✅ date range filter
       const orderDate = new Date(o.createdAt);
       const matchesFrom = !fromDate || orderDate >= new Date(fromDate);
       const matchesTo =
@@ -237,10 +236,18 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
         },
       },
       {
+        accessorKey: "date",
+        header: "Date",
+        cell: ({ row }: { row: { original: Order } }) =>
+          row.original.createdAt
+            ? new Date(row.original.createdAt).toLocaleDateString()
+            : "N/A",
+      },
+      {
         accessorKey: "paymentMethod",
         header: "Payment Method",
         cell: ({ row }: { row: { original: Order } }) =>
-          paymentMethodLabel(row.original.paymentMethod), // ✅ label mapped, value untouched
+          paymentMethodLabel(row.original.paymentMethod),
       },
       {
         accessorKey: "action",
@@ -486,6 +493,12 @@ const Orders = ({ showAll = false, heading }: OrdersProps) => {
                           0,
                         )
                         .toFixed(2)}
+                    </p>
+                    <p className="text-sm text-white font-bold mt-2">
+                      Date:{" "}
+                      {order.createdAt
+                        ? new Date(order.createdAt).toLocaleDateString()
+                        : "N/A"}
                     </p>
                     <p className="text-sm text-white font-bold mt-2">
                       Payment Method:{" "}
