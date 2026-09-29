@@ -3,9 +3,9 @@ import { MdPlayCircleFilled, MdReadMore } from "react-icons/md";
 
 const Rightbar = () => {
   return (
-    <div className="w-full max-w-[220px]">
+    <div className="w-full max-w-[200px]">
       <div className="hidden xl:block">
-        <div className="bg-gradient-to-t from-[#182237] to-[#253352] py-4 px-2 rounded-[10px] mb-3 relative">
+        <div className="bg-gradient-to-t from-[#182237] to-[#253352] p-3 rounded-[10px] mb-3 relative">
           <div className="absolute right-0 bottom-0 w-[40%] h-[40%]">
             <Image
               src="/images/astronaut.png"
@@ -31,7 +31,7 @@ const Rightbar = () => {
               href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-2flex items-center gap-2 p-2 w-[max-content] bg-[#5d57c9] text-white border-none rounded-[5px] cursor-pointer"
+              className="mt-2 flex items-center gap-2 p-2 w-[max-content] bg-[#5d57c9] text-white border-none rounded-[5px] cursor-pointer"
             >
               <MdPlayCircleFilled />
               Watch
@@ -39,7 +39,7 @@ const Rightbar = () => {
           </div>
         </div>
 
-        <div className="bg-gradient-to-t from-[#182237] to-[#253352] p-4 rounded-[10px] mb-4 relative">
+        <div className="bg-gradient-to-t from-[#182237] to-[#253352] p-3 rounded-[10px] mb-4 relative">
           <div className="flex flex-col gap-2">
             <span className="font-bold">🚀 Coming Soon</span>
             <h3 className="text-sm">
