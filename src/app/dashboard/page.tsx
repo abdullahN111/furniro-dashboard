@@ -8,7 +8,7 @@ import Chart from "../components/admin/chart/Chart";
 const Admin = () => {
   return (
     <div className="flex flex-col xl:flex-row gap-3 sm:gap-4 lg:gap-3 xl:gap-5 mt-6 sm:mt-10">
-      <div className="flex-1 flex flex-col gap-3 sm:gap-4 min-w-0">
+      <div className="flex-1 flex flex-col gap-3 min-w-0">
         <ReportCards />
 
         <Chart />
