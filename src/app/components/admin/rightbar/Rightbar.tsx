@@ -31,7 +31,7 @@ const Rightbar = () => {
               href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 p-2 w-[max-content] bg-[#5d57c9] text-white border-none rounded-[5px] cursor-pointer"
+              className="mt-2flex items-center gap-2 p-2 w-[max-content] bg-[#5d57c9] text-white border-none rounded-[5px] cursor-pointer"
             >
               <MdPlayCircleFilled />
               Watch
@@ -53,7 +53,7 @@ const Rightbar = () => {
               questions, provide step-by-step guidance, and make using the
               platform even easier.
             </p>
-            <button className="flex items-center gap-2 p-2 w-[max-content] bg-[#5d57c9] text-white border-none rounded-[5px] cursor-pointer">
+            <button className="mt-2 flex items-center gap-2 p-2 w-[max-content] bg-[#5d57c9] text-white border-none rounded-[5px] cursor-pointer">
               <MdReadMore />
               Learn
             </button>
