@@ -3,7 +3,7 @@ import { MdPlayCircleFilled, MdReadMore } from "react-icons/md";
 
 const Rightbar = () => {
   return (
-    <div className="w-full max-w-[200px]">
+    <div className="w-full max-w-[195px]">
       <div className="hidden xl:block">
         <div className="bg-gradient-to-t from-[#182237] to-[#253352] p-3 rounded-[10px] mb-3 relative">
           <div className="absolute right-0 bottom-0 w-[40%] h-[40%]">
@@ -31,7 +31,7 @@ const Rightbar = () => {
               href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-2 flex items-center gap-2 p-2 w-[max-content] bg-[#5d57c9] text-white border-none rounded-[5px] cursor-pointer"
+              className="mt-2 flex items-center gap-2 p-[6px] w-[max-content] bg-[#5d57c9] text-white text-xs border-none rounded-[5px] cursor-pointer"
             >
               <MdPlayCircleFilled />
               Watch
@@ -53,7 +53,7 @@ const Rightbar = () => {
               questions, provide step-by-step guidance, and make using the
               platform even easier.
             </p>
-            <button className="mt-2 flex items-center gap-2 p-2 w-[max-content] bg-[#5d57c9] text-white border-none rounded-[5px] cursor-pointer">
+            <button className="mt-2 flex items-center gap-2 p-[6px] w-[max-content] bg-[#5d57c9] text-white text-xs border-none rounded-[5px] cursor-pointer">
               <MdReadMore />
               Learn
             </button>
