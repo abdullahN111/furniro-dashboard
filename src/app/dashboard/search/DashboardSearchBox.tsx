@@ -1,112 +1,190 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { MdSearch, MdClose } from "react-icons/md";
+import {
+  MdSearch,
+  MdClose,
+  MdDashboard,
+  MdShoppingBag,
+  MdAttachMoney,
+  MdLocalShipping,
+  MdInsights,
+  MdSupervisedUserCircle,
+  MdPersonAdd,
+  MdArrowForward,
+} from "react-icons/md";
 import Link from "next/link";
 
 const dashboardRoutes = [
-  { title: "Dashboard", path: "/dashboard" },
-  { title: "Orders", path: "/dashboard/orders" },
-  { title: "Users", path: "/dashboard/users" },
-  { title: "Products", path: "/dashboard/products" },
-  { title: "Transactions", path: "/dashboard/transactions" },
-  { title: "Reports", path: "/dashboard/dispatched-orders" },
+  {
+    title: "Dashboard Overview",
+    description: "KPI summary, revenue charts, and recent activity",
+    path: "/dashboard",
+    icon: MdDashboard,
+  },
+  {
+    title: "Orders Management",
+    description: "View, filter, process, and dispatch customer orders",
+    path: "/dashboard/orders",
+    icon: MdShoppingBag,
+  },
+  {
+    title: "Dispatch Center",
+    description: "Track dispatched, shipped, and delivered shipments",
+    path: "/dashboard/dispatched-orders",
+    icon: MdLocalShipping,
+  },
+  {
+    title: "Revenue & Insights",
+    description: "30-day revenue trends and daily order breakdown",
+    path: "/dashboard/insights",
+    icon: MdInsights,
+  },
+  {
+    title: "Products Catalog",
+    description: "Manage furniture inventory, pricing, and stock levels",
+    path: "/dashboard/products",
+    icon: MdShoppingBag,
+  },
+  {
+    title: "Transactions",
+    description: "Monitor Stripe payment intents and statuses",
+    path: "/dashboard/transactions",
+    icon: MdAttachMoney,
+  },
+  {
+    title: "Users & Permissions",
+    description: "Manage administrator and editor accounts",
+    path: "/dashboard/users",
+    icon: MdSupervisedUserCircle,
+  },
+  {
+    title: "Add New User",
+    description: "Create a new admin or editor user account",
+    path: "/dashboard/users/add",
+    icon: MdPersonAdd,
+  },
 ];
 
 export default function DashboardSearchBox({ close }: { close?: () => void }) {
   const [query, setQuery] = useState("");
-  const [filteredRoutes, setFilteredRoutes] = useState<typeof dashboardRoutes>([]);
   const [isOpen, setIsOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (inputRef.current) inputRef.current.focus();
     setIsOpen(true);
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handleClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (!query.trim()) {
-      setFilteredRoutes([]);
-      return;
-    }
-    const lower = query.toLowerCase();
-    setFilteredRoutes(
-      dashboardRoutes.filter((r) =>
-        r.title.toLowerCase().includes(lower)
+  const filteredRoutes = query.trim()
+    ? dashboardRoutes.filter(
+        (r) =>
+          r.title.toLowerCase().includes(query.toLowerCase()) ||
+          r.description.toLowerCase().includes(query.toLowerCase())
       )
-    );
-  }, [query]);
+    : dashboardRoutes;
 
   const handleClose = () => {
     setIsOpen(false);
     setTimeout(() => {
       if (close) close();
-    }, 300);
+    }, 180);
   };
 
   return (
     <div
-      className={`fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center transition-opacity duration-300 ${
+      onClick={handleClose}
+      className={`fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 transition-opacity duration-200 ${
         isOpen ? "opacity-100" : "opacity-0"
       }`}
     >
       <div
-        className={`bg-[--bgSoft] text-[--text] w-full max-w-2xl mt-20 mx-6 sm:mx-10 rounded-lg shadow-2xl transform transition-transform duration-300 ${
-          isOpen ? "translate-y-0" : "-translate-y-10"
+        className={`bg-[#111827] border border-slate-800 text-slate-100 w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-200 ${
+          isOpen ? "translate-y-0 scale-100" : "-translate-y-4 scale-95"
         }`}
         onClick={(e) => e.stopPropagation()}
       >
-   
-        <div className="flex items-center border-b border-gray-700 p-3 md:p-4">
-          <div className="relative flex-1">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <MdSearch className="h-5 w-5 text-gray-400" />
-            </div>
-            <input
-              ref={inputRef}
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search dashboard..."
-              className="block w-full pl-10 pr-4 py-[10px] md:py-3 border-0 focus:ring-0 text-base sm:text-[17px] md:text-lg outline-none bg-transparent text-[--text]"
-              autoFocus
-            />
-          </div>
+        <div className="flex items-center border-b border-slate-800 px-4 py-3.5 bg-slate-900/50">
+          <MdSearch className="h-5 w-5 text-indigo-400 mr-3 shrink-0" />
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Jump to any page or tool..."
+            className="w-full bg-transparent border-0 focus:ring-0 text-sm sm:text-base outline-none text-slate-100 placeholder:text-slate-500"
+            autoFocus
+          />
           <button
             onClick={handleClose}
-            className="ml-4 p-2 rounded-full hover:bg-gray-800 transition-colors"
+            className="ml-2 p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
+            aria-label="Close search"
           >
-            <MdClose className="h-5 md:h-6 w-5 md:w-6 text-gray-400" />
+            <MdClose className="h-5 w-5" />
           </button>
         </div>
 
-        {/* Results */}
-        <div className="max-h-96 overflow-y-auto">
-          {query && filteredRoutes.length === 0 ? (
-            <div className="p-5 md:p-6 text-center text-gray-400">
-              No results for &quot;{query}&quot;
+        <div className="max-h-[380px] overflow-y-auto p-2">
+          {filteredRoutes.length === 0 ? (
+            <div className="py-12 px-4 text-center">
+              <p className="text-sm text-slate-400">
+                No matching pages found for &ldquo;{query}&rdquo;
+              </p>
             </div>
           ) : (
-            <>
-              {filteredRoutes.length > 0 && (
-                <div>
-                  <p className="px-5 md:px-6 py-3 text-sm font-semibold text-gray-400 uppercase tracking-wide">
-                    Pages
-                  </p>
-                  {filteredRoutes.map((r) => (
+            <div>
+              <p className="px-3 py-2 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                {query.trim() ? "Matching Destinations" : "Quick Navigation"}
+              </p>
+              <div className="space-y-1">
+                {filteredRoutes.map((r) => {
+                  const Icon = r.icon;
+                  return (
                     <Link
                       key={r.path}
                       href={r.path}
                       onClick={handleClose}
-                      className="flex items-center px-5 md:px-6 py-3 md:py-4 hover:bg-gray-800 border-b border-gray-700 transition-colors text-lg"
+                      className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-slate-800/80 transition-colors group"
                     >
-                      {r.title}
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="p-2 rounded-lg bg-slate-800 text-indigo-400 group-hover:bg-indigo-500/20 group-hover:text-indigo-300 transition-colors">
+                          <Icon size={18} />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-slate-200 group-hover:text-white truncate">
+                            {r.title}
+                          </p>
+                          <p className="text-xs text-slate-400 truncate">
+                            {r.description}
+                          </p>
+                        </div>
+                      </div>
+                      <MdArrowForward
+                        size={16}
+                        className="text-slate-600 group-hover:text-indigo-400 group-hover:translate-x-0.5 transition-all shrink-0 ml-2"
+                      />
                     </Link>
-                  ))}
-                </div>
-              )}
-            </>
+                  );
+                })}
+              </div>
+            </div>
           )}
+        </div>
+
+        <div className="px-4 py-2.5 bg-slate-900/80 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+          <span>Click any item to navigate</span>
+          <span className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">
+            ESC to close
+          </span>
         </div>
       </div>
     </div>

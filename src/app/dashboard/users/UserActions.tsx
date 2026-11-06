@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 "use client";
 
 import { deleteUser } from "@/app/lib/actions";
@@ -7,6 +6,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 const UserActions = ({
   viewLink,
@@ -25,86 +32,84 @@ const UserActions = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const { data: session } = useSession();
 
+  const sessionUserId = (session?.user as any)?.id;
   const isCurrentUserAdmin = (session?.user as any)?.role === "admin";
-  const canDelete = isCurrentUserAdmin && (!isAdmin || adminsCount > 1);
+  const canDelete =
+    isCurrentUserAdmin &&
+    sessionUserId !== userId &&
+    (!isAdmin || adminsCount > 1);
 
   const handleDelete = async () => {
-  setIsDeleting(true);
-  try {
-    const formData = new FormData();
-    formData.append("id", userId);
-    formData.append("sessionUserId", (session?.user as any)?.id ?? "");
+    setIsDeleting(true);
+    try {
+      const formData = new FormData();
+      formData.append("id", userId);
 
-    const result = await deleteUser(formData);
-    if (!result.success) {
-      console.error(result.error || "Failed to delete user"); 
+      const result = await deleteUser(formData);
+      if (!result.success) {
+        toast.error(result.error || "Failed to delete user");
+        return;
+      }
+
+      toast.success("User deleted successfully.");
+      onUserDeleted();
+      setIsConfirming(false);
+    } catch (err: any) {
+      console.error("Error deleting user:", err);
       toast.error("Failed to delete user");
-      return;
+    } finally {
+      setIsDeleting(false);
     }
-
-    toast.success("User deleted successfully.");
-    onUserDeleted();
-    setIsConfirming(false);
-  } catch (err: any) {
-   
-    console.error("Error deleting user:", err);
-    toast.error("Failed to delete user");
-  } finally {
-    setIsDeleting(false);
-  }
-};
+  };
 
   return (
     <div className="flex items-center gap-2">
-      <Link href={viewLink}>
-        <button className="bg-green-700 text-white px-2 py-1 rounded text-sm">
-          Edit
-        </button>
+      <Link
+        href={viewLink}
+        className="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 px-3 py-1.5 rounded-xl text-xs font-medium transition-colors"
+      >
+        {sessionUserId === userId || isCurrentUserAdmin ? "Manage" : "View"}
       </Link>
 
-      {canDelete ? (
+      {canDelete && (
         <button
-          className="bg-red-700 text-white px-2 py-1 rounded-md text-[13px] shadow"
+          className="bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors"
           onClick={() => setIsConfirming(true)}
-        >
-          Delete
-        </button>
-      ) : (
-        <button
-          className="bg-red-700 text-white px-2 py-1 rounded-md text-[13px] shadow opacity-70"
-          disabled
         >
           Delete
         </button>
       )}
 
-      <div
-        className={`fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 transition-all ease-in-out duration-300 ${
-          isConfirming ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
-      >
-        <div className="bg-white p-4 rounded-lg w-[250px] relative shadow-lg">
-          <p className="mt-5 text-sm font-medium text-gray-700 text-center">
-            Are you sure you want to delete this user?
-          </p>
-          <div className="flex flex-col gap-2 mt-4">
-            <button
-              className="bg-red-600 text-white p-2 rounded-md text-sm w-full"
+      <Dialog open={isConfirming} onOpenChange={setIsConfirming}>
+        <DialogContent className="bg-[#111827] text-slate-100 border border-slate-800 rounded-2xl max-w-sm p-6">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-white">
+              Delete User Account?
+            </DialogTitle>
+            <DialogDescription className="text-slate-400 text-xs sm:text-sm mt-1">
+              Are you sure you want to permanently remove this user account? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex justify-end gap-2.5 mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setIsConfirming(false)}
+              disabled={isDeleting}
+              className="border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl text-xs font-semibold"
+            >
+              Cancel
+            </Button>
+            <Button
               onClick={handleDelete}
               disabled={isDeleting}
+              className="bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold px-4"
             >
               {isDeleting ? "Deleting..." : "Confirm Delete"}
-            </button>
+            </Button>
           </div>
-
-          <button
-            className="absolute top-1 right-3 text-gray-600 text-3xl"
-            onClick={() => setIsConfirming(false)}
-          >
-            &times;
-          </button>
-        </div>
-      </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

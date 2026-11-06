@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { DispatchConfirmation } from "./DispatchConfirmation";
 
 export default function OrderActions({
   orderId,
@@ -13,6 +14,7 @@ export default function OrderActions({
 }) {
   const [currentStatus, setCurrentStatus] = useState(status);
   const [isLoading, setIsLoading] = useState(false);
+  const [confirmDispatch, setConfirmDispatch] = useState(false);
   const router = useRouter();
 
   const handleProcess = async () => {
@@ -26,7 +28,7 @@ export default function OrderActions({
 
       const updated = await res.json();
       setCurrentStatus(updated.status);
-      toast.success("Order processed successfully.");
+      toast.success("Order moved to Processing.");
       router.refresh();
     } catch (error) {
       console.error("Failed to process order:", error);
@@ -54,51 +56,55 @@ export default function OrderActions({
       toast.error("Failed to dispatch order.");
     } finally {
       setIsLoading(false);
+      setConfirmDispatch(false);
     }
   };
 
+  const isCompletedState =
+    currentStatus === "Dispatched" ||
+    currentStatus === "Shipped" ||
+    currentStatus === "Delivered";
+
   return (
-    <button
-      onClick={() => {
-        if (currentStatus === "Pending") {
-          handleProcess();
-        } else if (currentStatus === "Processing") {
-          handleDispatch();
-        }
-      }}
-      disabled={
-        isLoading ||
-        currentStatus === "Dispatched" ||
-        currentStatus === "Shipped" ||
-        currentStatus === "Delivered"
-      }
-      className={`text-white px-2 py-1 rounded-md text-xs sm:text-sm disabled:cursor-not-allowed ${
-        currentStatus === "Pending"
-          ? "bg-yellow-600 hover:bg-yellow-700"
-          : currentStatus === "Processing"
-            ? "bg-blue-600 hover:bg-blue-700"
-            : currentStatus === "Dispatched"
-              ? "bg-purple-600 opacity-50"
-              : currentStatus === "Shipped"
-                ? "bg-indigo-600 opacity-50"
-                : currentStatus === "Delivered"
-                  ? "bg-orange-600 opacity-50"
-                  : "bg-gray-600"
-      }`}
-    >
-      {isLoading
-        ? "Processing..."
-        : currentStatus === "Pending"
-          ? "Process"
-          : currentStatus === "Processing"
-            ? "Dispatch"
-            : currentStatus === "Dispatched"
-              ? "Dispatched"
-              : currentStatus === "Shipped"
-                ? "Shipped"
-                : currentStatus === "Delivered"
-                  ? "Delivered"
-                  : "N/A"}
-    </button>
+    <>
+      {confirmDispatch && (
+        <DispatchConfirmation
+          orderId={orderId}
+          onConfirm={handleDispatch}
+          onCancel={() => setConfirmDispatch(false)}
+        />
+      )}
+      <button
+        onClick={() => {
+          if (currentStatus === "Pending") {
+            handleProcess();
+          } else if (currentStatus === "Processing") {
+            setConfirmDispatch(true);
+          }
+        }}
+        disabled={isLoading || isCompletedState}
+        className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all disabled:cursor-not-allowed ${
+          currentStatus === "Pending"
+            ? "bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/30"
+            : currentStatus === "Processing"
+              ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/20"
+              : currentStatus === "Dispatched"
+                ? "bg-purple-500/15 text-purple-300 border border-purple-500/30 opacity-75"
+                : currentStatus === "Shipped"
+                  ? "bg-sky-500/15 text-sky-300 border border-sky-500/30 opacity-75"
+                  : currentStatus === "Delivered"
+                    ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 opacity-75"
+                    : "bg-slate-800 text-slate-300"
+        }`}
+      >
+        {isLoading
+          ? "Updating..."
+          : currentStatus === "Pending"
+            ? "Mark as Processing"
+            : currentStatus === "Processing"
+              ? "Dispatch Order"
+              : currentStatus}
+      </button>
+    </>
   );
 }

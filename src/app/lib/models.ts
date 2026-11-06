@@ -14,13 +14,8 @@ export const userSchema = new mongoose.Schema(
     provider: { type: String, default: "credentials" },
     forgotPasswordToken: String,
     forgotPasswordTokenExpiry: Date,
-    // verifyToken: String,
-    // verifyTokenExpiry: Date,
   },
   { timestamps: true }
 );
 
-
-
 export const User = mongoose.models.User || mongoose.model("User", userSchema);
-console.log("✅ User model loaded successfully");

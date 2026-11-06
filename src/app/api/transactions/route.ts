@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
+import { requireAuth } from "@/app/lib/auth";
 
-export const dynamic = "force-dynamic"; 
-export const revalidate = 0;            
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-08-27.basil",
@@ -10,21 +11,25 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function GET() {
   try {
+    await requireAuth();
+
     const payments = await stripe.paymentIntents.list({
-      limit: 20,
+      limit: 50,
     });
 
     return NextResponse.json(payments.data, {
       headers: {
-        "Cache-Control": "no-store, max-age=0", 
+        "Cache-Control": "no-store, max-age=0",
       },
     });
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
+  } catch (error) {
+    if (error instanceof Error && error.message === "UNAUTHORIZED") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     console.error(error);
     return NextResponse.json(
       { error: "Failed to fetch transactions" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

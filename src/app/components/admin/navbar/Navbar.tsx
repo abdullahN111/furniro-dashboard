@@ -1,88 +1,175 @@
 "use client";
 
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
-  MdNotifications,
   MdPublic,
   MdMenu,
-  MdClose,
   MdSearch,
+  MdPerson,
 } from "react-icons/md";
-
 import Link from "next/link";
 import DashboardSearchBox from "@/app/dashboard/search/DashboardSearchBox";
+import { useSearch } from "@/app/dashboard/search/SearchContext";
+
+const getRouteMeta = (pathname: string) => {
+  if (pathname === "/dashboard") {
+    return {
+      title: "Dashboard Overview",
+      subtitle: "Real-time store metrics, fulfillment status, and activity",
+    };
+  }
+  if (pathname.startsWith("/dashboard/orders/order/")) {
+    return {
+      title: "Order Details",
+      subtitle: "Inspect line items, customer billing, and fulfillment state",
+    };
+  }
+  if (pathname.startsWith("/dashboard/orders")) {
+    return {
+      title: "Orders Management",
+      subtitle: "Track, filter, process, and dispatch customer orders",
+    };
+  }
+  if (pathname.startsWith("/dashboard/dispatched-orders")) {
+    return {
+      title: "Order Dispatch Center",
+      subtitle: "Monitor dispatched, in-transit, and delivered shipments",
+    };
+  }
+  if (pathname.startsWith("/dashboard/insights")) {
+    return {
+      title: "Revenue & Insights",
+      subtitle: "30-day revenue performance and daily order breakdown",
+    };
+  }
+  if (pathname.startsWith("/dashboard/products/product/")) {
+    return {
+      title: "Product Details",
+      subtitle: "Inspect catalog specifications and adjust inventory levels",
+    };
+  }
+  if (pathname.startsWith("/dashboard/products")) {
+    return {
+      title: "Products Catalog",
+      subtitle: "Manage store inventory, pricing, discounts, and stock",
+    };
+  }
+  if (pathname.startsWith("/dashboard/transactions")) {
+    return {
+      title: "Stripe Transactions",
+      subtitle: "Live payment intents and settlement records",
+    };
+  }
+  if (pathname.startsWith("/dashboard/users/add")) {
+    return {
+      title: "Create User Account",
+      subtitle: "Provision a new administrator or editor profile",
+    };
+  }
+  if (pathname.startsWith("/dashboard/users/")) {
+    return {
+      title: "User Profile & Security",
+      subtitle: "Manage account details, role permissions, and password",
+    };
+  }
+  if (pathname.startsWith("/dashboard/users")) {
+    return {
+      title: "Users & Roles",
+      subtitle: "Manage team access and administrative permissions",
+    };
+  }
+  return {
+    title: "Furniro Admin",
+    subtitle: "Operations & Commerce Management",
+  };
+};
 
 const Navbar = () => {
   const { data: session } = useSession();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const { setIsSidebarOpen } = useSearch();
   const [openSearch, setOpenSearch] = useState(false);
 
+  const { title, subtitle } = getRouteMeta(pathname);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setOpenSearch((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
-    <div className="flex justify-between items-center w-full p-3 sm:p-4 lg:p-5 rounded-lg bg-[--bgSoft] border border-[#2e374a]">
-      <div className="text-[--textSoft] font-bold capitalize text-sm sm:text-base truncate">
-        {session?.user?.name}
-      </div>
-      <div className="hidden lg:flex items-center gap-[20px]">
-        <div className="flex items-center gap-[10px]">
-          <button onClick={() => setOpenSearch(true)} className="transition">
-            <MdSearch size={22} />
+    <header className="sticky top-0 z-30 w-full bg-[#0b0f19]/85 backdrop-blur-md border-b border-slate-800/80">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <button
+            onClick={() => setIsSidebarOpen(true)}
+            className="lg:hidden p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+            aria-label="Open navigation menu"
+          >
+            <MdMenu size={20} />
           </button>
 
-          {openSearch && (
-            <DashboardSearchBox close={() => setOpenSearch(false)} />
-          )}
-
-          <MdNotifications size={20} />
-          <Link
-            href="https://furniro-abd.vercel.app/"
-            className="cursor-pointer"
-            target="_blank"
-          >
-            <MdPublic size={20} />
-          </Link>
-        </div>
-      </div>
-      <div className="lg:hidden">
-        <button onClick={() => setMenuOpen(!menuOpen)} className="p-1">
-          {menuOpen ? (
-            <MdClose size={20} className="sm:w-6 sm:h-6" />
-          ) : (
-            <MdMenu size={20} className="sm:w-6 sm:h-6" />
-          )}
-        </button>
-      </div>
-      <div
-        className={`absolute top-[60px] sm:top-[70px] right-0 w-[200px] sm:w-[250px] bg-[--bgSoft] p-3 sm:p-5 rounded-[10px] shadow-lg transition-all duration-300 ${menuOpen ? "opacity-100 visible z-[1000]" : "opacity-0 invisible"}`}
-      >
-        <div className="flex flex-col gap-3 sm:gap-[20px]">
-          <div className="flex flex-col gap-2 sm:gap-[15px]">
-            <button
-              onClick={() => setOpenSearch(true)}
-              className="flex items-center gap-[10px] text-sm sm:text-base transition"
-            >
-              <MdSearch size={22} className="sm:w-5 sm:h-5" /> Search
-            </button>
-            {openSearch && (
-              <DashboardSearchBox close={() => setOpenSearch(false)} />
-            )}
-
-            <button className="flex items-center gap-[10px] text-sm sm:text-base">
-              <MdNotifications size={18} className="sm:w-5 sm:h-5" />{" "}
-              Notifications
-            </button>
-            <Link
-              href="https://furniro-abd.vercel.app/"
-              className="flex items-center gap-[10px] text-sm sm:text-base"
-              target="_blank"
-            >
-              <MdPublic size={18} className="sm:w-5 sm:h-5" /> Explore
-            </Link>
+          <div className="min-w-0">
+            <h1 className="text-base sm:text-lg font-bold text-white truncate">
+              {title}
+            </h1>
+            <p className="hidden sm:block text-xs text-slate-400 truncate">
+              {subtitle}
+            </p>
           </div>
         </div>
+
+        <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+          <button
+            onClick={() => setOpenSearch(true)}
+            className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-slate-200 text-xs sm:text-sm transition-all"
+            title="Quick Jump (Ctrl+K)"
+          >
+            <MdSearch size={18} className="text-indigo-400" />
+            <span className="hidden md:inline">Quick Jump...</span>
+            <kbd className="hidden md:inline-block px-1.5 py-0.5 text-[10px] font-mono bg-slate-800 text-slate-400 rounded border border-slate-700">
+              Ctrl K
+            </kbd>
+          </button>
+
+          <Link
+            href="https://furniro-abd.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white text-xs sm:text-sm font-medium transition-colors"
+            title="Open live storefront"
+          >
+            <MdPublic size={17} className="text-emerald-400" />
+            <span className="hidden sm:inline">Storefront</span>
+          </Link>
+
+          {session?.user?.id && (
+            <Link
+              href={`/dashboard/users/${session.user.id}`}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/25 text-indigo-300 text-xs sm:text-sm font-medium transition-colors"
+              title="View your profile"
+            >
+              <MdPerson size={17} />
+              <span className="hidden sm:inline capitalize max-w-[110px] truncate">
+                {session.user.name?.split(" ")[0] || "Profile"}
+              </span>
+            </Link>
+          )}
+        </div>
       </div>
-    </div>
+
+      {openSearch && (
+        <DashboardSearchBox close={() => setOpenSearch(false)} />
+      )}
+    </header>
   );
 };
 

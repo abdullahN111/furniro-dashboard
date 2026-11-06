@@ -9,10 +9,12 @@ export const fetchUsers = async () => {
 export const fetchUser = async (id: string) => {
   const baseUrl =
     typeof window === "undefined"
-      ? process.env.NEXT_PUBLIC_BASE_URL
+      ? process.env.NEXT_PUBLIC_BASE_URL || ""
       : window.location.origin;
 
-  const response = await fetch(`${baseUrl}/api/users/${id}`);
+  const response = await fetch(`${baseUrl}/api/users/${encodeURIComponent(id)}`, {
+    cache: "no-store",
+  });
 
   if (!response.ok) throw new Error("Failed to fetch user");
   return response.json();

@@ -3,7 +3,14 @@
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
-// import { client } from "@/sanity/lib/client";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 interface ProductActionsProps {
   action: string;
@@ -12,7 +19,6 @@ interface ProductActionsProps {
 }
 
 const ProductActions = ({ action, onDelete, link }: ProductActionsProps) => {
-  // const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
   const [isConfirming, setIsConfirming] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -25,18 +31,19 @@ const ProductActions = ({ action, onDelete, link }: ProductActionsProps) => {
         body: JSON.stringify({ id: action }),
       });
 
-      const data = await response.json(); 
-      // console.log("DELETE RESPONSE:", data);
-      if (!response.ok)
+      const data = await response.json();
+      if (!response.ok) {
         throw new Error(data.message || "Failed to delete product");
+      }
 
       onDelete(action);
       setIsConfirming(false);
       toast.success("Product deleted successfully.");
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
+    } catch (error) {
       console.error("Delete error:", error);
-      toast.error(error.message || "Failed to delete product.");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to delete product."
+      );
     } finally {
       setIsDeleting(false);
     }
@@ -44,45 +51,49 @@ const ProductActions = ({ action, onDelete, link }: ProductActionsProps) => {
 
   return (
     <div className="flex items-center gap-2">
-     <Link href={link}>
-     <button className="bg-green-700 text-white px-2 py-1 rounded-md text-[13px] shadow">
+      <Link
+        href={link}
+        className="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 px-3 py-1.5 rounded-xl text-xs font-medium transition-colors"
+      >
         Details
-      </button>
-     </Link>
+      </Link>
       <button
-        className="bg-red-700 text-white px-2 py-1 rounded-md text-[13px] shadow"
+        className="bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors"
         onClick={() => setIsConfirming(true)}
         disabled={isDeleting}
       >
         Delete
       </button>
 
-      <div
-        className={`fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 transition-all ease-in-out duration-300 ${
-          isConfirming ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
-      >
-        <div className="bg-white p-4 rounded-lg w-[200px]">
-          <p className="text-sm font-medium text-gray-700">
-            Are you sure you want to delete?
-          </p>
-          <div className="flex flex-col gap-2 mt-2">
-            <button
-              className="bg-red-600 text-white p-2 rounded-md text-sm"
-              onClick={handleDelete}
-              disabled={isDeleting}
-            >
-              {isDeleting ? "Deleting..." : "Delete"}
-            </button>
-            <button
-              className="mt-2 text-gray-600 p-2 rounded-md text-sm border"
+      <Dialog open={isConfirming} onOpenChange={setIsConfirming}>
+        <DialogContent className="bg-[#111827] text-slate-100 border border-slate-800 rounded-2xl max-w-sm p-6">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-white">
+              Delete Product?
+            </DialogTitle>
+            <DialogDescription className="text-slate-400 text-xs sm:text-sm mt-1">
+              This action permanently removes the product from your Sanity catalog and cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-2.5 mt-4">
+            <Button
+              variant="outline"
               onClick={() => setIsConfirming(false)}
+              disabled={isDeleting}
+              className="border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl text-xs font-semibold"
             >
               Cancel
-            </button>
+            </Button>
+            <Button
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold px-4"
+            >
+              {isDeleting ? "Deleting..." : "Confirm Delete"}
+            </Button>
           </div>
-        </div>
-      </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

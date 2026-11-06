@@ -1,4 +1,7 @@
+"use server";
+
 import { serverClient } from "@/sanity/lib/serverClient";
+import { requireAuth } from "@/app/lib/auth";
 
 export interface Order {
   _id: string;
@@ -29,84 +32,70 @@ export interface Order {
   createdAt: string;
 }
 
-export async function fetchOrders(): Promise<Order[]> {
-  const query = `*[_type == "order"] | order(createdAt desc) {
+const ORDER_PROJECTION = `{
+  _id,
+  orderId,
+  user,
+  "items": coalesce(items[]->{
     _id,
-    orderId,
-    user,
-    "items": items[]->{
-      _id,
-      title,
-      "productImage": productImage.asset->url,
-      price
-    },
-    itemPrices,
-    itemQuantities,
-    total,
-    status,
-    paymentMethod,
-    createdAt
-  }`;
+    title,
+    "productImage": productImage.asset->url,
+    price
+  }, []),
+  "itemPrices": coalesce(itemPrices, []),
+  "itemQuantities": coalesce(itemQuantities, []),
+  "total": coalesce(total, 0),
+  status,
+  dispatchedAt,
+  paymentMethod,
+  createdAt
+}`;
 
-  const orders: Order[] = await serverClient.fetch(query);
+export async function fetchOrders(): Promise<Order[]> {
+  await requireAuth();
+  const query = `*[_type == "order"] | order(createdAt desc) ${ORDER_PROJECTION}`;
+  const orders: Order[] = await serverClient.fetch(
+    query,
+    {},
+    { cache: "no-store" }
+  );
   return orders;
 }
 
 export async function fetchOrderById(id: string): Promise<Order | null> {
-  const query = `*[_type == "order" && _id == $id][0]{
-    _id,
-    orderId,
-    user,
-    "items": items[]->{
-      _id,
-      title,
-      "productImage": productImage.asset->url,
-      price
-    },
-    itemPrices,
-    itemQuantities,
-    total,
-    status,
-    paymentMethod,
-    createdAt
-  }`;
-
-  const order: Order = await serverClient.fetch(query, { id }, { cache: "no-store" });
+  await requireAuth();
+  const query = `*[_type == "order" && _id == $id][0] ${ORDER_PROJECTION}`;
+  const order: Order = await serverClient.fetch(
+    query,
+    { id },
+    { cache: "no-store" }
+  );
   return order || null;
 }
 
-// export async function fetchDispatchedOrders(): Promise<Order[]> {
-//   const query = `*[_type == "order" && status == "Dispatched"]{
-//     _id,
-//     orderId,
-//     user,
-//     "items": items[]->{
-//       _id,
-//       title,
-//       "productImage": productImage.asset->url,
-//       price
-//     },
-//     itemPrices,
-//     itemQuantities,
-//     total,
-//     status,
-//     dispatchedAt,
-//     paymentMethod,
-//     createdAt
-//   } | order(dispatchedAt desc)`;
+export async function fetchDispatchedOrders(): Promise<Order[]> {
+  await requireAuth();
+  return await serverClient.fetch(
+    `*[_type == "order" && status == "Dispatched"] | order(coalesce(dispatchedAt, createdAt, _createdAt) desc) ${ORDER_PROJECTION}`,
+    {},
+    { cache: "no-store" }
+  );
+}
 
-//   const orders: Order[] = await serverClient.fetch(query);
-//   return orders;
-// }
+export async function fetchShippedOrders(): Promise<Order[]> {
+  await requireAuth();
+  return await serverClient.fetch(
+    `*[_type == "order" && status == "Shipped"] | order(coalesce(dispatchedAt, createdAt, _createdAt) desc) ${ORDER_PROJECTION}`,
+    {},
+    { cache: "no-store" }
+  );
+}
 
-export const fetchDispatchedOrders = async () => {
-  return await serverClient.fetch(`*[_type == "order" && status == "Dispatched"] | order(_createdAt desc)`);
-};
-
-export const fetchShippedOrders = async () => {
-  return await serverClient.fetch(`*[_type == "order" && status == "Shipped"] | order(_createdAt desc)`);
-};
-
-export const fetchDeliveredOrders = async () => {
-  return await serverClient.fetch(`*[_type == "order" && status == "Delivered"] | order(_createdAt desc)`);
-};
+export async function fetchDeliveredOrders(): Promise<Order[]> {
+  await requireAuth();
+  return await serverClient.fetch(
+    `*[_type == "order" && status == "Delivered"] | order(coalesce(dispatchedAt, createdAt, _createdAt) desc) ${ORDER_PROJECTION}`,
+    {},
+    { cache: "no-store" }
+  );
+}

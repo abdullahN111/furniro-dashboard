@@ -9,13 +9,17 @@ const Layout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen w-full">
+    <div className="flex min-h-screen w-full bg-[--bg] text-[--text]">
       <Sidebar />
 
-      <div className="flex-1 flex flex-col min-w-0 p-4 md:p-6 lg:p-3">
+      <div className="flex-1 flex flex-col min-w-0">
         <Navbar />
-        <div className="flex-1 overflow-x-auto">{children}</div>
-        <Footer />
+        <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 overflow-x-hidden">
+          {children}
+        </main>
+        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+          <Footer />
+        </div>
       </div>
     </div>
   );

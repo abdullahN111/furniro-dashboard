@@ -12,8 +12,9 @@ interface DayData {
 
 const DailyInsightsTable = ({ days }: { days: DayData[] }) => {
   const bestDay = useMemo(() => {
-    if (days.length === 0) return null;
-    return days.reduce((best, d) => (d.revenue > best.revenue ? d : best));
+    const active = days.filter((d) => d.revenue > 0);
+    if (active.length === 0) return null;
+    return active.reduce((best, d) => (d.revenue > best.revenue ? d : best));
   }, [days]);
 
   const activeDays = days.filter((d) => d.orders > 0);
@@ -26,40 +27,50 @@ const DailyInsightsTable = ({ days }: { days: DayData[] }) => {
   const sortedDays = [...days].reverse().filter((d) => d.orders > 0);
 
   return (
-    <div className="mt-6 border-t border-[#2e374a] pt-4">
+    <div className="mt-6 border-t border-slate-800/80 pt-5">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
-        <h3 className="text-[--textSoft] text-sm font-bold">Daily Breakdown</h3>
-        <div className="flex gap-4 text-xs text-[--textSoft]">
+        <h3 className="text-slate-200 text-sm font-semibold">
+          Daily Activity Breakdown
+        </h3>
+        <div className="flex flex-wrap gap-4 text-xs text-slate-400">
           <span>
             Active days:{" "}
-            <span className="text-[--text] font-semibold">
+            <span className="text-slate-100 font-semibold">
               {activeDays.length}/{days.length}
             </span>
           </span>
           <span>
             Avg order value:{" "}
-            <span className="text-[--text] font-semibold">
+            <span className="text-emerald-400 font-semibold">
               ${avgOrderValue.toFixed(2)}
             </span>
           </span>
         </div>
       </div>
 
-      <div className="max-h-[280px] overflow-y-auto rounded-md border border-[#2e374a]">
+      <div className="max-h-[280px] overflow-y-auto rounded-xl border border-slate-800">
         <table className="w-full text-xs">
-          <thead className="bg-[#1e2943] text-[--textSoft] sticky top-0">
+          <thead className="bg-slate-900/95 text-slate-400 sticky top-0">
             <tr>
-              <th className="text-left p-2 font-medium">Date</th>
-              <th className="text-right p-2 font-medium">Orders</th>
-              <th className="text-right p-2 font-medium">Revenue</th>
-              <th className="text-right p-2 font-medium">Avg / Order</th>
+              <th className="text-left px-3.5 py-2.5 font-semibold uppercase tracking-wider">
+                Date
+              </th>
+              <th className="text-right px-3.5 py-2.5 font-semibold uppercase tracking-wider">
+                Orders
+              </th>
+              <th className="text-right px-3.5 py-2.5 font-semibold uppercase tracking-wider">
+                Revenue
+              </th>
+              <th className="text-right px-3.5 py-2.5 font-semibold uppercase tracking-wider">
+                Avg / Order
+              </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-slate-800/70">
             {sortedDays.length === 0 ? (
               <tr>
-                <td colSpan={4} className="p-4 text-center text-[--textSoft]">
-                  No orders in this period.
+                <td colSpan={4} className="p-6 text-center text-slate-400">
+                  No orders recorded in this 30-day window.
                 </td>
               </tr>
             ) : (
@@ -70,23 +81,25 @@ const DailyInsightsTable = ({ days }: { days: DayData[] }) => {
                 return (
                   <tr
                     key={day.dateKey}
-                    className={`border-t border-[#2e374a] ${isBest ? "bg-teal-900/30" : ""}`}
+                    className={`transition-colors hover:bg-slate-800/40 ${
+                      isBest ? "bg-emerald-500/10" : ""
+                    }`}
                   >
-                    <td className="p-2 text-[--text]">
-                      {day.fullDate}
+                    <td className="px-3.5 py-2.5 text-slate-200">
+                      <span>{day.fullDate}</span>
                       {isBest && (
-                        <span className="ml-2 text-teal-400 text-[10px] font-semibold">
-                          ★ BEST DAY
+                        <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-semibold">
+                          ★ Peak Day
                         </span>
                       )}
                     </td>
-                    <td className="p-2 text-right text-[--text]">
+                    <td className="px-3.5 py-2.5 text-right text-slate-200 font-medium">
                       {day.orders}
                     </td>
-                    <td className="p-2 text-right text-[--text] font-medium">
+                    <td className="px-3.5 py-2.5 text-right text-emerald-400 font-semibold">
                       ${day.revenue.toFixed(2)}
                     </td>
-                    <td className="p-2 text-right text-[--textSoft]">
+                    <td className="px-3.5 py-2.5 text-right text-slate-400">
                       {day.orders > 0 ? `$${avg.toFixed(2)}` : "—"}
                     </td>
                   </tr>

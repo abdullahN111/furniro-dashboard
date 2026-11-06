@@ -19,7 +19,7 @@ const WINDOW_DAYS = 30;
 
 interface DayData {
   dateKey: string;
-  label: string; 
+  label: string;
   fullDate: string;
   orders: number;
   revenue: number;
@@ -28,7 +28,7 @@ interface DayData {
 const Chart = () => {
   const [allOrders, setAllOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [periodOffset, setPeriodOffset] = useState(0); // 0 = most recent 30 days
+  const [periodOffset, setPeriodOffset] = useState(0);
 
   useEffect(() => {
     const loadOrders = async () => {
@@ -44,7 +44,6 @@ const Chart = () => {
     loadOrders();
   }, []);
 
-  
   const { rangeStart, rangeEnd, rangeLabel } = useMemo(() => {
     const today = new Date();
     today.setHours(23, 59, 59, 999);
@@ -63,7 +62,7 @@ const Chart = () => {
     return {
       rangeStart: start,
       rangeEnd: end,
-      rangeLabel: `${fmt(start)} - ${fmt(end)}, ${year}`,
+      rangeLabel: `${fmt(start)} – ${fmt(end)}, ${year}`,
     };
   }, [periodOffset]);
 
@@ -74,6 +73,7 @@ const Chart = () => {
     while (cursor <= rangeEnd) {
       const dateKey = cursor.toISOString().split("T")[0];
       const dayOrders = allOrders.filter((order) => {
+        if (!order.createdAt) return false;
         const orderDate = new Date(order.createdAt);
         return orderDate.toISOString().split("T")[0] === dateKey;
       });
@@ -92,7 +92,7 @@ const Chart = () => {
         }),
         orders: dayOrders.length,
         revenue:
-          Math.round(dayOrders.reduce((sum, o) => sum + o.total, 0) * 100) /
+          Math.round(dayOrders.reduce((sum, o) => sum + (o.total || 0), 0) * 100) /
           100,
       });
 
@@ -110,7 +110,6 @@ const Chart = () => {
 
   const isCurrentPeriod = periodOffset === 0;
 
-
   const earliestOrderDate = useMemo(() => {
     if (allOrders.length === 0) return null;
     return allOrders.reduce((earliest, o) => {
@@ -126,77 +125,81 @@ const Chart = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      <div className="w-full bg-[#111827] border border-slate-800 rounded-2xl p-6 flex justify-center items-center h-80">
+        <div className="animate-spin rounded-full h-10 w-10 border-2 border-indigo-500 border-t-transparent" />
       </div>
     );
   }
 
   return (
-    <div className="container bg-[--bgSoft] p-4 lg:p-2 xl:p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-2 mb-2">
+    <div className="w-full bg-[#111827] p-5 sm:p-6 rounded-2xl shadow-lg border border-slate-800/90">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 mb-4 border-b border-slate-800/80">
         <div>
-          <h2 className="text-[--textSoft] text-lg font-bold">Revenue Recap</h2>
-          <p className="text-xs text-[--textSoft] opacity-70">{rangeLabel}</p>
+          <h2 className="text-white text-base sm:text-lg font-bold">
+            Revenue &amp; Order Velocity
+          </h2>
+          <p className="text-xs text-slate-400 mt-0.5">{rangeLabel}</p>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setPeriodOffset((p) => p + 1)}
             disabled={!canGoOlder && chartData.length > 0}
-            className="text-xs px-3 py-1.5 rounded-md bg-[#1e2943] text-[--text] hover:bg-[#2a3a5c] disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-xs font-medium px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
-            ← Previous 30 Days
+            ← Prev 30d
           </button>
           <button
             onClick={() => setPeriodOffset((p) => Math.max(0, p - 1))}
             disabled={isCurrentPeriod}
-            className="text-xs px-3 py-1.5 rounded-md bg-[#1e2943] text-[--text] hover:bg-[#2a3a5c] disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-xs font-medium px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
-            Next 30 Days →
+            Next 30d →
           </button>
           {!isCurrentPeriod && (
             <button
               onClick={() => setPeriodOffset(0)}
-              className="text-xs px-3 py-1.5 rounded-md bg-teal-600 text-white hover:bg-teal-700"
+              className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 transition-colors"
             >
-              Today
+              Current
             </button>
           )}
         </div>
       </div>
 
-      <div className="h-[350px]">
+      <div className="h-[340px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={chartData}
-            margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+            margin={{ top: 8, right: 16, left: 4, bottom: 4 }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#2e374a" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
             <XAxis
               dataKey="label"
-              stroke="#8884d8"
+              stroke="#64748b"
+              tick={{ fontSize: 12 }}
               interval="preserveStartEnd"
-              minTickGap={20}
+              minTickGap={24}
             />
-            
             <YAxis
               yAxisId="revenue"
-              stroke="#82ca9d"
+              stroke="#34d399"
+              tick={{ fontSize: 12 }}
               tickFormatter={(v) => `$${v}`}
             />
-          
             <YAxis
               yAxisId="orders"
               orientation="right"
-              stroke="#8884d8"
+              stroke="#818cf8"
+              tick={{ fontSize: 12 }}
               allowDecimals={false}
             />
             <Tooltip
               contentStyle={{
-                background: "#151c2c",
-                border: "1px solid #2e374a",
-                borderRadius: "8px",
+                background: "#0f172a",
+                border: "1px solid #1e293b",
+                borderRadius: "12px",
+                color: "#f8fafc",
               }}
               formatter={(value, name) => {
                 if (name === "Revenue") return [`$${value}`, "Revenue"];
@@ -214,8 +217,8 @@ const Chart = () => {
               yAxisId="orders"
               type="monotone"
               dataKey="orders"
-              stroke="#8884d8"
-              strokeWidth={2}
+              stroke="#818cf8"
+              strokeWidth={2.5}
               dot={false}
               name="Orders"
             />
@@ -223,8 +226,8 @@ const Chart = () => {
               yAxisId="revenue"
               type="monotone"
               dataKey="revenue"
-              stroke="#82ca9d"
-              strokeWidth={2}
+              stroke="#34d399"
+              strokeWidth={2.5}
               dot={false}
               name="Revenue"
             />
@@ -232,9 +235,17 @@ const Chart = () => {
         </ResponsiveContainer>
       </div>
 
-      <div className="mt-4 flex justify-between text-xs text-[--textSoft] border-t border-[#2e374a] pt-3">
-        <div>Total Orders: {totals.orders}</div>
-        <div>Total Revenue: ${totals.revenue.toFixed(2)}</div>
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400 border-t border-slate-800/80 pt-3.5">
+        <div>
+          Window Orders:{" "}
+          <span className="font-semibold text-slate-200">{totals.orders}</span>
+        </div>
+        <div>
+          Window Volume:{" "}
+          <span className="font-semibold text-emerald-400">
+            ${totals.revenue.toFixed(2)}
+          </span>
+        </div>
       </div>
 
       <DailyInsightsTable days={chartData} />

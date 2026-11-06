@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import { connectToDB } from "@/app/lib/utils";
 import { User } from "@/app/lib/models";
@@ -6,18 +7,37 @@ import { User } from "@/app/lib/models";
 export async function POST(req: Request) {
   try {
     const { token, password } = await req.json();
-    if (!token || !password) {
-      return NextResponse.json({ error: "Token and password are required" }, { status: 400 });
+    if (!token || typeof token !== "string" || !password || typeof password !== "string") {
+      return NextResponse.json(
+        { error: "Token and new password are required" },
+        { status: 400 }
+      );
     }
 
+    if (password.length < 6) {
+      return NextResponse.json(
+        { error: "Password must be at least 6 characters long" },
+        { status: 400 }
+      );
+    }
+
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
     await connectToDB();
+    // Support hashed token (or legacy unhashed token if issued just prior)
     const user = await User.findOne({
-      forgotPasswordToken: token,
-      forgotPasswordTokenExpiry: { $gt: Date.now() }, 
+      forgotPasswordToken: { $in: [hashedToken, token] },
+      forgotPasswordTokenExpiry: { $gt: Date.now() },
     });
 
     if (!user) {
-      return NextResponse.json({ error: "Invalid or expired token" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid or expired reset token" },
+        { status: 400 }
+      );
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -26,9 +46,12 @@ export async function POST(req: Request) {
     user.forgotPasswordTokenExpiry = undefined;
     await user.save();
 
-    return NextResponse.json({ message: "Password reset successful" });
+    return NextResponse.json({ message: "Password has been reset successfully" });
   } catch (error) {
-    console.error("❌ Reset password error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    console.error("Reset password error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

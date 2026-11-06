@@ -3,16 +3,22 @@
 @tailwind utilities;
 
 :root {
-  --bg: #151c2c;
-  --bgSoft: #182237;
-  --textDark: #1e2943;
-  --text: white;
-  --textSoft: #b7bac1;
+  --bg: #0b0f19;
+  --bgSoft: #111827;
+  --bgElevated: #1e293b;
+  --textDark: #1e293b;
+  --border: #1f2937;
+  --text: #f8fafc;
+  --textSoft: #94a3b8;
+  --accent: #6366f1;
+  --accentHover: #4f46e5;
+  --radius: 0.625rem;
 }
 
 body {
   color: var(--text);
   background-color: var(--bg);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
 @layer utilities {
@@ -21,22 +27,21 @@ body {
   }
 }
 
-@layer base {
-  :root {
-    --radius: 0.5rem;
-  }
+/* Custom sleek scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-/* Custom scrollbar */
-.sidebar::-webkit-scrollbar {
-  width: 5px;
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.4);
 }
 
-.sidebar::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 10px;
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 9999px;
 }
 
-.sidebar::-webkit-scrollbar-thumb:hover {
-  background: #555;
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
 }

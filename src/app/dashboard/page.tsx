@@ -7,17 +7,19 @@ import Chart from "../components/admin/chart/Chart";
 
 const Admin = () => {
   return (
-    <div className="flex flex-col xl:flex-row gap-3 sm:gap-4 lg:gap-2 xl:gap-4 mt-6 sm:mt-10">
-      <div className="flex-1 flex flex-col gap-3 min-w-0">
-        <ReportCards />
+    <div className="space-y-6">
+      <ReportCards />
 
-        <Chart />
-        <Order heading={"Orders"} />
-        <Transactions heading={"Transactions"} />
-        <Products heading="Products" />
+      <div className="flex flex-col xl:flex-row gap-6 items-start">
+        <div className="flex-1 flex flex-col gap-6 min-w-0 w-full">
+          <Chart />
+          <Order heading="Recent Orders" />
+          <Transactions heading="Recent Transactions" />
+          <Products heading="Catalog Highlights" />
+        </div>
+
+        <Rightbar />
       </div>
-
-      <Rightbar />
     </div>
   );
 };

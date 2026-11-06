@@ -12,8 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { DialogClose } from "@radix-ui/react-dialog";
 import { toast } from "sonner";
+import { MdAdd } from "react-icons/md";
 
 interface AddProductModalProps {
   onProductAdded: () => void;
@@ -23,8 +23,6 @@ const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [error, setError] = useState("");
 
   const [newProduct, setNewProduct] = useState({
     title: "",
@@ -40,22 +38,27 @@ const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
   });
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
 
     setNewProduct((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: name === "inventoryInStock" ? Number(value) : value,
       slug:
-        name === "title" ? value.toLowerCase().replace(/ /g, "-") : prev.slug,
+        name === "title"
+          ? value
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/^-|-$/g, "")
+          : prev.slug,
     }));
 
     setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
+    if (e.target.files && e.target.files[0]) {
       setNewProduct((prev) => ({ ...prev, productImage: e.target.files![0] }));
       setErrors((prevErrors) => ({ ...prevErrors, productImage: "" }));
     }
@@ -67,13 +70,14 @@ const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
     if (!newProduct.title.trim()) newErrors.title = "Title is required";
     if (!newProduct.description.trim())
       newErrors.description = "Description is required";
-    if (!newProduct.price.trim()) newErrors.price = "Price is required";
+    if (!newProduct.price.trim() || Number(newProduct.price) < 0)
+      newErrors.price = "Valid price is required";
     if (!newProduct.tags.trim()) newErrors.tags = "Tags are required";
     if (!newProduct.dicountPercentage.trim())
-      newErrors.dicountPercentage = "Discount is required";
+      newErrors.dicountPercentage = "Discount percentage is required (use 0 for none)";
     if (!newProduct.featured.trim())
-      newErrors.featured = "Featured field is required";
-    if (newProduct.inventoryInStock <= 0)
+      newErrors.featured = "Featured label is required";
+    if (Number(newProduct.inventoryInStock) <= 0)
       newErrors.inventoryInStock = "Stock must be greater than 0";
     if (!newProduct.productImage)
       newErrors.productImage = "Product image is required";
@@ -84,7 +88,6 @@ const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
     }
 
     setLoading(true);
-    setError("");
 
     try {
       const formData = new FormData();
@@ -96,7 +99,7 @@ const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
       formData.append("isNew", String(newProduct.isNew));
       formData.append(
         "inventoryInStock",
-        newProduct.inventoryInStock.toString(),
+        newProduct.inventoryInStock.toString()
       );
       formData.append("featured", newProduct.featured);
       formData.append("slug", newProduct.slug);
@@ -115,9 +118,20 @@ const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
       if (response.ok) {
         onProductAdded();
         setIsOpen(false);
-        toast.success("Product added successfully.");
+        setNewProduct({
+          title: "",
+          description: "",
+          price: "",
+          tags: "",
+          dicountPercentage: "",
+          isNew: false,
+          inventoryInStock: 0,
+          featured: "",
+          slug: "",
+          productImage: null,
+        });
+        toast.success("Product added to catalog.");
       } else {
-        console.error("Failed to add product:", result.message);
         toast.error(result.message || "Failed to add product");
       }
     } catch (error) {
@@ -131,80 +145,84 @@ const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-[#3f3fad] hover:bg-[#313195] text-white px-4 py-2 rounded-lg text-[15px] sm:text-base font-medium shadow-md transition-all">
-          + Add Product
+        <Button className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold shadow-lg shadow-indigo-600/20 transition-all inline-flex items-center gap-1.5">
+          <MdAdd size={18} />
+          <span>Add Product</span>
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="bg-[--bgSoft] text-[--text] w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl p-6 shadow-xl border border-[#2e374a]">
-        <DialogHeader className="border-b border-gray-100 pb-4">
-          <DialogTitle className="text-2xl font-bold text-center">
-            Add New Product
+      <DialogContent className="bg-[#111827] text-slate-100 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl p-6 shadow-2xl border border-slate-800">
+        <DialogHeader className="border-b border-slate-800 pb-4">
+          <DialogTitle className="text-xl font-bold text-white">
+            Add New Catalog Product
           </DialogTitle>
-          <DialogClose asChild></DialogClose>
         </DialogHeader>
 
-        <div className="space-y-5 mt-5">
+        <div className="space-y-4 mt-4">
           <div>
-            <label className="block text-sm font-medium text-[--textSoft] mb-2">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
               Product Title *
             </label>
             <Input
               name="title"
+              value={newProduct.title}
               onChange={handleInputChange}
-              placeholder="Enter product title"
-              className="w-full bg-[--bg] text-[--text] border border-[#2e374a] placeholder:text-[--textSoft] focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g. Nordic Oak Lounge Chair"
+              className="w-full bg-slate-900 text-slate-100 border border-slate-800 rounded-xl placeholder:text-slate-500 focus:border-indigo-500"
             />
             {errors.title && (
-              <p className="text-red-500 text-xs mt-1">{errors.title}</p>
+              <p className="text-rose-400 text-xs mt-1">{errors.title}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[--textSoft] mb-2">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
               Description *
             </label>
             <Textarea
               name="description"
+              value={newProduct.description}
               onChange={handleInputChange}
-              placeholder="Write a detailed product description"
-              className="w-full bg-[--bg] text-[--text] border border-[#2e374a] placeholder:text-[--textSoft] focus:ring-2 focus:ring-blue-500"
+              placeholder="Write a detailed product description..."
+              className="w-full bg-slate-900 text-slate-100 border border-slate-800 rounded-xl placeholder:text-slate-500 focus:border-indigo-500"
             />
             {errors.description && (
-              <p className="text-red-500 text-xs mt-1">{errors.description}</p>
+              <p className="text-rose-400 text-xs mt-1">{errors.description}</p>
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[--textSoft] mb-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
                 Price ($) *
               </label>
               <Input
                 name="price"
                 type="number"
                 step="0.01"
+                value={newProduct.price}
                 onChange={handleInputChange}
                 placeholder="0.00"
-                className="w-full bg-[--bg] text-[--text] border border-[#2e374a] placeholder:text-[--textSoft] focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-slate-900 text-slate-100 border border-slate-800 rounded-xl placeholder:text-slate-500 focus:border-indigo-500"
               />
               {errors.price && (
-                <p className="text-red-500 text-xs mt-1">{errors.price}</p>
+                <p className="text-rose-400 text-xs mt-1">{errors.price}</p>
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-[--textSoft] mb-2">
-                Discount (%)
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                Discount (%) *
               </label>
               <Input
                 name="dicountPercentage"
                 type="number"
+                value={newProduct.dicountPercentage}
                 onChange={handleInputChange}
                 placeholder="e.g. 15"
-                className="w-full bg-[--bg] text-[--text] border border-[#2e374a] placeholder:text-[--textSoft] focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-slate-900 text-slate-100 border border-slate-800 rounded-xl placeholder:text-slate-500 focus:border-indigo-500"
               />
               {errors.dicountPercentage && (
-                <p className="text-red-500 text-xs mt-1">
+                <p className="text-rose-400 text-xs mt-1">
                   {errors.dicountPercentage}
                 </p>
               )}
@@ -212,83 +230,88 @@ const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[--textSoft] mb-2">
-              Tags (comma-separated)
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+              Tags (comma-separated) *
             </label>
             <Input
               name="tags"
+              value={newProduct.tags}
               onChange={handleInputChange}
-              placeholder="e.g. electronics, phone, sale"
-              className="w-full bg-[--bg] text-[--text] border border-[#2e374a] placeholder:text-[--textSoft] focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g. chair, living room, minimal"
+              className="w-full bg-slate-900 text-slate-100 border border-slate-800 rounded-xl placeholder:text-slate-500 focus:border-indigo-500"
             />
             {errors.tags && (
-              <p className="text-red-500 text-xs mt-1">{errors.tags}</p>
+              <p className="text-rose-400 text-xs mt-1">{errors.tags}</p>
             )}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[--textSoft] mb-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
                 Stock Quantity *
               </label>
               <Input
                 name="inventoryInStock"
                 type="number"
                 onChange={handleInputChange}
-                placeholder="e.g. 100"
-                className="w-full bg-[--bg] text-[--text] border border-[#2e374a] placeholder:text-[--textSoft] focus:ring-2 focus:ring-blue-500"
+                placeholder="e.g. 50"
+                className="w-full bg-slate-900 text-slate-100 border border-slate-800 rounded-xl placeholder:text-slate-500 focus:border-indigo-500"
               />
               {errors.inventoryInStock && (
-                <p className="text-red-500 text-xs mt-1">
+                <p className="text-rose-400 text-xs mt-1">
                   {errors.inventoryInStock}
                 </p>
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-[--textSoft] mb-2">
-                Featured Label
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                Featured Category *
               </label>
               <Input
                 name="featured"
+                value={newProduct.featured}
                 onChange={handleInputChange}
                 placeholder="e.g. Best Seller"
-                className="w-full bg-[--bg] text-[--text] border border-[#2e374a] placeholder:text-[--textSoft] focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-slate-900 text-slate-100 border border-slate-800 rounded-xl placeholder:text-slate-500 focus:border-indigo-500"
               />
               {errors.featured && (
-                <p className="text-red-500 text-xs mt-1">{errors.featured}</p>
+                <p className="text-rose-400 text-xs mt-1">{errors.featured}</p>
               )}
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-[--textSoft] mb-2">
-              Slug (Auto-generated)
-            </label>
-            <Input
-              name="slug"
-              value={newProduct.slug}
-              disabled
-              className="w-full bg-[--bg] text-[--text] border border-[#2e374a] placeholder:text-[--textSoft] focus:ring-2 focus:ring-blue-500"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                URL Slug (Auto-generated)
+              </label>
+              <Input
+                name="slug"
+                value={newProduct.slug}
+                disabled
+                className="w-full bg-slate-950 text-slate-400 border border-slate-800 rounded-xl font-mono text-xs"
+              />
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-slate-900 border border-slate-800 rounded-xl mt-5">
+              <span className="text-xs font-semibold text-slate-300">
+                Display &ldquo;New Arrival&rdquo; Badge
+              </span>
+              <Switch
+                checked={newProduct.isNew}
+                onCheckedChange={(checked) =>
+                  setNewProduct((prev) => ({ ...prev, isNew: checked }))
+                }
+              />
+            </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3 bg-[--bg] border border-[#2e374a] rounded-lg">
-            <Switch
-              checked={newProduct.isNew}
-              onCheckedChange={(checked) =>
-                setNewProduct((prev) => ({ ...prev, isNew: checked }))
-              }
-            />
-            <span className="text-sm font-medium text-[--textSoft]">
-              Mark as New Product
-            </span>
-          </div>
-
           <div>
-            <label className="block text-sm font-medium text-[--textSoft] mb-2">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
               Product Image *
             </label>
             <div
-              className="border-2 border-dashed bg-[--bg] border-[#2e374a] rounded-lg p-5 flex flex-col items-center justify-center text-center cursor-pointer transition-colors hover:border-[#2e374ae3]"
+              className="border-2 border-dashed bg-slate-900/60 border-slate-800 rounded-xl p-5 flex flex-col items-center justify-center text-center cursor-pointer transition-colors hover:border-indigo-500/50"
               onDragOver={(e) => e.preventDefault()}
               onDrop={(e) => {
                 e.preventDefault();
@@ -309,83 +332,51 @@ const AddProduct: React.FC<AddProductModalProps> = ({ onProductAdded }) => {
                 className="hidden"
                 id="fileInput"
               />
-              <label htmlFor="fileInput" className="cursor-pointer">
+              <label htmlFor="fileInput" className="cursor-pointer w-full">
                 {newProduct.productImage ? (
                   <div className="flex flex-col items-center">
-                    <span className="text-sm font-medium text-[--text] mb-1">
+                    <span className="text-sm font-semibold text-indigo-300 mb-0.5">
                       {newProduct.productImage.name}
                     </span>
-                    <span className="text-xs text-[--textSoft]">
-                      Click to change
+                    <span className="text-xs text-slate-400">
+                      Click to replace file
                     </span>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center">
-                    <svg
-                      className="w-8 h-8 text-gray-400 mb-2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                    <span className="text-sm text-gray-600">
-                      Drag & drop or click to upload
+                    <span className="text-sm font-medium text-slate-300">
+                      Drag &amp; drop or click to upload image
                     </span>
-                    <span className="text-xs text-gray-400 mt-1">
-                      PNG, JPG, GIF up to 10MB
+                    <span className="text-xs text-slate-500 mt-1">
+                      JPG, PNG, WEBP, or GIF up to 10MB
                     </span>
                   </div>
                 )}
               </label>
             </div>
             {errors.productImage && (
-              <p className="text-red-500 text-xs mt-1">{errors.productImage}</p>
+              <p className="text-rose-400 text-xs mt-1">
+                {errors.productImage}
+              </p>
             )}
           </div>
         </div>
 
-        <div className="mt-6 pt-4 border-t border-gray-100">
+        <div className="mt-6 pt-4 border-t border-slate-800 flex justify-end gap-3">
+          <Button
+            variant="outline"
+            onClick={() => setIsOpen(false)}
+            disabled={loading}
+            className="border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 rounded-xl"
+          >
+            Cancel
+          </Button>
           <Button
             onClick={addProduct}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors shadow-md"
+            className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 rounded-xl font-semibold shadow-lg shadow-indigo-600/20"
             disabled={loading}
           >
-            {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg
-                  className="animate-spin h-5 w-5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 
-          0 0 5.373 0 12h4zm2 5.291A7.962 
-          7.962 0 014 12H0c0 3.042 1.135 
-          5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                Adding...
-              </span>
-            ) : (
-              "Add Product"
-            )}
+            {loading ? "Uploading..." : "Create Product"}
           </Button>
         </div>
       </DialogContent>

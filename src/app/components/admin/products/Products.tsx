@@ -16,7 +16,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import LocalSearchBar from "@/app/dashboard/search/LocalSearchBar";
-import { useSearch } from "@/app/dashboard/search/SearchContext";
 import Image from "next/image";
 import { fetchProducts, Product } from "./ProductData";
 import Link from "next/link";
@@ -29,93 +28,133 @@ interface ProductsProps {
   heading?: string;
 }
 
-const Products = ({ showAll = false, heading }: ProductsProps) => {
-  const { pageSearchQuery } = useSearch();
+const Products = ({ showAll = false, heading = "Products Catalog" }: ProductsProps) => {
+  const [searchQuery, setSearchQuery] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getProducts = async () => {
-      const fetchedProducts = await fetchProducts();
-      setProducts(fetchedProducts);
-      setLoading(false);
+      try {
+        setLoading(true);
+        const fetchedProducts = await fetchProducts();
+        setProducts(fetchedProducts);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+      } finally {
+        setLoading(false);
+      }
     };
     getProducts();
   }, []);
 
   const filteredProducts = useMemo(() => {
-    if (!pageSearchQuery) return products;
+    if (!searchQuery.trim()) return products;
+    const q = searchQuery.toLowerCase();
     return products.filter(
       (p) =>
-        p.title.toLowerCase().includes(pageSearchQuery.toLowerCase()) ||
-        p._id.toLowerCase().includes(pageSearchQuery.toLowerCase())
+        p.title.toLowerCase().includes(q) ||
+        p._id.toLowerCase().includes(q) ||
+        (p.tags || "").toLowerCase().includes(q)
     );
-  }, [pageSearchQuery, products]);
+  }, [searchQuery, products]);
 
   const displayedProducts = useMemo(
     () => (showAll ? filteredProducts : filteredProducts.slice(0, 5)),
     [filteredProducts, showAll]
   );
 
-  const columns = [
-    {
-      accessorKey: "index",
-      header: "#",
-      cell: ({ row }: { row: { index: number } }) => row.index + 1,
-    },
-    {
-      accessorKey: "image",
-      header: "Image",
-      cell: ({ row }: { row: { original: Product } }) => (
-        <Link href={`/dashboard/products/product/${row.original.slug.current}`}>
-          <Image
-            src={row.original.image}
-            alt={row.original.title}
-            width={50}
-            height={50}
-            className="rounded-md object-cover w-[50px] h-[50px] cursor-pointer"
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "index",
+        header: "#",
+        cell: ({ row }: { row: { index: number } }) => (
+          <span className="text-xs font-mono text-slate-400">
+            {row.index + 1}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "image",
+        header: "Product",
+        cell: ({ row }: { row: { original: Product } }) => (
+          <Link
+            href={`/dashboard/products/product/${row.original.slug.current}`}
+            className="flex items-center gap-3 group"
+          >
+            <Image
+              src={row.original.image || "/images/noproduct.jpg"}
+              alt={row.original.title}
+              width={44}
+              height={44}
+              className="rounded-xl object-cover w-11 h-11 border border-slate-700 shrink-0"
+            />
+            <div className="min-w-0">
+              <div className="font-semibold text-slate-100 group-hover:text-indigo-400 transition-colors truncate">
+                {row.original.title}
+              </div>
+              {row.original.tags && (
+                <div className="text-xs text-slate-400 truncate max-w-[220px]">
+                  {row.original.tags}
+                </div>
+              )}
+            </div>
+          </Link>
+        ),
+      },
+      {
+        accessorKey: "price",
+        header: "Price",
+        cell: ({ row }: { row: { original: Product } }) => (
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-slate-100">
+              ${row.original.price}
+            </span>
+            {row.original.dicountPercentage && (
+              <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-rose-500/15 text-rose-300 border border-rose-500/30">
+                {row.original.dicountPercentage.text}
+              </span>
+            )}
+          </div>
+        ),
+      },
+      {
+        accessorKey: "stock",
+        header: "Inventory",
+        cell: ({ row }: { row: { original: Product } }) => {
+          const stock = row.original.inventoryInStock;
+          return (
+            <span
+              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
+                stock > 10
+                  ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
+                  : stock > 0
+                    ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
+                    : "bg-rose-500/15 text-rose-300 border-rose-500/30"
+              }`}
+            >
+              {stock > 0 ? `${stock} in stock` : "Out of stock"}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: "action",
+        header: "Actions",
+        cell: ({ row }: { row: { original: Product } }) => (
+          <ProductActions
+            action={row.original._id}
+            onDelete={(id) =>
+              setProducts((prev) => prev.filter((p) => p._id !== id))
+            }
+            link={`/dashboard/products/product/${row.original.slug.current}`}
           />
-        </Link>
-      ),
-    },
-    {
-      accessorKey: "name",
-      header: "Product Name",
-      cell: ({ row }: { row: { original: Product } }) => (
-        <Link
-          href={`/dashboard/products/product/${row.original.slug.current}`}
-          className="cursor-pointer"
-        >
-          {row.original.title}
-        </Link>
-      ),
-    },
-    {
-      accessorKey: "price",
-      header: "Price",
-      cell: ({ row }: { row: { original: Product } }) =>
-        `$${row.original.price}`,
-    },
-    {
-      accessorKey: "stock",
-      header: "Stock Quantity",
-      cell: ({ row }: { row: { original: Product } }) =>
-        `${row.original.inventoryInStock}`,
-    },
-    {
-      accessorKey: "action",
-      header: "Action",
-      cell: ({ row }: { row: { original: Product } }) => (
-        <ProductActions
-          action={row.original._id}
-          onDelete={(id) =>
-            setProducts((prev) => prev.filter((p) => p._id !== id))
-          }
-          link={`/dashboard/products/product/${row.original.slug.current}`}
-        />
-      ),
-    },
-  ];
+        ),
+      },
+    ],
+    []
+  );
 
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
@@ -128,25 +167,39 @@ const Products = ({ showAll = false, heading }: ProductsProps) => {
     onPaginationChange: setPagination,
   });
 
-     if (loading) {
+  if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      <div className="w-full bg-[#111827] border border-slate-800 rounded-2xl p-6 flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-10 w-10 border-2 border-indigo-500 border-t-transparent" />
       </div>
     );
   }
 
   return (
-    <div className="container bg-[--bgSoft] p-4 lg:p-2 xl:p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
-      <div className="text-[--textSoft] text-lg font-bold capitalize py-2">
-        {heading}
+    <div className="w-full bg-[#111827] p-5 sm:p-6 rounded-2xl shadow-lg border border-slate-800/90">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+        <div>
+          <h2 className="text-white text-base sm:text-lg font-bold capitalize">
+            {heading}
+          </h2>
+          <p className="text-xs text-slate-400">
+            Showing {displayedProducts.length} of {filteredProducts.length} products
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <LocalSearchBar
+            value={searchQuery}
+            onChange={setSearchQuery}
+            placeholder="Search products or tags..."
+          />
+          <AddProduct onProductAdded={() => fetchProducts().then(setProducts)} />
+        </div>
       </div>
-      <div className="mt-2 mb-3 flex justify-between">
-        <LocalSearchBar scope="page" />
-        <AddProduct onProductAdded={() => fetchProducts().then(setProducts)} />
-      </div>
-      <div className="hidden lg:block w-full overflow-auto rounded-lg shadow">
-        <Table className="w-full xl:min-w-[600px]">
+
+      {/* Desktop Table */}
+      <div className="hidden lg:block w-full overflow-hidden rounded-xl border border-slate-800/80">
+        <Table className="w-full">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -162,13 +215,13 @@ const Products = ({ showAll = false, heading }: ProductsProps) => {
             ))}
           </TableHeader>
           <TableBody>
-            {loading ? (
+            {table.getRowModel().rows.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="text-center py-32 text-lg font-semibold text-[--textSoft]"
+                  className="text-center py-10 text-slate-400"
                 >
-                  Loading products...
+                  No products match your search.
                 </TableCell>
               </TableRow>
             ) : (
@@ -189,52 +242,40 @@ const Products = ({ showAll = false, heading }: ProductsProps) => {
         </Table>
       </div>
 
-      <div className="lg:hidden flex flex-col gap-4">
-        {loading ? (
-          <div className="text-center py-32 text-lg font-semibold text-[--textSoft]">
-            Loading products...
+      {/* Mobile Cards */}
+      <div className="lg:hidden flex flex-col gap-3">
+        {table.getRowModel().rows.length === 0 ? (
+          <div className="text-center py-10 text-slate-400 text-sm border border-slate-800 rounded-xl">
+            No products match your search.
           </div>
         ) : (
-          displayedProducts
-            .slice(
-              pagination.pageIndex * pagination.pageSize,
-              (pagination.pageIndex + 1) * pagination.pageSize
-            )
-            .map((product, index) => (
-              <div
-                key={product._id}
-                className="p-3 sm:p-4 border border-[#2e374a] rounded-lg shadow-md bg-[--bgSoft]"
-              >
-                <p className="text-sm text-white mb-1 cursor-pointer">
-                  #: {pagination.pageIndex * pagination.pageSize + index + 1}
-                </p>
-                <Link
-                  href={`/dashboard/products/product/${product.slug.current}`}
-                >
-                  <Image
-                    src={product.image}
-                    alt={product.title}
-                    width={50}
-                    height={50}
-                    className="rounded-md object-cover w-[50px] h-[50px] my-3"
-                  />
-                </Link>
-
-                <p className="text-sm text-white mb-1 cursor-pointer">
+          table.getRowModel().rows.map(({ original: product }) => (
+            <div
+              key={product._id}
+              className="p-4 border border-slate-800 rounded-xl bg-slate-900/50 space-y-3"
+            >
+              <div className="flex items-center gap-3">
+                <Image
+                  src={product.image || "/images/noproduct.jpg"}
+                  alt={product.title}
+                  width={48}
+                  height={48}
+                  className="rounded-xl object-cover w-12 h-12 border border-slate-700 shrink-0"
+                />
+                <div className="min-w-0 flex-1">
                   <Link
                     href={`/dashboard/products/product/${product.slug.current}`}
+                    className="font-semibold text-sm text-white hover:text-indigo-400 truncate block"
                   >
-                    Product: {product.title}
+                    {product.title}
                   </Link>
-                </p>
+                  <span className="text-xs text-slate-400">
+                    ${product.price} • {product.inventoryInStock} in stock
+                  </span>
+                </div>
+              </div>
 
-                <p className="text-sm text-white mb-1">
-                  Price: {product.price}
-                </p>
-                <p className="text-sm text-white mb-1">
-                  Stock Quantity: {product.inventoryInStock}
-                </p>
-
+              <div className="pt-2 border-t border-slate-800 flex justify-end">
                 <ProductActions
                   action={product._id}
                   onDelete={(id) =>
@@ -243,7 +284,8 @@ const Products = ({ showAll = false, heading }: ProductsProps) => {
                   link={`/dashboard/products/product/${product.slug.current}`}
                 />
               </div>
-            ))
+            </div>
+          ))
         )}
       </div>
 

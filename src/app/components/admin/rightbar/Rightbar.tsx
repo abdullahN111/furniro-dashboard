@@ -1,66 +1,69 @@
 import Image from "next/image";
-import { MdPlayCircleFilled, MdReadMore } from "react-icons/md";
+import Link from "next/link";
+import {
+  MdLocalShipping,
+  MdInsights,
+  MdSchedule,
+  MdArrowForward,
+} from "react-icons/md";
 
 const Rightbar = () => {
   return (
-    <div className="w-full max-w-[195px]">
-      <div className="hidden xl:block">
-        <div className="bg-gradient-to-t from-[#182237] to-[#253352] p-3 rounded-[10px] mb-3 relative">
-          <div className="absolute right-0 bottom-0 w-[40%] h-[40%]">
+    <aside className="w-full xl:w-[260px] shrink-0">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-1 gap-4 sticky top-24">
+        <div className="bg-gradient-to-br from-[#111827] via-[#151f38] to-[#1e1b4b] p-5 rounded-2xl border border-indigo-500/20 shadow-lg relative overflow-hidden">
+          <div className="absolute -right-2 -bottom-2 w-28 h-28 pointer-events-none">
             <Image
               src="/images/astronaut.png"
-              alt="astronaut visual"
+              alt="Fulfillment visual"
               fill
-              className="object-contain opacity-[0.2]"
+              className="object-contain opacity-15"
             />
           </div>
-          <div className="flex flex-col gap-2">
-            <span className="font-bold">🔥 Available Now</span>
-            <h3 className="text-sm">
-              How to use the new version of the admin dashboard?
-            </h3>
-            <span className="text-[--textSoft] font-semibold text-[10px]">
-              Takes less than 2 minutes to learn
+          <div className="relative z-10 flex flex-col gap-2.5">
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-indigo-300 bg-indigo-500/15 border border-indigo-500/30 px-2.5 py-1 rounded-full w-fit">
+              <MdSchedule className="text-indigo-400" size={14} />
+              Automated SLA
             </span>
-            <p className="text-[--textSoft] text-xs">
-              In this quick guide, we’ll walk you through the updated dashboard
-              interface, new navigation improvements, and shortcuts that will
-              save you time managing your workflow.
+            <h3 className="text-sm font-bold text-white leading-snug">
+              Smart Order Fulfillment Pipeline
+            </h3>
+            <p className="text-slate-300 text-xs leading-relaxed">
+              Orders marked as <strong>Dispatched</strong> automatically transition to{" "}
+              <strong>Shipped</strong> after 6 hours and <strong>Delivered</strong> after 24 hours.
             </p>
-            <a
-              href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-2 flex items-center gap-2 p-[6px] w-[max-content] bg-[#5d57c9] text-white text-xs border-none rounded-[5px] cursor-pointer"
+            <Link
+              href="/dashboard/dispatched-orders"
+              className="mt-2 inline-flex items-center gap-1.5 px-3.5 py-2 w-fit bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl shadow transition-colors"
             >
-              <MdPlayCircleFilled />
-              Watch
-            </a>
+              <MdLocalShipping size={15} />
+              <span>Open Dispatch Center</span>
+              <MdArrowForward size={13} />
+            </Link>
           </div>
         </div>
 
-        <div className="bg-gradient-to-t from-[#182237] to-[#253352] p-3 rounded-[10px] mb-4 relative">
-          <div className="flex flex-col gap-2">
-            <span className="font-bold">🚀 Coming Soon</span>
-            <h3 className="text-sm">
-              An AI Agent is coming to guide you through the dashboard!
-            </h3>
-            <span className="text-[--textSoft] font-semibold text-[10px]">
-              Your personal smart assistant
-            </span>
-            <p className="text-[--textSoft] text-xs">
-              Soon, an AI-powered Agent will be available to answer your
-              questions, provide step-by-step guidance, and make using the
-              platform even easier.
-            </p>
-            <button className="mt-2 flex items-center gap-2 p-[6px] w-[max-content] bg-[#5d57c9] text-white text-xs border-none rounded-[5px] cursor-pointer">
-              <MdReadMore />
-              Learn
-            </button>
-          </div>
+        <div className="bg-[#111827] p-5 rounded-2xl border border-slate-800 shadow-lg flex flex-col gap-2.5">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-300 bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-1 rounded-full w-fit">
+            <MdInsights className="text-emerald-400" size={14} />
+            Analytics & Reports
+          </span>
+          <h3 className="text-sm font-bold text-white leading-snug">
+            30-Day Revenue & Daily Breakdown
+          </h3>
+          <p className="text-slate-400 text-xs leading-relaxed">
+            Compare rolling 30-day revenue windows, identify peak sales days, and export customer order invoices as PDFs.
+          </p>
+          <Link
+            href="/dashboard/insights"
+            className="mt-2 inline-flex items-center gap-1.5 px-3.5 py-2 w-fit bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs font-semibold rounded-xl border border-slate-700 transition-colors"
+          >
+            <span>Explore Insights</span>
+            <MdArrowForward size={13} />
+          </Link>
         </div>
       </div>
-    </div>
+    </aside>
   );
 };
 

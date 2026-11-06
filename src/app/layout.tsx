@@ -11,8 +11,8 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Dashboard",
-  description: "A dashboard for your company",
+  title: "Furniro Admin — Operations & Commerce Dashboard",
+  description: "Enterprise operations, inventory, order fulfillment, and analytics console for Furniro.",
 };
 
 export default function RootLayout({
@@ -21,8 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${montserrat.className} antialiased`}>
+    <html lang="en" className="dark">
+      <body className={`${montserrat.className} antialiased bg-[--bg] text-[--text] selection:bg-indigo-500/30 selection:text-indigo-200`}>
         <AuthProvider>
           <Providers>
             {children}
@@ -30,10 +30,11 @@ export default function RootLayout({
               position="bottom-right"
               richColors
               closeButton
+              theme="dark"
               toastOptions={{
                 classNames: {
                   toast:
-                    "bg-[--bgSoft] text-[var(--text)] border border-[#2e374a] shadow-lg",
+                    "bg-[#111827] text-[#f8fafc] border border-slate-800 shadow-2xl rounded-xl",
                 },
               }}
             />

@@ -1,23 +1,38 @@
 import { NextResponse } from "next/server";
+import crypto from "crypto";
 import { serverClient } from "@/sanity/lib/serverClient";
 
 export async function GET(request: Request) {
-  const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const cronSecret = process.env.CRON_SECRET;
+  const authHeader = request.headers.get("authorization") || "";
+
+  if (!cronSecret) {
+    return NextResponse.json(
+      { error: "Server configuration error" },
+      { status: 500 }
+    );
+  }
+
+  const expected = `Bearer ${cronSecret}`;
+  const isAuthorized =
+    authHeader.length === expected.length &&
+    crypto.timingSafeEqual(Buffer.from(authHeader), Buffer.from(expected));
+
+  if (!isAuthorized) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const now = new Date();
   const orders = await serverClient.fetch(`
-  *[
-    _type == "order" &&
-    (status == "Dispatched" || status == "Shipped")
-  ]{
-    _id,
-    status,
-    dispatchedAt
-  }
-`);
+    *[
+      _type == "order" &&
+      (status == "Dispatched" || status == "Shipped")
+    ]{
+      _id,
+      status,
+      dispatchedAt
+    }
+  `);
 
   for (const order of orders) {
     if (!order.dispatchedAt) continue;

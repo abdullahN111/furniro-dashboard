@@ -3,167 +3,228 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import LocalSearchBar from "@/app/dashboard/search/LocalSearchBar";
-import { useSearch } from "@/app/dashboard/search/SearchContext";
 import { fetchUsers } from "@/app/lib/data";
 import Image from "next/image";
 import UserActions from "./UserActions";
 import { useSession } from "next-auth/react";
+import { MdPersonAdd } from "react-icons/md";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 type User = {
   _id: string;
   username: string;
   email: string;
-  img: string;
-  createdAt: string;
+  img?: string;
+  createdAt?: string;
   isAdmin: boolean;
+  isActive?: boolean;
 };
 
 const Users = () => {
   const [users, setUsers] = useState<User[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
   const { data: session } = useSession();
 
-  useEffect(() => {
-    const getUsers = async () => {
-      try {
-        const data = await fetchUsers();
-        setUsers(data);
-      } catch (err) {
-        console.error("Error fetching users:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getUsers();
-  }, []);
   const getUsers = async () => {
-    const data = await fetchUsers();
-    setUsers(data);
+    try {
+      const data = await fetchUsers();
+      setUsers(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Error fetching users:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const { pageSearchQuery } = useSearch();
+  useEffect(() => {
+    getUsers();
+  }, []);
 
   const filteredUsers = useMemo(() => {
-    if (!pageSearchQuery) return users;
+    if (!searchQuery.trim()) return users;
+    const q = searchQuery.toLowerCase();
     return users.filter(
       (u) =>
-        u._id.toLowerCase().includes(pageSearchQuery.toLowerCase()) ||
-        u.username.toLowerCase().includes(pageSearchQuery.toLowerCase()) ||
-        u.email.toLowerCase().includes(pageSearchQuery.toLowerCase()),
+        (u._id || "").toLowerCase().includes(q) ||
+        (u.username || "").toLowerCase().includes(q) ||
+        (u.email || "").toLowerCase().includes(q)
     );
-  }, [pageSearchQuery, users]);
+  }, [searchQuery, users]);
 
-  
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      <div className="w-full bg-[#111827] border border-slate-800 rounded-2xl p-6 flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-10 w-10 border-2 border-indigo-500 border-t-transparent" />
       </div>
     );
   }
+
   const adminsCount = users.filter((u) => u.isAdmin).length;
+  const isCurrentUserAdmin =
+    (session?.user as { role?: string })?.role === "admin";
 
   return (
-    <div className="bg-[--bgSoft] w-full p-4 rounded-[10px] mb-8 mt-4 shadow-lg border border-[#2e374a]">
-      <div className="mt-2 mb-3 flex justify-between">
-        <LocalSearchBar scope="page" />
-        {(session?.user as { role?: string })?.role === "admin" ? (
-          <Link href="/dashboard/users/add">
-            <button className="bg-[#3f3fad] hover:bg-[#3f3faddc] text-white px-3 py-2 rounded-md text-xs sm:text-sm shadow">
-              Add User
-            </button>
-          </Link>
-        ) : (
-          <div>
-            <button className="bg-[#3f3fad] text-white px-3 py-2 rounded-md text-xs sm:text-sm shadow opacity-70">
-              Add User
-            </button>
-          </div>
-        )}
+    <div className="bg-[#111827] w-full p-5 sm:p-6 rounded-2xl shadow-lg border border-slate-800/90">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+        <div>
+          <h2 className="text-white text-base sm:text-lg font-bold">
+            Team Members &amp; Access Control
+          </h2>
+          <p className="text-xs text-slate-400">
+            Showing {filteredUsers.length} of {users.length} registered accounts ({adminsCount} admin{adminsCount !== 1 ? "s" : ""})
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <LocalSearchBar
+            value={searchQuery}
+            onChange={setSearchQuery}
+            placeholder="Search name or email..."
+          />
+          {isCurrentUserAdmin && (
+            <Link
+              href="/dashboard/users/add"
+              className="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold shadow-lg shadow-indigo-600/20 transition-all"
+            >
+              <MdPersonAdd size={17} />
+              <span>Add User</span>
+            </Link>
+          )}
+        </div>
       </div>
 
-      <div className="hidden lg:block overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-[#2e374a] text-white">
-              <th className="p-[10px] text-left">ID</th>
-              <th className="p-[10px] text-left">Image</th>
-              <th className="p-[10px] text-left">Name</th>
-              <th className="p-[10px] text-left">Email</th>
-              {/* <th className="p-[10px] text-left">Created At</th> */}
-              <th className="p-[10px] text-left">Role</th>
-              <th className="p-[10px] text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredUsers.map((user, index) => (
-              <tr key={user._id} className="bg-[--bgSoft] text-white">
-                <td className="p-[10px] text-left">{index + 1}</td>
-                <td className="p-[10px] text-left">
-                  <Image
-                    src={user.img || "/images/noavatar.png"}
-                    alt={user.username}
-                    width={50}
-                    height={50}
-                    className="rounded-[200%] object-cover w-[50px] h-[50px] cursor-pointer"
-                  />
-                </td>
-                <td className="p-[10px] text-left">{user.username}</td>
-                <td className="p-[10px] text-left">{user.email}</td>
-                {/* <td className="p-[10px] text-left">{user.createdAt}</td> */}
-                <td className="p-[10px] text-left">
-                  {user.isAdmin ? "Admin" : "Editor"}
-                </td>
-
-                <td className="p-[10px] text-left flex gap-2 mt-2">
-                  <UserActions
-                    viewLink={`/dashboard/users/${user._id}`}
-                    userId={user._id}
-                    isAdmin={user.isAdmin}
-                    adminsCount={adminsCount}
-                    onUserDeleted={getUsers}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* Desktop Table */}
+      <div className="hidden lg:block overflow-hidden rounded-xl border border-slate-800/80">
+        <Table className="w-full">
+          <TableHeader>
+            <TableRow>
+              <TableHead>#</TableHead>
+              <TableHead>User</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Joined</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredUsers.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center py-10 text-slate-400">
+                  No users match your search.
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredUsers.map((user, index) => (
+                <TableRow key={user._id}>
+                  <TableCell className="font-mono text-xs text-slate-400">
+                    {index + 1}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <Image
+                        src={user.img || "/images/noavatar.png"}
+                        alt={user.username}
+                        width={38}
+                        height={38}
+                        className="rounded-full object-cover w-9 h-9 border border-slate-700 shrink-0"
+                      />
+                      <span className="font-semibold text-slate-100">
+                        {user.username}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-slate-300">{user.email}</TableCell>
+                  <TableCell>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
+                        user.isAdmin
+                          ? "bg-indigo-500/15 text-indigo-300 border-indigo-500/30"
+                          : "bg-slate-800 text-slate-300 border-slate-700"
+                      }`}
+                    >
+                      {user.isAdmin ? "Administrator" : "Editor"}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
+                        user.isActive !== false
+                          ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
+                          : "bg-rose-500/15 text-rose-300 border-rose-500/30"
+                      }`}
+                    >
+                      {user.isActive !== false ? "Active" : "Inactive"}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-xs text-slate-400">
+                    {user.createdAt
+                      ? new Date(user.createdAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })
+                      : "—"}
+                  </TableCell>
+                  <TableCell>
+                    <UserActions
+                      viewLink={`/dashboard/users/${user._id}`}
+                      userId={user._id}
+                      isAdmin={user.isAdmin}
+                      adminsCount={adminsCount}
+                      onUserDeleted={getUsers}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
       </div>
 
-      <div className="lg:hidden flex flex-col gap-4">
-        {filteredUsers.map((user, index) => (
+      {/* Mobile Cards */}
+      <div className="lg:hidden flex flex-col gap-3">
+        {filteredUsers.map((user) => (
           <div
             key={user._id}
-            className="p-3 sm:p-4 border border-[#2e374a] rounded-lg shadow-md bg-[--bgSoft]"
+            className="p-4 border border-slate-800 rounded-xl bg-slate-900/50 space-y-3"
           >
-            <div className="mb-2">
-              <Image
-                src={user.img || "/images/noavatar.png"}
-                alt={user.username}
-                width={50}
-                height={50}
-                className="rounded-[200%] object-cover w-[50px] h-[50px] cursor-pointer mb-4"
-              />
-              <p className="text-sm sm:text-[15px] text-white mb-2">
-                ID: {index + 1}
-              </p>
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <Image
+                  src={user.img || "/images/noavatar.png"}
+                  alt={user.username}
+                  width={42}
+                  height={42}
+                  className="rounded-full object-cover w-10 h-10 border border-slate-700 shrink-0"
+                />
+                <div className="min-w-0">
+                  <p className="font-semibold text-sm text-white truncate">
+                    {user.username}
+                  </p>
+                  <p className="text-xs text-slate-400 truncate">{user.email}</p>
+                </div>
+              </div>
+              <span
+                className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border shrink-0 ${
+                  user.isAdmin
+                    ? "bg-indigo-500/15 text-indigo-300 border-indigo-500/30"
+                    : "bg-slate-800 text-slate-300 border-slate-700"
+                }`}
+              >
+                {user.isAdmin ? "Admin" : "Editor"}
+              </span>
             </div>
-            <p className="text-sm sm:text-[15px] text-white mb-2">
-              Name: {user.username}
-            </p>
-            <p className="text-sm sm:text-[15px] text-white mb-2">
-              Email: {user.email}
-            </p>
-            {/* <p className="text-sm sm:text-[15px] text-white mb-2">
-              Created At: {user.createdAt}
-            </p> */}
-            <p className="text-sm sm:text-[15px] text-white mb-2">
-              Role: {user.isAdmin ? "Admin" : "Editor"}
-            </p>
 
-            <div className="flex gap-2 mt-2">
+            <div className="pt-2 border-t border-slate-800 flex justify-end">
               <UserActions
                 viewLink={`/dashboard/users/${user._id}`}
                 userId={user._id}

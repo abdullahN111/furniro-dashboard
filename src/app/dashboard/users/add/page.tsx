@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { MdArrowBack } from "react-icons/md";
 
 const AddUserPage = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -17,7 +19,7 @@ const AddUserPage = () => {
     const form = e.currentTarget;
 
     try {
-      const formData = new FormData(e.currentTarget);
+      const formData = new FormData(form);
 
       const res = await fetch("/api/users/add", {
         method: "POST",
@@ -31,7 +33,7 @@ const AddUserPage = () => {
         return;
       }
 
-      toast.success("User added successfully.");
+      toast.success("User account created successfully.");
       form.reset();
       setImagePreview(null);
       router.push("/dashboard/users");
@@ -55,122 +57,167 @@ const AddUserPage = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 mt-5">
-      <div className="flex-1 bg-[--bgSoft] p-3 sm:p-5 rounded-[10px] font-bold text-[--textSoft] h-max flex flex-col items-center justify-center">
-        <div className="w-[180px] h-[180px] relative rounded-full overflow-hidden mb-4 border-4 border-[#2e374a] shadow-lg">
-          {imagePreview ? (
-            <Image src={imagePreview} alt="Preview" fill />
-          ) : (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <Link
+          href="/dashboard/users"
+          className="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors"
+        >
+          <MdArrowBack size={16} />
+          Back to Users
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className="lg:col-span-4 bg-[#111827] border border-slate-800/90 p-6 rounded-2xl shadow-lg flex flex-col items-center text-center">
+          <div className="w-36 h-36 relative rounded-full overflow-hidden mb-4 border-4 border-slate-800 shadow-xl">
             <Image
-              src="/images/noavatar.png"
-              alt="No Avatar"
+              src={imagePreview || "/images/noavatar.png"}
+              alt="Avatar Preview"
               fill
               className="object-cover"
             />
-          )}
+          </div>
+          <h3 className="text-base font-bold text-white">Profile Avatar</h3>
+          <p className="text-xs text-slate-400 mt-1">
+            JPG, PNG, WEBP, or GIF up to 4MB
+          </p>
         </div>
-        Profile Image
-      </div>
-      <div className="flex-[3] bg-[--bgSoft] p-3 sm:p-5 rounded-[10px]">
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col"
-          encType="multipart/form-data"
-        >
-          <label className="text-sm">Username</label>
-          <input
-            type="text"
-            name="username"
-            required
-            className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
-          />
-          <label className="text-sm">Email</label>
-          <input
-            type="email"
-            name="email"
-            required
-            className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
-          />
-          <label className="text-sm">Password</label>
-          <input
-            type="password"
-            name="password"
-            required
-            className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
-          />
-          <label className="text-sm">Phone</label>
-          <input
-            type="tel"
-            name="phone"
-            className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
-          />
-          <label className="text-sm">Address</label>
-          <textarea
-            name="address"
-            rows={3}
-            className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
-          />
-          <label className="text-sm">Role</label>
-          <select
-            name="isAdmin"
-            className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
+
+        <div className="lg:col-span-8 bg-[#111827] border border-slate-800/90 p-6 sm:p-8 rounded-2xl shadow-lg">
+          <h2 className="text-lg font-bold text-white mb-6 pb-3 border-b border-slate-800">
+            Account Credentials &amp; Permissions
+          </h2>
+
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-4"
+            encType="multipart/form-data"
           >
-            <option value="true">Admin</option>
-            <option value="false">Editor</option>
-          </select>
-          <label className="text-sm">Is Active?</label>
-          <select
-            name="isActive"
-            className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
-          >
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-          <label className="text-sm">Image</label>
-          <input
-            type="file"
-            accept="image/*"
-            name="image"
-            onChange={handleImageChange}
-            className="p-5 border-2 border-[#2e374a] rounded-[5px] bg-[--bg] text-[--text] my-[10px]"
-          />
-          <button
-            className="w-full px-5 py-5 bg-teal-500 text-[var(--text)] border-none rounded-md cursor-pointer mt-5"
-            type="submit"
-            disabled={loading}
-          >
-            {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg
-                  className="animate-spin h-5 w-5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                  Username *
+                </label>
+                <input
+                  type="text"
+                  name="username"
+                  required
+                  minLength={3}
+                  maxLength={20}
+                  placeholder="johndoe"
+                  className="w-full px-3.5 py-2.5 text-sm border border-slate-800 rounded-xl bg-slate-900 text-slate-100 placeholder:text-slate-500 outline-none focus:border-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                  Email Address *
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  placeholder="john@furniro.com"
+                  className="w-full px-3.5 py-2.5 text-sm border border-slate-800 rounded-xl bg-slate-900 text-slate-100 placeholder:text-slate-500 outline-none focus:border-indigo-500"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                  Initial Password *
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  required
+                  minLength={6}
+                  placeholder="Minimum 6 characters"
+                  className="w-full px-3.5 py-2.5 text-sm border border-slate-800 rounded-xl bg-slate-900 text-slate-100 placeholder:text-slate-500 outline-none focus:border-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="+1 (555) 000-0000"
+                  className="w-full px-3.5 py-2.5 text-sm border border-slate-800 rounded-xl bg-slate-900 text-slate-100 placeholder:text-slate-500 outline-none focus:border-indigo-500"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                  Access Role
+                </label>
+                <select
+                  name="isAdmin"
+                  defaultValue="false"
+                  className="w-full px-3.5 py-2.5 text-sm border border-slate-800 rounded-xl bg-slate-900 text-slate-100 outline-none focus:border-indigo-500"
                 >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 
-          0 0 5.373 0 12h4zm2 5.291A7.962 
-          7.962 0 014 12H0c0 3.042 1.135 
-          5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                Adding...
-              </span>
-            ) : (
-              "Add User"
-            )}
-          </button>
-        </form>
+                  <option value="true">Administrator (Full Access)</option>
+                  <option value="false">Editor (Standard Access)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                  Account Status
+                </label>
+                <select
+                  name="isActive"
+                  defaultValue="true"
+                  className="w-full px-3.5 py-2.5 text-sm border border-slate-800 rounded-xl bg-slate-900 text-slate-100 outline-none focus:border-indigo-500"
+                >
+                  <option value="true">Active</option>
+                  <option value="false">Deactivated</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                Address
+              </label>
+              <textarea
+                name="address"
+                rows={3}
+                placeholder="Street, City, Country"
+                className="w-full px-3.5 py-2.5 text-sm border border-slate-800 rounded-xl bg-slate-900 text-slate-100 placeholder:text-slate-500 outline-none focus:border-indigo-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                Upload Profile Image
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                name="image"
+                onChange={handleImageChange}
+                className="w-full px-3.5 py-2 text-xs text-slate-300 border border-slate-800 rounded-xl bg-slate-900 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600/20 file:text-indigo-300 hover:file:bg-indigo-600/30"
+              />
+            </div>
+
+            <div className="pt-4 flex justify-end">
+              <button
+                className="w-full sm:w-auto px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-indigo-600/20 transition-all disabled:opacity-60"
+                type="submit"
+                disabled={loading}
+              >
+                {loading ? "Creating Account..." : "Create User Account"}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
