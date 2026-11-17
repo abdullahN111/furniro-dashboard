@@ -141,15 +141,22 @@ const styles = StyleSheet.create({
 });
 
 export const OrderInvoicePDF = ({ order }: { order: Order }) => {
-  const itemSubtotals = order.items.map(
-    (item, index) => item.price * (order.itemQuantities[index] || 0),
+  const unitPrices = (order.items || []).map(
+    (item, index) => order.itemPrices?.[index] ?? item.price ?? 0
+  );
+  const itemSubtotals = unitPrices.map(
+    (price, index) => price * (order.itemQuantities?.[index] || 0)
   );
   const subtotal = itemSubtotals.reduce((sum, s) => sum + s, 0);
+  const isPaid =
+    order.paid ||
+    order.paymentStatus === "Paid" ||
+    order.paymentMethod === "Stripe" ||
+    order.status === "Delivered";
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        
         <View style={styles.headerRow}>
           <View>
             <Text style={styles.brand}>Furniro</Text>
@@ -189,6 +196,14 @@ export const OrderInvoicePDF = ({ order }: { order: Order }) => {
               Payment Method: {order.paymentMethod}
             </Text>
             <Text style={styles.value}>
+              Payment Status: {order.paymentStatus || (isPaid ? "Paid" : "Pending")}
+            </Text>
+            {order.stripePaymentIntentId ? (
+              <Text style={styles.value}>
+                Stripe Ref: {order.stripePaymentIntentId}
+              </Text>
+            ) : null}
+            <Text style={styles.value}>
               Date: {formatDate(order.createdAt)}
             </Text>
             <Text style={styles.statusBadge}>{order.status}</Text>
@@ -207,7 +222,9 @@ export const OrderInvoicePDF = ({ order }: { order: Order }) => {
           {order.items.map((item, index) => (
             <View style={styles.tableRow} key={item._id ?? index}>
               <Text style={styles.colProduct}>{item.title}</Text>
-              <Text style={styles.colPrice}>${item.price.toFixed(2)}</Text>
+              <Text style={styles.colPrice}>
+                ${unitPrices[index].toFixed(2)}
+              </Text>
               <Text style={styles.colQty}>{order.itemQuantities[index]}</Text>
               <Text style={styles.colSubtotal}>
                 ${itemSubtotals[index].toFixed(2)}
@@ -216,7 +233,6 @@ export const OrderInvoicePDF = ({ order }: { order: Order }) => {
           ))}
         </View>
 
-      
         <View style={styles.totalsBlock}>
           <View style={styles.totalsRow}>
             <Text>Subtotal</Text>

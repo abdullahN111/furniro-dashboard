@@ -15,8 +15,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { fetchProducts, Product } from "./ProductData";
 import ProductActions from "./ProductActions";
+import { formatDate } from "@/app/lib/formatDate";
 import { toast } from "sonner";
-import { MdArrowBack, MdInventory2 } from "react-icons/md";
+import { MdArrowBack, MdInventory2, MdStar } from "react-icons/md";
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -158,15 +159,20 @@ const ProductDetail = () => {
               {product.title}
             </h1>
 
-            <div className="flex items-baseline gap-3">
-              <span className="text-2xl sm:text-3xl font-bold text-emerald-400">
-                ${product.price}
-              </span>
-              {product.oldPrice && (
-                <span className="text-sm text-slate-500 line-through">
-                  ${product.oldPrice}
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="flex items-baseline gap-3">
+                <span className="text-2xl sm:text-3xl font-bold text-emerald-400">
+                  ${product.price}
                 </span>
-              )}
+                {product.oldPrice && (
+                  <span className="text-sm text-slate-500 line-through">
+                    ${product.oldPrice}
+                  </span>
+                )}
+              </div>
+              <span className="text-xs font-medium text-amber-400 bg-amber-500/10 border border-amber-500/25 px-2.5 py-1 rounded-full">
+                {product.reviews}
+              </span>
             </div>
 
             <p className="text-sm text-slate-300 leading-relaxed pt-2 border-t border-slate-800/80">
@@ -287,6 +293,61 @@ const ProductDetail = () => {
             />
           </div>
         </div>
+      </div>
+
+      {/* Verified Customer Reviews Section */}
+      <div className="bg-[#111827] border border-slate-800/90 rounded-2xl p-5 sm:p-6 shadow-lg">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-base sm:text-lg font-bold text-white">
+              Verified Customer Reviews ({product.reviewsList?.length || 0})
+            </h2>
+            <p className="text-xs text-slate-400">
+              Reviews submitted on the Storefront by customers with Delivered orders
+            </p>
+          </div>
+        </div>
+
+        {!product.reviewsList || product.reviewsList.length === 0 ? (
+          <div className="p-8 text-center bg-slate-900/40 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-400">
+            No customer reviews have been submitted for this product yet.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {product.reviewsList.map((rev) => (
+              <div
+                key={rev._id}
+                className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-2"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <span className="text-sm font-semibold text-white">
+                      {rev.userName || rev.userEmail || "Verified Buyer"}
+                    </span>
+                    {rev.orderId && (
+                      <span className="ml-2 font-mono text-[11px] text-indigo-400">
+                        Order #{rev.orderId.slice(0, 8)}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center text-amber-400">
+                    {Array.from({ length: rev.rating || 5 }).map((_, i) => (
+                      <MdStar key={i} size={15} />
+                    ))}
+                  </div>
+                </div>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                  {rev.comment}
+                </p>
+                {rev.createdAt && (
+                  <p className="text-[11px] text-slate-500">
+                    {formatDate(rev.createdAt)}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -73,58 +73,60 @@ const Orders = ({ showAll = false, heading = "Orders" }: OrdersProps) => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
 
-  const handleProcess = async (orderId: string) => {
+  const handleStatusTransition = async (
+    orderId: string,
+    nextStatus: string,
+    endpoint?: string
+  ) => {
     try {
-      const res = await fetch(`/api/orders/${orderId}/process`, {
-        method: "POST",
-      });
+      const res = await fetch(
+        endpoint || `/api/orders/${orderId}/status`,
+        endpoint
+          ? { method: "POST" }
+          : {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ status: nextStatus }),
+            }
+      );
 
-      if (!res.ok) throw new Error("Failed to process order");
+      if (!res.ok) throw new Error(`Failed to move order to ${nextStatus}`);
+
       setOrders((prev) =>
         prev.map((order) =>
           order._id === orderId
             ? {
                 ...order,
-                status: "Processing",
+                status: nextStatus,
+                ...(nextStatus === "Dispatched"
+                  ? { dispatchedAt: new Date().toISOString() }
+                  : {}),
+                ...(nextStatus === "Delivered"
+                  ? { paid: true, paymentStatus: "Paid" }
+                  : {}),
               }
             : order
         )
       );
-      toast.success("Order moved to Processing.");
+      toast.success(
+        nextStatus === "Delivered"
+          ? "Order marked as Delivered & payment status synced to Paid."
+          : `Order moved to ${nextStatus}.`
+      );
     } catch (error) {
-      console.error("Failed to process order:", error);
-      toast.error("Failed to process order.");
+      console.error("Failed to update order:", error);
+      toast.error("Failed to update order.");
     }
   };
 
   const handleDispatch = async () => {
     if (!dispatchOrderId) return;
-
-    try {
-      const res = await fetch(`/api/orders/${dispatchOrderId}/dispatch`, {
-        method: "POST",
-      });
-
-      if (!res.ok) throw new Error("Failed to dispatch order");
-
-      setOrders((prev) =>
-        prev.map((order) =>
-          order._id === dispatchOrderId
-            ? {
-                ...order,
-                status: "Dispatched",
-                dispatchedAt: new Date().toISOString(),
-              }
-            : order
-        )
-      );
-
-      setDispatchOrderId(null);
-      toast.success("Order dispatched successfully.");
-    } catch (error) {
-      console.error("Failed to dispatch order:", error);
-      toast.error("Failed to dispatch order.");
-    }
+    await handleStatusTransition(
+      dispatchOrderId,
+      "Dispatched",
+      `/api/orders/${dispatchOrderId}/dispatch`
+    );
+    setDispatchOrderId(null);
   };
 
   useEffect(() => {
@@ -151,6 +153,7 @@ const Orders = ({ showAll = false, heading = "Orders" }: OrdersProps) => {
       const matchesSearch =
         !searchQuery ||
         (o.orderId ?? "").toLowerCase().includes(query) ||
+        (o.stripePaymentIntentId ?? "").toLowerCase().includes(query) ||
         custName.includes(query) ||
         (o.items ?? []).some((p) =>
           (p?.title ?? "").toLowerCase().includes(query)
@@ -246,9 +249,13 @@ const Orders = ({ showAll = false, heading = "Orders" }: OrdersProps) => {
         header: "Total",
         cell: ({ row }: { row: { original: Order } }) => {
           const subtotal = (row.original.items || []).reduce(
-            (sum, item, index) =>
-              sum +
-              (item?.price || 0) * (row.original.itemQuantities?.[index] || 0),
+            (sum, item, index) => {
+              const unitPrice =
+                row.original.itemPrices?.[index] ?? item?.price ?? 0;
+              return (
+                sum + unitPrice * (row.original.itemQuantities?.[index] || 0)
+              );
+            },
             0
           );
           const displayTotal = row.original.total || subtotal;
@@ -261,7 +268,7 @@ const Orders = ({ showAll = false, heading = "Orders" }: OrdersProps) => {
       },
       {
         accessorKey: "status",
-        header: "Status",
+        header: "Fulfillment",
         cell: ({ row }: { row: { original: Order } }) => (
           <span
             className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${getStatusBadgeStyle(
@@ -275,11 +282,27 @@ const Orders = ({ showAll = false, heading = "Orders" }: OrdersProps) => {
       {
         accessorKey: "paymentMethod",
         header: "Payment",
-        cell: ({ row }: { row: { original: Order } }) => (
-          <span className="text-xs text-slate-300">
-            {paymentMethodLabel(row.original.paymentMethod)}
-          </span>
-        ),
+        cell: ({ row }: { row: { original: Order } }) => {
+          const isPaid =
+            row.original.paid ||
+            row.original.paymentStatus === "Paid" ||
+            row.original.paymentMethod === "Stripe" ||
+            row.original.status === "Delivered";
+          return (
+            <div className="flex flex-col gap-0.5">
+              <span className="text-xs font-medium text-slate-200">
+                {paymentMethodLabel(row.original.paymentMethod)}
+              </span>
+              <span
+                className={`text-[10px] font-semibold ${
+                  isPaid ? "text-emerald-400" : "text-amber-400"
+                }`}
+              >
+                {row.original.paymentStatus || (isPaid ? "Paid" : "Pending")}
+              </span>
+            </div>
+          );
+        },
       },
       {
         accessorKey: "date",
@@ -301,7 +324,7 @@ const Orders = ({ showAll = false, heading = "Orders" }: OrdersProps) => {
         header: "Actions",
         cell: ({ row }: { row: { original: Order } }) => {
           const status = row.original.status;
-          const canAct = status === "Pending" || status === "Processing";
+          const isDelivered = status === "Delivered";
           return (
             <div className="flex items-center gap-2">
               <Link
@@ -310,22 +333,40 @@ const Orders = ({ showAll = false, heading = "Orders" }: OrdersProps) => {
               >
                 View
               </Link>
-              {canAct && (
+              {!isDelivered && (
                 <button
                   onClick={() => {
                     if (status === "Pending") {
-                      handleProcess(row.original._id);
+                      handleStatusTransition(
+                        row.original._id,
+                        "Processing",
+                        `/api/orders/${row.original._id}/process`
+                      );
                     } else if (status === "Processing") {
                       setDispatchOrderId(row.original._id);
+                    } else if (status === "Dispatched") {
+                      handleStatusTransition(row.original._id, "Shipped");
+                    } else if (status === "Shipped") {
+                      handleStatusTransition(row.original._id, "Delivered");
                     }
                   }}
-                  className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
+                  className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-colors whitespace-nowrap ${
                     status === "Pending"
                       ? "bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/30"
-                      : "bg-indigo-600 hover:bg-indigo-500 text-white"
+                      : status === "Processing"
+                        ? "bg-indigo-600 hover:bg-indigo-500 text-white"
+                        : status === "Dispatched"
+                          ? "bg-purple-600 hover:bg-purple-500 text-white"
+                          : "bg-emerald-600 hover:bg-emerald-500 text-white"
                   }`}
                 >
-                  {status === "Pending" ? "Process" : "Dispatch"}
+                  {status === "Pending"
+                    ? "Process"
+                    : status === "Processing"
+                      ? "Dispatch"
+                      : status === "Dispatched"
+                        ? "Ship"
+                        : "Deliver"}
                 </button>
               )}
             </div>
@@ -333,7 +374,6 @@ const Orders = ({ showAll = false, heading = "Orders" }: OrdersProps) => {
         },
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -376,7 +416,7 @@ const Orders = ({ showAll = false, heading = "Orders" }: OrdersProps) => {
         <LocalSearchBar
           value={searchQuery}
           onChange={setSearchQuery}
-          placeholder="Search order ID, customer, or product..."
+          placeholder="Search order ID, customer, product, or pi_..."
         />
       </div>
 
@@ -501,8 +541,7 @@ const Orders = ({ showAll = false, heading = "Orders" }: OrdersProps) => {
           </div>
         ) : (
           table.getRowModel().rows.map(({ original: order }) => {
-            const canAct =
-              order.status === "Pending" || order.status === "Processing";
+            const isDelivered = order.status === "Delivered";
             return (
               <div
                 key={order._id}
@@ -529,14 +568,18 @@ const Orders = ({ showAll = false, heading = "Orders" }: OrdersProps) => {
                 </div>
 
                 <div className="text-xs text-slate-400 space-y-1">
-                  {(order.items || []).map((p, index) => (
-                    <div key={index} className="flex justify-between">
-                      <span>
-                        {order.itemQuantities?.[index] || 1}× {p?.title}
-                      </span>
-                      <span>${p?.price}</span>
-                    </div>
-                  ))}
+                  {(order.items || []).map((p, index) => {
+                    const unitPrice =
+                      order.itemPrices?.[index] ?? p?.price ?? 0;
+                    return (
+                      <div key={index} className="flex justify-between">
+                        <span>
+                          {order.itemQuantities?.[index] || 1}× {p?.title}
+                        </span>
+                        <span>${unitPrice.toFixed(2)}</span>
+                      </div>
+                    );
+                  })}
                 </div>
 
                 <div className="flex items-center justify-between pt-2 border-t border-slate-800 text-xs">
@@ -544,7 +587,8 @@ const Orders = ({ showAll = false, heading = "Orders" }: OrdersProps) => {
                     {order.createdAt
                       ? new Date(order.createdAt).toLocaleDateString()
                       : "N/A"}{" "}
-                    • {paymentMethodLabel(order.paymentMethod)}
+                    • {paymentMethodLabel(order.paymentMethod)} (
+                    {order.paymentStatus || (order.paid ? "Paid" : "Pending")})
                   </span>
                   <span className="font-bold text-sm text-white">
                     ${(order.total || 0).toFixed(2)}
@@ -558,22 +602,40 @@ const Orders = ({ showAll = false, heading = "Orders" }: OrdersProps) => {
                   >
                     View Details
                   </Link>
-                  {canAct && (
+                  {!isDelivered && (
                     <button
                       onClick={() => {
                         if (order.status === "Pending") {
-                          handleProcess(order._id);
+                          handleStatusTransition(
+                            order._id,
+                            "Processing",
+                            `/api/orders/${order._id}/process`
+                          );
                         } else if (order.status === "Processing") {
                           setDispatchOrderId(order._id);
+                        } else if (order.status === "Dispatched") {
+                          handleStatusTransition(order._id, "Shipped");
+                        } else if (order.status === "Shipped") {
+                          handleStatusTransition(order._id, "Delivered");
                         }
                       }}
                       className={`flex-1 px-3 py-1.5 rounded-xl text-xs font-semibold ${
                         order.status === "Pending"
                           ? "bg-amber-500/20 text-amber-200 border border-amber-500/30"
-                          : "bg-indigo-600 text-white"
+                          : order.status === "Processing"
+                            ? "bg-indigo-600 text-white"
+                            : order.status === "Dispatched"
+                              ? "bg-purple-600 text-white"
+                              : "bg-emerald-600 text-white"
                       }`}
                     >
-                      {order.status === "Pending" ? "Process" : "Dispatch"}
+                      {order.status === "Pending"
+                        ? "Process"
+                        : order.status === "Processing"
+                          ? "Dispatch"
+                          : order.status === "Dispatched"
+                            ? "Ship"
+                            : "Deliver"}
                     </button>
                   )}
                 </div>

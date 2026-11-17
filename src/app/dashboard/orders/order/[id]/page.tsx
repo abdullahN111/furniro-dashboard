@@ -30,29 +30,57 @@ const OrderDetailPage = async ({ params }: { params: { id: string } }) => {
     );
   }
 
-  const itemSubtotals = (order.items || []).map(
-    (item, index) => (item?.price || 0) * (order.itemQuantities?.[index] || 0)
+  const unitPrices = (order.items || []).map(
+    (item, index) => order.itemPrices?.[index] ?? item?.price ?? 0
+  );
+  const itemSubtotals = unitPrices.map(
+    (price, index) => price * (order.itemQuantities?.[index] || 0)
   );
   const currentStepIndex = Math.max(0, STEPS.indexOf(order.status));
+  const isPaid =
+    order.paid ||
+    order.paymentStatus === "Paid" ||
+    order.paymentMethod === "Stripe" ||
+    order.status === "Delivered";
+  const resolvedPaymentStatus =
+    order.paymentStatus || (isPaid ? "Paid" : "Pending");
 
   return (
     <div className="space-y-6">
       {/* Header Bar */}
       <div className="bg-[#111827] border border-slate-800/90 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-lg">
         <div>
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
             <h1 className="text-xl sm:text-2xl font-bold text-white">
               Order #{order.orderId}
             </h1>
             <span className="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
               {order.status}
             </span>
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-semibold border ${
+                isPaid
+                  ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
+                  : "bg-amber-500/15 text-amber-300 border-amber-500/30"
+              }`}
+            >
+              Payment: {resolvedPaymentStatus}
+            </span>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
-            Placed on {formatDate(order.createdAt)} • Payment via{" "}
+          <p className="text-xs text-slate-400 mt-1.5">
+            Placed on {formatDate(order.createdAt)} • Method:{" "}
             <span className="text-slate-200 font-medium">
               {order.paymentMethod || "Card"}
             </span>
+            {order.stripePaymentIntentId && (
+              <>
+                {" "}
+                • Stripe Intent:{" "}
+                <span className="font-mono text-indigo-300">
+                  {order.stripePaymentIntentId}
+                </span>
+              </>
+            )}
           </p>
         </div>
 
@@ -71,9 +99,19 @@ const OrderDetailPage = async ({ params }: { params: { id: string } }) => {
 
       {/* Fulfillment Stepper */}
       <div className="bg-[#111827] border border-slate-800/90 rounded-2xl p-5 sm:p-6 shadow-lg">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4">
-          Fulfillment Pipeline
-        </h2>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+            Fulfillment Pipeline
+          </h2>
+          {order.dispatchedAt && (
+            <span className="text-xs text-slate-400">
+              Dispatched at:{" "}
+              <strong className="text-slate-200">
+                {formatDate(order.dispatchedAt)}
+              </strong>
+            </span>
+          )}
+        </div>
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
           {STEPS.map((step, idx) => {
             const isDone = idx <= currentStepIndex;
@@ -145,7 +183,7 @@ const OrderDetailPage = async ({ params }: { params: { id: string } }) => {
                       </div>
                     </td>
                     <td className="p-3.5 text-slate-300">
-                      ${(item?.price || 0).toFixed(2)}
+                      ${unitPrices[index].toFixed(2)}
                     </td>
                     <td className="p-3.5 font-mono text-slate-300">
                       ×{order.itemQuantities?.[index] || 1}
@@ -163,10 +201,34 @@ const OrderDetailPage = async ({ params }: { params: { id: string } }) => {
         <div className="space-y-6">
           <div className="bg-[#111827] rounded-2xl p-5 sm:p-6 border border-slate-800/90 shadow-lg">
             <h2 className="text-base font-bold text-white mb-4">
-              Order Summary
+              Payment &amp; Summary
             </h2>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
+                <span className="text-slate-400">Payment Method</span>
+                <span className="text-slate-200 font-medium">
+                  {order.paymentMethod || "Stripe"}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Payment Status</span>
+                <span
+                  className={`font-semibold ${
+                    isPaid ? "text-emerald-400" : "text-amber-400"
+                  }`}
+                >
+                  {resolvedPaymentStatus} ({isPaid ? "Paid" : "Unpaid"})
+                </span>
+              </div>
+              {order.stripePaymentIntentId && (
+                <div className="flex justify-between gap-2">
+                  <span className="text-slate-400 shrink-0">Stripe Intent</span>
+                  <span className="font-mono text-xs text-indigo-300 truncate">
+                    {order.stripePaymentIntentId}
+                  </span>
+                </div>
+              )}
+              <div className="flex justify-between pt-2 border-t border-slate-800">
                 <span className="text-slate-400">Subtotal</span>
                 <span className="text-slate-200">
                   ${(order.total || 0).toFixed(2)}
@@ -177,7 +239,7 @@ const OrderDetailPage = async ({ params }: { params: { id: string } }) => {
                 <span className="text-emerald-400 font-medium">Free</span>
               </div>
               <div className="flex justify-between border-t border-slate-800 pt-3">
-                <span className="font-semibold text-white">Total Paid</span>
+                <span className="font-semibold text-white">Order Total</span>
                 <span className="font-bold text-lg text-indigo-400">
                   ${(order.total || 0).toFixed(2)}
                 </span>

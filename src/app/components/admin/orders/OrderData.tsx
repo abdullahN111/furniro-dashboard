@@ -29,6 +29,9 @@ export interface Order {
   status: string;
   dispatchedAt: string;
   paymentMethod: string;
+  paid?: boolean;
+  paymentStatus?: string;
+  stripePaymentIntentId?: string;
   createdAt: string;
 }
 
@@ -48,6 +51,9 @@ const ORDER_PROJECTION = `{
   status,
   dispatchedAt,
   paymentMethod,
+  "paid": coalesce(paid, paymentMethod == "Stripe"),
+  "paymentStatus": coalesce(paymentStatus, select(paymentMethod == "Stripe" => "Paid", status == "Delivered" => "Paid", "Pending")),
+  stripePaymentIntentId,
   createdAt
 }`;
 

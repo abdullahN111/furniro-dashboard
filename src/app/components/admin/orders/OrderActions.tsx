@@ -17,69 +17,62 @@ export default function OrderActions({
   const [confirmDispatch, setConfirmDispatch] = useState(false);
   const router = useRouter();
 
-  const handleProcess = async () => {
+  const updateOrderStatus = async (nextStatus: string, endpoint?: string) => {
     setIsLoading(true);
     try {
-      const res = await fetch(`/api/orders/${orderId}/process`, {
-        method: "POST",
-      });
+      const res = await fetch(
+        endpoint || `/api/orders/${orderId}/status`,
+        endpoint
+          ? { method: "POST" }
+          : {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ status: nextStatus }),
+            }
+      );
 
-      if (!res.ok) throw new Error("Failed to process order");
-
-      const updated = await res.json();
-      setCurrentStatus(updated.status);
-      toast.success("Order moved to Processing.");
-      router.refresh();
-    } catch (error) {
-      console.error("Failed to process order:", error);
-      toast.error("Failed to process order.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDispatch = async () => {
-    setIsLoading(true);
-    try {
-      const res = await fetch(`/api/orders/${orderId}/dispatch`, {
-        method: "POST",
-      });
-
-      if (!res.ok) throw new Error("Failed to dispatch order");
+      if (!res.ok) throw new Error(`Failed to move order to ${nextStatus}`);
 
       const updated = await res.json();
-      setCurrentStatus(updated.status);
-      toast.success("Order dispatched successfully.");
+      setCurrentStatus(updated.status || nextStatus);
+      toast.success(
+        nextStatus === "Delivered"
+          ? "Order marked as Delivered & payment status synced to Paid."
+          : `Order moved to ${nextStatus}.`
+      );
       router.refresh();
     } catch (error) {
-      console.error("Failed to dispatch order:", error);
-      toast.error("Failed to dispatch order.");
+      console.error("Failed to update order:", error);
+      toast.error("Failed to update order status.");
     } finally {
       setIsLoading(false);
       setConfirmDispatch(false);
     }
   };
 
-  const isCompletedState =
-    currentStatus === "Dispatched" ||
-    currentStatus === "Shipped" ||
-    currentStatus === "Delivered";
+  const isCompletedState = currentStatus === "Delivered";
 
   return (
     <>
       {confirmDispatch && (
         <DispatchConfirmation
           orderId={orderId}
-          onConfirm={handleDispatch}
+          onConfirm={() =>
+            updateOrderStatus("Dispatched", `/api/orders/${orderId}/dispatch`)
+          }
           onCancel={() => setConfirmDispatch(false)}
         />
       )}
       <button
         onClick={() => {
           if (currentStatus === "Pending") {
-            handleProcess();
+            updateOrderStatus("Processing", `/api/orders/${orderId}/process`);
           } else if (currentStatus === "Processing") {
             setConfirmDispatch(true);
+          } else if (currentStatus === "Dispatched") {
+            updateOrderStatus("Shipped");
+          } else if (currentStatus === "Shipped") {
+            updateOrderStatus("Delivered");
           }
         }}
         disabled={isLoading || isCompletedState}
@@ -89,12 +82,10 @@ export default function OrderActions({
             : currentStatus === "Processing"
               ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/20"
               : currentStatus === "Dispatched"
-                ? "bg-purple-500/15 text-purple-300 border border-purple-500/30 opacity-75"
+                ? "bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/20"
                 : currentStatus === "Shipped"
-                  ? "bg-sky-500/15 text-sky-300 border border-sky-500/30 opacity-75"
-                  : currentStatus === "Delivered"
-                    ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 opacity-75"
-                    : "bg-slate-800 text-slate-300"
+                  ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20"
+                  : "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 opacity-75"
         }`}
       >
         {isLoading
@@ -103,7 +94,11 @@ export default function OrderActions({
             ? "Mark as Processing"
             : currentStatus === "Processing"
               ? "Dispatch Order"
-              : currentStatus}
+              : currentStatus === "Dispatched"
+                ? "Mark as Shipped"
+                : currentStatus === "Shipped"
+                  ? "Mark as Delivered"
+                  : "Delivered ✓"}
       </button>
     </>
   );

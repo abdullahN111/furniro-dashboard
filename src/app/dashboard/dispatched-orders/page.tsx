@@ -11,6 +11,7 @@ import { formatDate } from "@/app/lib/formatDate";
 import ReportCards from "@/app/components/admin/card/ReportCard";
 import LocalSearchBar from "@/app/dashboard/search/LocalSearchBar";
 import Link from "next/link";
+import { toast } from "sonner";
 import { MdLocalShipping, MdCheckCircle, MdInventory } from "react-icons/md";
 
 const DispatchPage = () => {
@@ -23,28 +24,50 @@ const DispatchPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
+  const loadOrders = async () => {
+    setLoading(true);
+    try {
+      const [dispatched, shipped, delivered] = await Promise.all([
+        fetchDispatchedOrders(),
+        fetchShippedOrders(),
+        fetchDeliveredOrders(),
+      ]);
+
+      setDispatchedOrders(dispatched);
+      setShippedOrders(shipped);
+      setDeliveredOrders(delivered);
+    } catch (error) {
+      console.error("Failed to load orders:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const loadOrders = async () => {
-      setLoading(true);
-      try {
-        const [dispatched, shipped, delivered] = await Promise.all([
-          fetchDispatchedOrders(),
-          fetchShippedOrders(),
-          fetchDeliveredOrders(),
-        ]);
-
-        setDispatchedOrders(dispatched);
-        setShippedOrders(shipped);
-        setDeliveredOrders(delivered);
-      } catch (error) {
-        console.error("Failed to load orders:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadOrders();
   }, []);
+
+  const handleAdvanceStatus = async (orderId: string, nextStatus: "Shipped" | "Delivered") => {
+    try {
+      const res = await fetch(`/api/orders/${orderId}/status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: nextStatus }),
+      });
+
+      if (!res.ok) throw new Error("Failed to update status");
+
+      toast.success(
+        nextStatus === "Delivered"
+          ? "Order marked as Delivered & payment status synced to Paid."
+          : "Order marked as Shipped."
+      );
+      await loadOrders();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update order status.");
+    }
+  };
 
   const currentList = useMemo(() => {
     const raw =
@@ -87,7 +110,7 @@ const DispatchPage = () => {
               Fulfillment &amp; Dispatch Center
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
-              Monitor orders across Dispatched, Shipped, and Delivered stages
+              Monitor and advance orders across Dispatched, Shipped, and Delivered stages
             </p>
           </div>
           <LocalSearchBar
@@ -167,7 +190,7 @@ const DispatchPage = () => {
                       Total
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                      Order Date
+                      Payment
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
                       Dispatched At
@@ -176,60 +199,98 @@ const DispatchPage = () => {
                       Status
                     </th>
                     <th className="px-4 py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                      Action
+                      Actions
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
-                  {currentList.map((order) => (
-                    <tr
-                      key={order._id}
-                      className="hover:bg-slate-800/40 transition-colors"
-                    >
-                      <td className="p-4 whitespace-nowrap font-mono text-xs font-semibold text-indigo-400">
-                        #{order.orderId?.slice(0, 8) || order._id.slice(0, 8)}
-                      </td>
-                      <td className="p-4 whitespace-nowrap text-slate-200 font-medium">
-                        {order.user?.firstname} {order.user?.lastname}
-                      </td>
-                      <td className="p-4 whitespace-nowrap text-slate-300 text-xs">
-                        {(order.items || []).length} item
-                        {(order.items || []).length !== 1 ? "s" : ""}
-                      </td>
-                      <td className="p-4 whitespace-nowrap text-slate-100 font-semibold">
-                        ${(order.total || 0).toFixed(2)}
-                      </td>
-                      <td className="p-4 whitespace-nowrap text-xs text-slate-400">
-                        {order.createdAt ? formatDate(order.createdAt) : "N/A"}
-                      </td>
-                      <td className="p-4 whitespace-nowrap text-xs text-slate-400">
-                        {order.dispatchedAt
-                          ? formatDate(order.dispatchedAt)
-                          : "—"}
-                      </td>
-                      <td className="p-4 whitespace-nowrap">
-                        <span
-                          className={`px-2.5 py-1 inline-flex text-xs font-semibold rounded-full border ${
-                            activeTab === "dispatched"
-                              ? "bg-purple-500/15 text-purple-300 border-purple-500/30"
-                              : activeTab === "shipped"
-                                ? "bg-indigo-500/15 text-indigo-300 border-indigo-500/30"
-                                : "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
-                          }`}
-                        >
-                          {order.status}
-                        </span>
-                      </td>
-                      <td className="p-4 whitespace-nowrap text-right">
-                        <Link
-                          href={`/dashboard/orders/order/${order._id}`}
-                          className="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 px-3 py-1.5 rounded-xl text-xs font-medium transition-colors"
-                        >
-                          Inspect
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
+                  {currentList.map((order) => {
+                    const isPaid =
+                      order.paid ||
+                      order.paymentStatus === "Paid" ||
+                      order.paymentMethod === "Stripe" ||
+                      order.status === "Delivered";
+                    return (
+                      <tr
+                        key={order._id}
+                        className="hover:bg-slate-800/40 transition-colors"
+                      >
+                        <td className="p-4 whitespace-nowrap font-mono text-xs font-semibold text-indigo-400">
+                          #{order.orderId?.slice(0, 8) || order._id.slice(0, 8)}
+                        </td>
+                        <td className="p-4 whitespace-nowrap text-slate-200 font-medium">
+                          {order.user?.firstname} {order.user?.lastname}
+                        </td>
+                        <td className="p-4 whitespace-nowrap text-slate-300 text-xs">
+                          {(order.items || []).length} item
+                          {(order.items || []).length !== 1 ? "s" : ""}
+                        </td>
+                        <td className="p-4 whitespace-nowrap text-slate-100 font-semibold">
+                          ${(order.total || 0).toFixed(2)}
+                        </td>
+                        <td className="p-4 whitespace-nowrap text-xs">
+                          <span className="text-slate-300">
+                            {order.paymentMethod || "Card"}
+                          </span>{" "}
+                          <span
+                            className={`font-semibold ${
+                              isPaid ? "text-emerald-400" : "text-amber-400"
+                            }`}
+                          >
+                            ({order.paymentStatus || (isPaid ? "Paid" : "Pending")})
+                          </span>
+                        </td>
+                        <td className="p-4 whitespace-nowrap text-xs text-slate-400">
+                          {order.dispatchedAt
+                            ? formatDate(order.dispatchedAt)
+                            : formatDate(order.createdAt)}
+                        </td>
+                        <td className="p-4 whitespace-nowrap">
+                          <span
+                            className={`px-2.5 py-1 inline-flex text-xs font-semibold rounded-full border ${
+                              activeTab === "dispatched"
+                                ? "bg-purple-500/15 text-purple-300 border-purple-500/30"
+                                : activeTab === "shipped"
+                                  ? "bg-indigo-500/15 text-indigo-300 border-indigo-500/30"
+                                  : "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
+                            }`}
+                          >
+                            {order.status}
+                          </span>
+                        </td>
+                        <td className="p-4 whitespace-nowrap text-right">
+                          <div className="inline-flex items-center gap-2">
+                            <Link
+                              href={`/dashboard/orders/order/${order._id}`}
+                              className="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 px-3 py-1.5 rounded-xl text-xs font-medium transition-colors"
+                            >
+                              Inspect
+                            </Link>
+                            {activeTab === "dispatched" && (
+                              <button
+                                onClick={() =>
+                                  handleAdvanceStatus(order._id, "Shipped")
+                                }
+                                className="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors"
+                              >
+                                Mark Shipped
+                              </button>
+                            )}
+                            {activeTab === "shipped" && (
+                              <button
+                                onClick={() =>
+                                  handleAdvanceStatus(order._id, "Delivered")
+                                }
+                                className="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors"
+                              >
+                                Mark Delivered
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
